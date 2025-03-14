@@ -1,0 +1,3 @@
+from fastapi_admin.contrib import admin
+
+# Register your models here.
