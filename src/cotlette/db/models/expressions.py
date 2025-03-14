@@ -6,7 +6,6 @@ from collections import defaultdict
 from decimal import Decimal
 from enum import Enum
 from itertools import chain
-from types import NoneType
 from uuid import UUID
 
 from cotlette.core.exceptions import EmptyResultSet, FieldError, FullResultSet
@@ -638,7 +637,7 @@ _connector_combinations = [
     {
         connector: list(
             chain.from_iterable(
-                [(field_type, NoneType, field_type), (NoneType, field_type, field_type)]
+                [(field_type, None, field_type), (None, field_type, field_type)]
                 for field_type in (
                     fields.IntegerField,
                     fields.DecimalField,
@@ -2058,7 +2057,7 @@ class WindowFrame(Expression):
     def __init__(self, start=None, end=None, exclusion=None):
         self.start = Value(start)
         self.end = Value(end)
-        if not isinstance(exclusion, (NoneType, WindowFrameExclusion)):
+        if not isinstance(exclusion, (None, WindowFrameExclusion)):
             raise TypeError(
                 f"{self.__class__.__qualname__}.exclusion must be a "
                 "WindowFrameExclusion instance."

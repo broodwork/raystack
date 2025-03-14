@@ -7,6 +7,7 @@ name = "cotlette"
 version = "0.1.0"  # Явная версия проекта
 requires-python = ">= 3.6"
 dependencies = [
+    "uvicorn",
     "fastapi",
     "asgiref",
 ]
