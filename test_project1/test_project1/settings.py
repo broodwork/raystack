@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.cotletteproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cotlette-insecure--o1^_8v4!=glegjnz8y(@$^mo_&b67x70i3jaor)(ofyl2m%zu'
+SECRET_KEY = 'cotlette-insecure-qsblr2-k_96!*c*sregmdfvu@9vadhcjr+ebrq*74j42v=9v5q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
