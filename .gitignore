@@ -55,7 +55,7 @@ cover/
 *.mo
 *.pot
 
-# fastapi-admin stuff:
+# cotlette stuff:
 *.log
 local_settings.py
 db.sqlite3

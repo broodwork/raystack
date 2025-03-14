@@ -1,3 +1,0 @@
-from fastapi_admin.db import models
-
-# Create your models here.

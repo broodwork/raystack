@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0.0,<69.3.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fastapi-admin"
+name = "cotlette"
 version = "0.1.0"  # Явная версия проекта
 requires-python = ">= 3.6"
 dependencies = [
@@ -39,11 +39,11 @@ classifiers = [
 ]
 
 [project.scripts]
-fastapi-admin = "fastapi_admin.core.management:execute_from_command_line"
+cotlette = "cotlette.core.management:execute_from_command_line"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/fastapi-admin"
+Homepage = "https://github.com/yourusername/cotlette"
 Documentation = "https://your-docs-url.com/"
-"Release notes" = "https://github.com/yourusername/fastapi-admin/releases"
-Source = "https://github.com/yourusername/fastapi-admin"
-Tracker = "https://github.com/yourusername/fastapi-admin/issues"
+"Release notes" = "https://github.com/yourusername/cotlette/releases"
+Source = "https://github.com/yourusername/cotlette"
+Tracker = "https://github.com/yourusername/cotlette/issues"
