@@ -9,22 +9,22 @@ import zoneinfo
 from collections import deque
 from contextlib import contextmanager
 
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.db import DEFAULT_DB_ALIAS, DatabaseError, NotSupportedError
-from django.db.backends import utils
-from django.db.backends.base.validation import BaseDatabaseValidation
-from django.db.backends.signals import connection_created
-from django.db.backends.utils import debug_transaction
-from django.db.transaction import TransactionManagementError
-from django.db.utils import DatabaseErrorWrapper, ProgrammingError
-from django.utils.asyncio import async_unsafe
-from django.utils.functional import cached_property
+from cotlette.conf import settings
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.db import DEFAULT_DB_ALIAS, DatabaseError, NotSupportedError
+from cotlette.db.backends import utils
+from cotlette.db.backends.base.validation import BaseDatabaseValidation
+from cotlette.db.backends.signals import connection_created
+from cotlette.db.backends.utils import debug_transaction
+from cotlette.db.transaction import TransactionManagementError
+from cotlette.db.utils import DatabaseErrorWrapper, ProgrammingError
+from cotlette.utils.asyncio import async_unsafe
+from cotlette.utils.functional import cached_property
 
 NO_DB_ALIAS = "__no_db__"
 RAN_DB_VERSION_CHECK = set()
 
-logger = logging.getLogger("django.db.backends.base")
+logger = logging.getLogger("cotlette.db.backends.base")
 
 
 class BaseDatabaseWrapper:
@@ -56,7 +56,7 @@ class BaseDatabaseWrapper:
         self.connection = None
         # `settings_dict` should be a dictionary containing keys such as
         # NAME, USER, etc. It's called `settings_dict` instead of `settings`
-        # to disambiguate it from Django settings modules.
+        # to disambiguate it from Cotlette settings modules.
         self.settings_dict = settings_dict
         self.alias = alias
         # Query logging in debug mode or when explicitly enabled.
@@ -140,11 +140,11 @@ class BaseDatabaseWrapper:
         read from the database, it is always returned in this time zone.
 
         When the database backend supports time zones, it doesn't matter which
-        time zone Django uses, as long as aware datetimes are used everywhere.
+        time zone Cotlette uses, as long as aware datetimes are used everywhere.
         Other users connecting to the database can choose their own time zone.
 
         When the database backend doesn't support time zones, the time zone
-        Django uses may be constrained by the requirements of other users of
+        Cotlette uses may be constrained by the requirements of other users of
         the database.
         """
         if not settings.USE_TZ:
@@ -190,7 +190,7 @@ class BaseDatabaseWrapper:
     def check_database_version_supported(self):
         """
         Raise an error if the database version isn't supported by this
-        version of Django.
+        version of Cotlette.
         """
         if (
             self.features.minimum_database_version is not None
@@ -570,7 +570,7 @@ class BaseDatabaseWrapper:
         This method may assume that self.connection is not None.
 
         Actual implementations should take care not to raise exceptions
-        as that may prevent Django from recycling unusable connections.
+        as that may prevent Cotlette from recycling unusable connections.
         """
         raise NotImplementedError(
             "subclasses of BaseDatabaseWrapper may require an is_usable() method"
@@ -663,7 +663,7 @@ class BaseDatabaseWrapper:
     def wrap_database_errors(self):
         """
         Context manager and decorator that re-throws backend-specific database
-        exceptions using Django's common wrappers.
+        exceptions using Cotlette's common wrappers.
         """
         return DatabaseErrorWrapper(self)
 

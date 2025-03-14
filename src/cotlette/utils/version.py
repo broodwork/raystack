@@ -11,7 +11,7 @@ PYPY = sys.implementation.name == "pypy"
 
 # Private, stable API for detecting the Python version. PYXY means "Python X.Y
 # or later". So that third-party apps can use these values, each constant
-# should remain as long as the oldest supported Django version supports that
+# should remain as long as the oldest supported Cotlette version supports that
 # Python version.
 PY38 = sys.version_info >= (3, 8)
 PY39 = sys.version_info >= (3, 9)

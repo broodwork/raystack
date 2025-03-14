@@ -1,6 +1,6 @@
 from functools import total_ordering
 
-from django.db.migrations.state import ProjectState
+from cotlette.db.migrations.state import ProjectState
 
 from .exceptions import CircularDependencyError, NodeNotFoundError
 

@@ -1,12 +1,12 @@
-from django.apps import apps
-from django.core import checks
-from django.core.checks.registry import registry
-from django.core.management.base import BaseCommand, CommandError
-from django.db import connections
+from cotlette.apps import apps
+from cotlette.core import checks
+from cotlette.core.checks.registry import registry
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.db import connections
 
 
 class Command(BaseCommand):
-    help = "Checks the entire Django project for potential problems."
+    help = "Checks the entire Cotlette project for potential problems."
 
     requires_system_checks = []
 

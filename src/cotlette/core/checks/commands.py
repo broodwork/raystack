@@ -3,7 +3,7 @@ from cotlette.core.checks import Error, Tags, register
 
 @register(Tags.commands)
 def migrate_and_makemigrations_autodetector(**kwargs):
-    from django.core.management import get_commands, load_command_class
+    from cotlette.core.management import get_commands, load_command_class
 
     commands = get_commands()
 

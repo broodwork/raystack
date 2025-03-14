@@ -38,11 +38,11 @@ class Command(BaseCommand):
             "--no-input",
             action="store_false",
             dest="interactive",
-            help="Tells Django to NOT prompt the user for input of any kind.",
+            help="Tells Cotlette to NOT prompt the user for input of any kind.",
         )
         parser.add_argument(
             "--testrunner",
-            help="Tells Django to use specified test runner class instead of "
+            help="Tells Cotlette to use specified test runner class instead of "
             "the one specified by the TEST_RUNNER setting.",
         )
 

@@ -3,13 +3,13 @@ import sys
 import warnings
 from io import StringIO
 
-from django.apps import apps
-from django.conf import settings
-from django.core import serializers
-from django.db import router
-from django.db.transaction import atomic
-from django.utils.deprecation import RemovedInDjango70Warning
-from django.utils.module_loading import import_string
+from cotlette.apps import apps
+from cotlette.conf import settings
+from cotlette.core import serializers
+from cotlette.db import router
+from cotlette.db.transaction import atomic
+from cotlette.utils.deprecation import RemovedInCotlette70Warning
+from cotlette.utils.module_loading import import_string
 
 # The prefix to put on the default database name when creating
 # the test database.
@@ -31,7 +31,7 @@ class BaseDatabaseCreation:
     def log(self, msg):
         sys.stderr.write(msg + os.linesep)
 
-    # RemovedInDjango70Warning: When the deprecation ends, replace with:
+    # RemovedInCotlette70Warning: When the deprecation ends, replace with:
     # def create_test_db(self, verbosity=1, autoclobber=False, keepdb=False):
     def create_test_db(
         self, verbosity=1, autoclobber=False, serialize=None, keepdb=False
@@ -40,8 +40,8 @@ class BaseDatabaseCreation:
         Create a test database, prompting the user for confirmation if the
         database already exists. Return the name of the test database created.
         """
-        # Don't import django.core.management if it isn't needed.
-        from django.core.management import call_command
+        # Don't import cotlette.core.management if it isn't needed.
+        from cotlette.core.management import call_command
 
         test_database_name = self._get_test_db_name()
 
@@ -100,7 +100,7 @@ class BaseDatabaseCreation:
                 "DatabaseCreation.serialize_test_db() once all test databases are set "
                 "up instead if you need fixtures persistence between tests.",
                 stacklevel=2,
-                category=RemovedInDjango70Warning,
+                category=RemovedInCotlette70Warning,
             )
             if serialize:
                 self.connection._test_serialized_contents = (
@@ -112,7 +112,7 @@ class BaseDatabaseCreation:
         # Ensure a connection for the side effect of initializing the test database.
         self.connection.ensure_connection()
 
-        if os.environ.get("RUNNING_DJANGOS_TEST_SUITE") == "true":
+        if os.environ.get("RUNNING_COTLETTES_TEST_SUITE") == "true":
             self.mark_expected_failures_and_skips()
 
         return test_database_name
@@ -133,7 +133,7 @@ class BaseDatabaseCreation:
 
         # Iteratively return every object for all models to serialize.
         def get_objects():
-            from django.db.migrations.loader import MigrationLoader
+            from cotlette.db.migrations.loader import MigrationLoader
 
             loader = MigrationLoader(self.connection)
             for app_config in apps.get_app_configs():
@@ -344,13 +344,13 @@ class BaseDatabaseCreation:
 
     def mark_expected_failures_and_skips(self):
         """
-        Mark tests in Django's test suite which are expected failures on this
+        Mark tests in Cotlette's test suite which are expected failures on this
         database and test which should be skipped on this database.
         """
         # Only load unittest if we're actually testing.
         from unittest import expectedFailure, skip
 
-        for test_name in self.connection.features.django_test_expected_failures:
+        for test_name in self.connection.features.cotlette_test_expected_failures:
             test_case_name, _, test_method_name = test_name.rpartition(".")
             test_app = test_name.split(".")[0]
             # Importing a test app that isn't installed raises RuntimeError.
@@ -358,7 +358,7 @@ class BaseDatabaseCreation:
                 test_case = import_string(test_case_name)
                 test_method = getattr(test_case, test_method_name)
                 setattr(test_case, test_method_name, expectedFailure(test_method))
-        for reason, tests in self.connection.features.django_test_skips.items():
+        for reason, tests in self.connection.features.cotlette_test_skips.items():
             for test_name in tests:
                 test_case_name, _, test_method_name = test_name.rpartition(".")
                 test_app = test_name.split(".")[0]
@@ -391,7 +391,7 @@ class BaseDatabaseCreation:
     def setup_worker_connection(self, _worker_id):
         settings_dict = self.get_test_db_clone_settings(str(_worker_id))
         # connection.settings_dict must be updated in place for changes to be
-        # reflected in django.db.connections. If the following line assigned
+        # reflected in cotlette.db.connections. If the following line assigned
         # connection.settings_dict = settings_dict, new threads would connect
         # to the default database instead of the appropriate clone.
         self.connection.settings_dict.update(settings_dict)

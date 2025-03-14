@@ -1,4 +1,4 @@
-from django.db import router
+from cotlette.db import router
 
 from .base import Operation, OperationCategory
 

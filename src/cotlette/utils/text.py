@@ -100,7 +100,7 @@ class TruncateHTMLParser(HTMLParser):
 
     @cached_property
     def void_elements(self):
-        from django.utils.html import VOID_ELEMENTS
+        from cotlette.utils.html import VOID_ELEMENTS
 
         return VOID_ELEMENTS
 

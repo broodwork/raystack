@@ -1,4 +1,4 @@
-from django.template import Template, TemplateDoesNotExist
+from cotlette.template import Template, TemplateDoesNotExist
 
 
 class Loader:

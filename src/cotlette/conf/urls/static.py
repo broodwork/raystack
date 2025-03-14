@@ -1,18 +1,18 @@
 import re
 from urllib.parse import urlsplit
 
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.urls import re_path
-from django.views.static import serve
+from cotlette.conf import settings
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.urls import re_path
+from cotlette.views.static import serve
 
 
 def static(prefix, view=serve, **kwargs):
     """
     Return a URL pattern for serving files in debug mode.
 
-    from django.conf import settings
-    from django.conf.urls.static import static
+    from cotlette.conf import settings
+    from cotlette.conf.urls.static import static
 
     urlpatterns = [
         # ... the rest of your URLconf goes here ...

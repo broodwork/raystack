@@ -54,7 +54,7 @@ def get_commands():
     """
     Return a dictionary mapping command names to their callback applications.
 
-    Look for a management.commands package in django.core, and in each
+    Look for a management.commands package in cotlette.core, and in each
     installed application -- if a commands package exists, register all
     commands in that package.
 
@@ -95,7 +95,7 @@ def call_command(command_name, *args, **options):
         call_command('shell', plain=True)
         call_command('sqlmigrate', 'myapp')
 
-        from django.core.management.commands import flush
+        from cotlette.core.management.commands import flush
         cmd = flush.Command()
         call_command(cmd, verbosity=0, interactive=False)
         # Do something with cmd ...
@@ -196,7 +196,7 @@ def call_command(command_name, *args, **options):
 
 class ManagementUtility:
     """
-    Encapsulate the logic of the django-admin and manage.py utilities.
+    Encapsulate the logic of the cotlette and manage.py utilities.
     """
 
     def __init__(self, argv=None):
@@ -247,21 +247,21 @@ class ManagementUtility:
         """
         Try to fetch the given subcommand, printing a message with the
         appropriate command called from the command line (usually
-        "django-admin" or "manage.py") if it can't be found.
+        "cotlette" or "manage.py") if it can't be found.
         """
         # Get commands outside of try block to prevent swallowing exceptions
         commands = get_commands()
         try:
             app_name = commands[subcommand]
         except KeyError:
-            if os.environ.get("DJANGO_SETTINGS_MODULE"):
+            if os.environ.get("COTLETTE_SETTINGS_MODULE"):
                 # If `subcommand` is missing due to misconfigured settings, the
                 # following line will retrigger an ImproperlyConfigured exception
                 # (get_commands() swallows the original one) so the user is
                 # informed about it.
                 settings.INSTALLED_APPS
             elif not settings.configured:
-                sys.stderr.write("No Django settings specified.\n")
+                sys.stderr.write("No Cotlette settings specified.\n")
             possible_matches = get_close_matches(subcommand, commands)
             sys.stderr.write("Unknown command: %r" % subcommand)
             if possible_matches:
@@ -297,7 +297,7 @@ class ManagementUtility:
         and formatted as potential completion suggestions.
         """
         # Don't complete if user hasn't sourced bash_completion file.
-        if "DJANGO_AUTO_COMPLETE" not in os.environ:
+        if "COTLETTE_AUTO_COMPLETE" not in os.environ:
             return
 
         cwords = os.environ["COMP_WORDS"].split()[1:]
@@ -325,7 +325,7 @@ class ManagementUtility:
                     # Get the last part of the dotted path as the app name.
                     options.extend((app_config.label, 0) for app_config in app_configs)
                 except ImportError:
-                    # Fail silently if DJANGO_SETTINGS_MODULE isn't set. The
+                    # Fail silently if COTLETTE_SETTINGS_MODULE isn't set. The
                     # user will find out once they execute the command.
                     pass
             parser = subcommand_cls.create_parser("", cwords[0])
@@ -391,7 +391,7 @@ class ManagementUtility:
             # flag on the command class because we haven't located it yet.
             if subcommand == "runserver" and "--noreload" not in self.argv:
                 try:
-                    autoreload.check_errors(django.setup)()
+                    autoreload.check_errors(cotlette.setup)()
                 except Exception:
                     # The exception will be raised later in the child process
                     # started by the autoreloader. Pretend it didn't happen by
@@ -411,9 +411,9 @@ class ManagementUtility:
                     for _arg in _args:
                         self.argv.remove(_arg)
 
-            # In all other cases, django.setup() is required to succeed.
+            # In all other cases, cotlette.setup() is required to succeed.
             else:
-                django.setup()
+                cotlette.setup()
 
         self.autocomplete()
 
@@ -426,10 +426,10 @@ class ManagementUtility:
                 self.fetch_command(options.args[0]).print_help(
                     self.prog_name, options.args[0]
                 )
-        # Special-cases: We want 'django-admin --version' and
-        # 'django-admin --help' to work, for backwards compatibility.
+        # Special-cases: We want 'cotlette --version' and
+        # 'cotlette --help' to work, for backwards compatibility.
         elif subcommand == "version" or self.argv[1:] == ["--version"]:
-            sys.stdout.write(django.get_version() + "\n")
+            sys.stdout.write(cotlette.get_version() + "\n")
         elif self.argv[1:] in (["--help"], ["-h"]):
             sys.stdout.write(self.main_help_text() + "\n")
         else:

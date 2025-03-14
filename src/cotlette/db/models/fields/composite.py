@@ -1,9 +1,9 @@
 import json
 
-from django.core import checks
-from django.db.models import NOT_PROVIDED, Field
-from django.db.models.expressions import ColPairs
-from django.db.models.fields.tuple_lookups import (
+from cotlette.core import checks
+from cotlette.db.models import NOT_PROVIDED, Field
+from cotlette.db.models.expressions import ColPairs
+from cotlette.db.models.fields.tuple_lookups import (
     TupleExact,
     TupleGreaterThan,
     TupleGreaterThanOrEqual,
@@ -12,7 +12,7 @@ from django.db.models.fields.tuple_lookups import (
     TupleLessThan,
     TupleLessThanOrEqual,
 )
-from django.utils.functional import cached_property
+from cotlette.utils.functional import cached_property
 
 
 class AttributeSetter:

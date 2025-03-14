@@ -72,7 +72,7 @@ def reset_cache(*, setting, **kwargs):
 
 class TranslationCatalog:
     """
-    Simulate a dict for DjangoTranslation._catalog so as multiple catalogs
+    Simulate a dict for CotletteTranslation._catalog so as multiple catalogs
     with different plural equations are kept separate.
     """
 
@@ -126,7 +126,7 @@ class TranslationCatalog:
         raise KeyError
 
 
-class DjangoTranslation(gettext_module.GNUTranslations):
+class CotletteTranslation(gettext_module.GNUTranslations):
     """
     Set up the GNUTranslations context with regard to output charset.
 
@@ -185,7 +185,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
             self._catalog = TranslationCatalog()
 
     def __repr__(self):
-        return "<DjangoTranslation lang:%s>" % self.__language
+        return "<CotletteTranslation lang:%s>" % self.__language
 
     def _new_gnu_trans(self, localedir, use_null_fallback=True):
         """
@@ -203,7 +203,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
         )
 
     def _init_translation_catalog(self):
-        """Create a base catalog using global django translations."""
+        """Create a base catalog using global cotlette translations."""
         settingsfile = sys.modules[settings.__module__].__file__
         localedir = os.path.join(os.path.dirname(settingsfile), "locale")
         translation = self._new_gnu_trans(localedir)
@@ -243,7 +243,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
             # Get from cache
             default_translation = translation(settings.LANGUAGE_CODE)
         else:
-            default_translation = DjangoTranslation(
+            default_translation = CotletteTranslation(
                 settings.LANGUAGE_CODE, domain=self.domain, localedirs=localedirs
             )
         self.add_fallback(default_translation)
@@ -253,7 +253,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
         if not getattr(other, "_catalog", None):
             return  # NullTranslations() has no _catalog
         if self._catalog is None:
-            # Take plural and _info from first catalog found (generally Django's).
+            # Take plural and _info from first catalog found (generally Cotlette's).
             self.plural = other.plural
             self._info = other._info.copy()
             self._catalog = TranslationCatalog(other)
@@ -289,7 +289,7 @@ def translation(language):
     """
     global _translations
     if language not in _translations:
-        _translations[language] = DjangoTranslation(language)
+        _translations[language] = CotletteTranslation(language)
     return _translations[language]
 
 
@@ -468,7 +468,7 @@ def check_for_language(lang_code):
 
     lru_cache should have a maxsize to prevent from memory exhaustion attacks,
     as the provided language codes are taken from the HTTP request. See also
-    <https://www.djangoproject.com/weblog/2007/oct/26/security-fix/>.
+    <https://www.cotletteproject.com/weblog/2007/oct/26/security-fix/>.
     """
     # First, a quick check to make sure lang_code is well-formed (#21458)
     if lang_code is None or not language_code_re.search(lang_code):
@@ -502,7 +502,7 @@ def get_supported_language_variant(lang_code, strict=False):
 
     lru_cache should have a maxsize to prevent from memory exhaustion attacks,
     as the provided language codes are taken from the HTTP request. See also
-    <https://www.djangoproject.com/weblog/2007/oct/26/security-fix/>.
+    <https://www.cotletteproject.com/weblog/2007/oct/26/security-fix/>.
     """
     if lang_code:
         # Truncate the language code to a maximum length to avoid potential

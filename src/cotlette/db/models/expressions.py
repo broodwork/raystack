@@ -9,14 +9,14 @@ from itertools import chain
 from types import NoneType
 from uuid import UUID
 
-from django.core.exceptions import EmptyResultSet, FieldError, FullResultSet
-from django.db import DatabaseError, NotSupportedError, connection
-from django.db.models import fields
-from django.db.models.constants import LOOKUP_SEP
-from django.db.models.query_utils import Q
-from django.utils.deconstruct import deconstructible
-from django.utils.functional import cached_property, classproperty
-from django.utils.hashable import make_hashable
+from cotlette.core.exceptions import EmptyResultSet, FieldError, FullResultSet
+from cotlette.db import DatabaseError, NotSupportedError, connection
+from cotlette.db.models import fields
+from cotlette.db.models.constants import LOOKUP_SEP
+from cotlette.db.models.query_utils import Q
+from cotlette.utils.deconstruct import deconstructible
+from cotlette.utils.functional import cached_property, classproperty
+from cotlette.utils.hashable import make_hashable
 
 
 class SQLiteNumericMixin:
@@ -565,7 +565,7 @@ class Expression(BaseExpression, Combinable):
 #
 # The current approach for NULL is based on lowest common denominator behavior
 # i.e. if one of the supported databases is raising an error (rather than
-# return NULL) for `val <op> NULL`, then Django raises FieldError.
+# return NULL) for `val <op> NULL`, then Cotlette raises FieldError.
 
 _connector_combinations = [
     # Numeric operations - operands of same type.
@@ -872,7 +872,7 @@ class TemporalSubtraction(CombinedExpression):
         )
 
 
-@deconstructible(path="django.db.models.F")
+@deconstructible(path="cotlette.db.models.F")
 class F(Combinable):
     """An object capable of resolving references to existing query objects."""
 
@@ -1044,7 +1044,7 @@ class Sliced(F):
         return resolved.output_field.slice_expression(expr, self.start, self.length)
 
 
-@deconstructible(path="django.db.models.Func")
+@deconstructible(path="cotlette.db.models.Func")
 class Func(SQLiteNumericMixin, Expression):
     """An SQL function call."""
 
@@ -1138,7 +1138,7 @@ class Func(SQLiteNumericMixin, Expression):
         return all(expression.allowed_default for expression in self.source_expressions)
 
 
-@deconstructible(path="django.db.models.Value")
+@deconstructible(path="cotlette.db.models.Value")
 class Value(SQLiteNumericMixin, Expression):
     """Represent a wrapped value as a node within an expression."""
 
@@ -1497,7 +1497,7 @@ class OrderByList(ExpressionList):
         )
 
 
-@deconstructible(path="django.db.models.ExpressionWrapper")
+@deconstructible(path="cotlette.db.models.ExpressionWrapper")
 class ExpressionWrapper(SQLiteNumericMixin, Expression):
     """
     An expression that can wrap another expression so that it can provide
@@ -1585,7 +1585,7 @@ class NegatedExpression(ExpressionWrapper):
         return sql, params
 
 
-@deconstructible(path="django.db.models.When")
+@deconstructible(path="cotlette.db.models.When")
 class When(Expression):
     template = "WHEN %(condition)s THEN %(result)s"
     # This isn't a complete conditional expression, must be used in Case().
@@ -1651,7 +1651,7 @@ class When(Expression):
         return self.condition.allowed_default and self.result.allowed_default
 
 
-@deconstructible(path="django.db.models.Case")
+@deconstructible(path="cotlette.db.models.Case")
 class Case(SQLiteNumericMixin, Expression):
     """
     An SQL searched CASE expression:
@@ -1821,7 +1821,7 @@ class Exists(Subquery):
             return compiler.compile(Value(False))
 
 
-@deconstructible(path="django.db.models.OrderBy")
+@deconstructible(path="cotlette.db.models.OrderBy")
 class OrderBy(Expression):
     template = "%(expression)s %(ordering)s"
     conditional = False

@@ -1,7 +1,7 @@
-from django.db.models.expressions import ColPairs
-from django.db.models.fields import composite
-from django.db.models.fields.tuple_lookups import TupleIn, tuple_lookups
-from django.db.models.lookups import (
+from cotlette.db.models.expressions import ColPairs
+from cotlette.db.models.fields import composite
+from cotlette.db.models.fields.tuple_lookups import TupleIn, tuple_lookups
+from cotlette.db.models.lookups import (
     Exact,
     GreaterThan,
     GreaterThanOrEqual,
@@ -13,7 +13,7 @@ from django.db.models.lookups import (
 
 
 def get_normalized_value(value, lhs):
-    from django.db.models import Model
+    from cotlette.db.models import Model
 
     if isinstance(value, Model):
         if not value._is_pk_set():
@@ -40,7 +40,7 @@ def get_normalized_value(value, lhs):
 
 class RelatedIn(In):
     def get_prep_lookup(self):
-        from django.db.models.sql.query import Query  # avoid circular import
+        from cotlette.db.models.sql.query import Query  # avoid circular import
 
         if isinstance(self.lhs, ColPairs):
             if (

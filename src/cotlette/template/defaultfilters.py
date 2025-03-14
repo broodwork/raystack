@@ -10,19 +10,19 @@ from operator import itemgetter
 from pprint import pformat
 from urllib.parse import quote
 
-from django.utils import formats
-from django.utils.dateformat import format, time_format
-from django.utils.encoding import iri_to_uri
-from django.utils.html import avoid_wrapping, conditional_escape, escape, escapejs
-from django.utils.html import json_script as _json_script
-from django.utils.html import linebreaks, strip_tags
-from django.utils.html import urlize as _urlize
-from django.utils.safestring import SafeData, mark_safe
-from django.utils.text import Truncator, normalize_newlines, phone2numeric
-from django.utils.text import slugify as _slugify
-from django.utils.text import wrap
-from django.utils.timesince import timesince, timeuntil
-from django.utils.translation import gettext, ngettext
+from cotlette.utils import formats
+from cotlette.utils.dateformat import format, time_format
+from cotlette.utils.encoding import iri_to_uri
+from cotlette.utils.html import avoid_wrapping, conditional_escape, escape, escapejs
+from cotlette.utils.html import json_script as _json_script
+from cotlette.utils.html import linebreaks, strip_tags
+from cotlette.utils.html import urlize as _urlize
+from cotlette.utils.safestring import SafeData, mark_safe
+from cotlette.utils.text import Truncator, normalize_newlines, phone2numeric
+from cotlette.utils.text import slugify as _slugify
+from cotlette.utils.text import wrap
+from cotlette.utils.timesince import timesince, timeuntil
+from cotlette.utils.translation import gettext, ngettext
 
 from .base import VARIABLE_ATTRIBUTE_SEPARATOR
 from .library import Library
@@ -171,7 +171,7 @@ def floatformat(text, arg=-1):
 
     # Values with more than 200 digits, or with a large exponent, are returned "as is"
     # to avoid high memory consumption and potential denial-of-service attacks.
-    # The cut-off of 200 is consistent with django.utils.numberformat.floatformat().
+    # The cut-off of 200 is consistent with cotlette.utils.numberformat.floatformat().
     if number_of_digits_and_exponent_sum > 200:
         return input_val
 

@@ -24,10 +24,10 @@ from cotlette.utils.version import get_docs_version
 
 class TemplateCommand(BaseCommand):
     """
-    Copy either a Django application layout template or a Django project
+    Copy either a Cotlette application layout template or a Cotlette project
     layout template into the specified directory.
 
-    :param style: A color style object (see django.core.management.color).
+    :param style: A color style object (see cotlette.core.management.color).
     :param app_or_project: The string 'app' or 'project'.
     :param name: The name of the application or project.
     :param directory: The directory to which the template should be copied.
@@ -144,7 +144,7 @@ class TemplateCommand(BaseCommand):
                 base_directory: top_dir,
                 camel_case_name: camel_case_value,
                 "docs_version": get_docs_version(),
-                "django_version": cotlette.__version__,
+                "cotlette_version": cotlette.__version__,
             },
             autoescape=False,
         )
@@ -196,7 +196,7 @@ class TemplateCommand(BaseCommand):
                     )
 
                 # Only render the Python files, as we don't want to
-                # accidentally render Django templates files
+                # accidentally render Cotlette templates files
                 if new_path.endswith(extensions) or filename in extra_files:
                     with open(old_path, encoding="utf-8") as template_file:
                         content = template_file.read()
@@ -234,7 +234,7 @@ class TemplateCommand(BaseCommand):
     def handle_template(self, template, subdir):
         """
         Determine where the app or project templates are.
-        Use django.__path__[0] as the default because the Django install
+        Use cotlette.__path__[0] as the default because the Cotlette install
         directory isn't known.
         """
         if template is None:
@@ -302,7 +302,7 @@ class TemplateCommand(BaseCommand):
                 display_url = url
             return filename, display_url
 
-        prefix = "django_%s_template_" % self.app_or_project
+        prefix = "cotlette_%s_template_" % self.app_or_project
         tempdir = tempfile.mkdtemp(prefix=prefix, suffix="_download")
         self.paths_to_remove.append(tempdir)
         filename, display_url = cleanup_url(url)
@@ -312,7 +312,7 @@ class TemplateCommand(BaseCommand):
 
         the_path = os.path.join(tempdir, filename)
         opener = build_opener()
-        opener.addheaders = [("User-Agent", f"Django/{django.__version__}")]
+        opener.addheaders = [("User-Agent", f"Cotlette/{cotlette.__version__}")]
         try:
             with opener.open(url) as source, open(the_path, "wb") as target:
                 headers = source.info()
@@ -365,7 +365,7 @@ class TemplateCommand(BaseCommand):
         Extract the given file to a temporary directory and return
         the path of the directory with the extracted content.
         """
-        prefix = "django_%s_template_" % self.app_or_project
+        prefix = "cotlette_%s_template_" % self.app_or_project
         tempdir = tempfile.mkdtemp(prefix=prefix, suffix="_extract")
         self.paths_to_remove.append(tempdir)
         if self.verbosity >= 2:

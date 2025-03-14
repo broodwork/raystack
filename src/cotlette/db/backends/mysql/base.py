@@ -1,16 +1,16 @@
 """
-MySQL database backend for Django.
+MySQL database backend for Cotlette.
 
 Requires mysqlclient: https://pypi.org/project/mysqlclient/
 """
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db import IntegrityError
-from django.db.backends import utils as backend_utils
-from django.db.backends.base.base import BaseDatabaseWrapper
-from django.utils.asyncio import async_unsafe
-from django.utils.functional import cached_property
-from django.utils.regex_helper import _lazy_re_compile
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.db import IntegrityError
+from cotlette.db.backends import utils as backend_utils
+from cotlette.db.backends.base.base import BaseDatabaseWrapper
+from cotlette.utils.asyncio import async_unsafe
+from cotlette.utils.functional import cached_property
+from cotlette.utils.regex_helper import _lazy_re_compile
 
 try:
     import MySQLdb as Database
@@ -39,9 +39,9 @@ if version < (2, 2, 1):
 
 
 # MySQLdb returns TIME columns as timedelta -- they are more like timedelta in
-# terms of actual behavior as they are signed and include days -- and Django
+# terms of actual behavior as they are signed and include days -- and Cotlette
 # expects time.
-django_conversions = {
+cotlette_conversions = {
     **conversions,
     **{FIELD_TYPE.TIME: backend_utils.typecast_time},
 }
@@ -76,7 +76,7 @@ class CursorWrapper:
             return self.cursor.execute(query, args)
         except Database.OperationalError as e:
             # Map some error codes to IntegrityError, since they seem to be
-            # misclassified and Django would prefer the more logical place.
+            # misclassified and Cotlette would prefer the more logical place.
             if e.args[0] in self.codes_for_integrityerror:
                 raise IntegrityError(*tuple(e.args))
             raise
@@ -86,7 +86,7 @@ class CursorWrapper:
             return self.cursor.executemany(query, args)
         except Database.OperationalError as e:
             # Map some error codes to IntegrityError, since they seem to be
-            # misclassified and Django would prefer the more logical place.
+            # misclassified and Cotlette would prefer the more logical place.
             if e.args[0] in self.codes_for_integrityerror:
                 raise IntegrityError(*tuple(e.args))
             raise
@@ -214,7 +214,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def get_connection_params(self):
         kwargs = {
-            "conv": django_conversions,
+            "conv": cotlette_conversions,
             "charset": "utf8mb4",
         }
         settings_dict = self.settings_dict

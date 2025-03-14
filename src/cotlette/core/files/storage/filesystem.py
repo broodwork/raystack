@@ -6,16 +6,16 @@ from cotlette.conf import settings
 from cotlette.core.files import File, locks
 from cotlette.core.files.move import file_move_safe
 from cotlette.core.signals import setting_changed
-from django.utils._os import safe_join
-from django.utils.deconstruct import deconstructible
-from django.utils.encoding import filepath_to_uri
-from django.utils.functional import cached_property
+from cotlette.utils._os import safe_join
+from cotlette.utils.deconstruct import deconstructible
+from cotlette.utils.encoding import filepath_to_uri
+from cotlette.utils.functional import cached_property
 
 from .base import Storage
 from .mixins import StorageSettingsMixin
 
 
-@deconstructible(path="django.core.files.storage.FileSystemStorage")
+@deconstructible(path="cotlette.core.files.storage.FileSystemStorage")
 class FileSystemStorage(Storage, StorageSettingsMixin):
     """
     Standard filesystem storage

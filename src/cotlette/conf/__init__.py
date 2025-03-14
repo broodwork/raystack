@@ -1,7 +1,7 @@
 """
-Settings and configuration for Django.
+Settings and configuration for Cotlette.
 
-Read values from the module specified by the DJANGO_SETTINGS_MODULE environment
+Read values from the module specified by the COTLETTE_SETTINGS_MODULE environment
 variable, and then from cotlette.conf.global_settings; see the global_settings.py
 for a list of all possible variables.
 """
@@ -18,7 +18,7 @@ from cotlette.conf import global_settings
 from cotlette.core.exceptions import ImproperlyConfigured
 from cotlette.utils.functional import LazyObject, empty
 
-ENVIRONMENT_VARIABLE = "DJANGO_SETTINGS_MODULE"
+ENVIRONMENT_VARIABLE = "COTLETTE_SETTINGS_MODULE"
 DEFAULT_STORAGE_ALIAS = "default"
 STATICFILES_STORAGE_ALIAS = "staticfiles"
 
@@ -38,9 +38,9 @@ class SettingsReference(str):
 
 class LazySettings(LazyObject):
     """
-    A lazy proxy for either global Django settings or a custom settings object.
+    A lazy proxy for either global Cotlette settings or a custom settings object.
     The user can manually configure settings prior to using them. Otherwise,
-    Django uses the settings module pointed to by DJANGO_SETTINGS_MODULE.
+    Cotlette uses the settings module pointed to by COTLETTE_SETTINGS_MODULE.
     """
 
     def _setup(self, name=None):
@@ -139,7 +139,7 @@ class LazySettings(LazyObject):
 
     def _show_deprecation_warning(self, message, category):
         stack = traceback.extract_stack()
-        # Show a warning if the setting is used outside of Django.
+        # Show a warning if the setting is used outside of Cotlette.
         # Stack index: -1 this line, -2 the property, -3 the
         # LazyObject __getattribute__(), -4 the caller.
         filename, _, _, _ = stack[-4]

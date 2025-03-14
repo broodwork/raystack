@@ -17,7 +17,7 @@ from .registry import Tags, register, run_checks, tag_exists
 import cotlette.core.checks.async_checks  # NOQA isort:skip
 import cotlette.core.checks.caches  # NOQA isort:skip
 import cotlette.core.checks.commands  # NOQA isort:skip
-import cotlette.core.checks.compatibility.django_4_0  # NOQA isort:skip
+import cotlette.core.checks.compatibility.cotlette_4_0  # NOQA isort:skip
 import cotlette.core.checks.database  # NOQA isort:skip
 import cotlette.core.checks.files  # NOQA isort:skip
 import cotlette.core.checks.model_checks  # NOQA isort:skip

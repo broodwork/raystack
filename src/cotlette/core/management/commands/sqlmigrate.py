@@ -1,7 +1,7 @@
-from django.apps import apps
-from django.core.management.base import BaseCommand, CommandError
-from django.db import DEFAULT_DB_ALIAS, connections
-from django.db.migrations.loader import AmbiguityError, MigrationLoader
+from cotlette.apps import apps
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.db import DEFAULT_DB_ALIAS, connections
+from cotlette.db.migrations.loader import AmbiguityError, MigrationLoader
 
 
 class Command(BaseCommand):

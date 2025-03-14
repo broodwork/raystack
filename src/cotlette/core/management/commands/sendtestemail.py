@@ -1,8 +1,8 @@
 import socket
 
-from django.core.mail import mail_admins, mail_managers, send_mail
-from django.core.management.base import BaseCommand
-from django.utils import timezone
+from cotlette.core.mail import mail_admins, mail_managers, send_mail
+from cotlette.core.management.base import BaseCommand
+from cotlette.utils import timezone
 
 
 class Command(BaseCommand):

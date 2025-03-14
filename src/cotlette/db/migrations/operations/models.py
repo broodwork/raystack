@@ -1,12 +1,12 @@
 from copy import copy
 
-from django.db import models
-from django.db.migrations.operations.base import Operation, OperationCategory
-from django.db.migrations.state import ModelState
-from django.db.migrations.utils import field_references, resolve_relation
-from django.db.models.options import normalize_together
-from django.utils.copy import replace
-from django.utils.functional import cached_property
+from cotlette.db import models
+from cotlette.db.migrations.operations.base import Operation, OperationCategory
+from cotlette.db.migrations.state import ModelState
+from cotlette.db.migrations.utils import field_references, resolve_relation
+from cotlette.db.models.options import normalize_together
+from cotlette.utils.copy import replace
+from cotlette.utils.functional import cached_property
 
 from .fields import AddField, AlterField, FieldOperation, RemoveField, RenameField
 

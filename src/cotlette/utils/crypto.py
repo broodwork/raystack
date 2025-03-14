@@ -1,5 +1,5 @@
 """
-Django's standard crypto functions and utilities.
+Cotlette's standard crypto functions and utilities.
 """
 
 import hashlib

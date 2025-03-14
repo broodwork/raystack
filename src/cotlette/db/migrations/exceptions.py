@@ -1,4 +1,4 @@
-from django.db import DatabaseError
+from cotlette.db import DatabaseError
 
 
 class AmbiguityError(Exception):

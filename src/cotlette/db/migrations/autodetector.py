@@ -5,19 +5,19 @@ from enum import Enum
 from graphlib import TopologicalSorter
 from itertools import chain
 
-from django.conf import settings
-from django.db import models
-from django.db.migrations import operations
-from django.db.migrations.migration import Migration
-from django.db.migrations.operations.models import AlterModelOptions
-from django.db.migrations.optimizer import MigrationOptimizer
-from django.db.migrations.questioner import MigrationQuestioner
-from django.db.migrations.utils import (
+from cotlette.conf import settings
+from cotlette.db import models
+from cotlette.db.migrations import operations
+from cotlette.db.migrations.migration import Migration
+from cotlette.db.migrations.operations.models import AlterModelOptions
+from cotlette.db.migrations.optimizer import MigrationOptimizer
+from cotlette.db.migrations.questioner import MigrationQuestioner
+from cotlette.db.migrations.utils import (
     COMPILED_REGEX_TYPE,
     RegexObject,
     resolve_relation,
 )
-from django.utils.functional import cached_property
+from cotlette.utils.functional import cached_property
 
 
 class OperationDependency(

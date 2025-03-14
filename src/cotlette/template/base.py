@@ -1,5 +1,5 @@
 """
-This is the Django template system.
+This is the Cotlette template system.
 
 How it works:
 
@@ -35,7 +35,7 @@ will be raised if the template doesn't have proper syntax.
 
 Sample code:
 
->>> from django import template
+>>> from cotlette import template
 >>> s = '<html>{% if test %}<h1>{{ varvalue }}</h1>{% endif %}</html>'
 >>> t = template.Template(s)
 
@@ -88,7 +88,7 @@ UNKNOWN_SOURCE = "<unknown source>"
 # than instantiating SimpleLazyObject with _lazy_re_compile().
 tag_re = re.compile(r"({%.*?%}|{{.*?}}|{#.*?#})")
 
-logger = logging.getLogger("django.template")
+logger = logging.getLogger("cotlette.template")
 
 
 class TokenType(Enum):
@@ -138,7 +138,7 @@ class Origin:
 class Template:
     def __init__(self, template_string, origin=None, name=None, engine=None):
         # If Template is instantiated directly rather than from an Engine and
-        # exactly one Django template engine is configured, use that engine.
+        # exactly one Cotlette template engine is configured, use that engine.
         # This is required to preserve backwards-compatibility for direct use
         # e.g. Template('...').render(Context({...}))
         if engine is None:
@@ -443,7 +443,7 @@ class Parser:
 
         # Custom template tags may store additional data on the parser that
         # will be made available on the template instance. Library authors
-        # should use a key to namespace any added data. The 'django' namespace
+        # should use a key to namespace any added data. The 'cotlette' namespace
         # is reserved for internal use.
         self.extra_data = {}
 

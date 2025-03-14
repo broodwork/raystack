@@ -2,9 +2,9 @@
 Wrapper for loading templates from the filesystem.
 """
 
-from django.core.exceptions import SuspiciousFileOperation
-from django.template import Origin, TemplateDoesNotExist
-from django.utils._os import safe_join
+from cotlette.core.exceptions import SuspiciousFileOperation
+from cotlette.template import Origin, TemplateDoesNotExist
+from cotlette.utils._os import safe_join
 
 from .base import Loader as BaseLoader
 

@@ -1,10 +1,10 @@
 import sys
 
-from django.apps import apps
-from django.core.management.base import BaseCommand
-from django.db import DEFAULT_DB_ALIAS, connections
-from django.db.migrations.loader import MigrationLoader
-from django.db.migrations.recorder import MigrationRecorder
+from cotlette.apps import apps
+from cotlette.core.management.base import BaseCommand
+from cotlette.db import DEFAULT_DB_ALIAS, connections
+from cotlette.db.migrations.loader import MigrationLoader
+from cotlette.db.migrations.recorder import MigrationRecorder
 
 
 class Command(BaseCommand):

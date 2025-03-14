@@ -1,15 +1,15 @@
 import shutil
 import sys
 
-from django.apps import apps
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management.utils import run_formatters
-from django.db import migrations
-from django.db.migrations.exceptions import AmbiguityError
-from django.db.migrations.loader import MigrationLoader
-from django.db.migrations.optimizer import MigrationOptimizer
-from django.db.migrations.writer import MigrationWriter
-from django.utils.version import get_docs_version
+from cotlette.apps import apps
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.core.management.utils import run_formatters
+from cotlette.db import migrations
+from cotlette.db.migrations.exceptions import AmbiguityError
+from cotlette.db.migrations.loader import MigrationLoader
+from cotlette.db.migrations.optimizer import MigrationOptimizer
+from cotlette.db.migrations.writer import MigrationWriter
+from cotlette.utils.version import get_docs_version
 
 
 class Command(BaseCommand):
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 raise CommandError(
                     "Migration will require manual porting but is already a squashed "
                     "migration.\nTransition to a normal migration first: "
-                    "https://docs.djangoproject.com/en/%s/topics/migrations/"
+                    "https://docs.cotletteproject.com/en/%s/topics/migrations/"
                     "#squashing-migrations" % get_docs_version()
                 )
             # Make a new migration with those operations.

@@ -1,19 +1,19 @@
 import keyword
 import re
 
-from django.core.management.base import BaseCommand, CommandError
-from django.db import DEFAULT_DB_ALIAS, connections
-from django.db.models.constants import LOOKUP_SEP
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.db import DEFAULT_DB_ALIAS, connections
+from cotlette.db.models.constants import LOOKUP_SEP
 
 
 class Command(BaseCommand):
     help = (
-        "Introspects the database tables in the given database and outputs a Django "
+        "Introspects the database tables in the given database and outputs a Cotlette "
         "model module."
     )
     requires_system_checks = []
     stealth_options = ("table_name_filter",)
-    db_module = "django.db"
+    db_module = "cotlette.db"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -58,7 +58,7 @@ class Command(BaseCommand):
         table_name_filter = options.get("table_name_filter")
 
         with connection.cursor() as cursor:
-            yield "# This is an auto-generated Django model module."
+            yield "# This is an auto-generated Cotlette model module."
             yield "# You'll have to do the following manually to clean this up:"
             yield "#   * Rearrange models' order"
             yield "#   * Make sure each model has one field with primary_key=True"
@@ -68,7 +68,7 @@ class Command(BaseCommand):
             )
             yield (
                 "#   * Remove `managed = False` lines if you wish to allow "
-                "Django to create, modify, and delete the table"
+                "Cotlette to create, modify, and delete the table"
             )
             yield (
                 "# Feel free to rename the models, but don't rename db_table values or "

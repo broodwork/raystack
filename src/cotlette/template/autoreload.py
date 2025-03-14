@@ -2,19 +2,19 @@ from pathlib import Path
 
 from cotlette.dispatch import receiver
 from cotlette.template import engines
-from cotlette.template.backends.django import DjangoTemplates
+from cotlette.template.backends.cotlette import CotletteTemplates
 from cotlette.utils._os import to_path
-from cotlette.utils.autoreload import autoreload_started, file_changed, is_django_path
+from cotlette.utils.autoreload import autoreload_started, file_changed, is_cotlette_path
 
 
 def get_template_directories():
     # Iterate through each template backend and find
     # any template_loader that has a 'get_dirs' method.
-    # Collect the directories, filtering out Django templates.
+    # Collect the directories, filtering out Cotlette templates.
     cwd = Path.cwd()
     items = set()
     for backend in engines.all():
-        if not isinstance(backend, DjangoTemplates):
+        if not isinstance(backend, CotletteTemplates):
             continue
 
         items.update(cwd / to_path(dir) for dir in backend.engine.dirs if dir)
@@ -25,22 +25,22 @@ def get_template_directories():
             items.update(
                 cwd / to_path(directory)
                 for directory in loader.get_dirs()
-                if directory and not is_django_path(directory)
+                if directory and not is_cotlette_path(directory)
             )
     return items
 
 
 def reset_loaders():
-    from django.forms.renderers import get_default_renderer
+    from cotlette.forms.renderers import get_default_renderer
 
     for backend in engines.all():
-        if not isinstance(backend, DjangoTemplates):
+        if not isinstance(backend, CotletteTemplates):
             continue
         for loader in backend.engine.template_loaders:
             loader.reset()
 
     backend = getattr(get_default_renderer(), "engine", None)
-    if isinstance(backend, DjangoTemplates):
+    if isinstance(backend, CotletteTemplates):
         for loader in backend.engine.template_loaders:
             loader.reset()
 

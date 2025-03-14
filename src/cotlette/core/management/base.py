@@ -1,6 +1,6 @@
 """
 Base classes for writing management commands (named commands which can
-be executed through ``django-admin`` or ``manage.py``).
+be executed through ``cotlette`` or ``manage.py``).
 """
 
 import argparse
@@ -90,7 +90,7 @@ def handle_default_options(options):
     user commands.
     """
     if options.settings:
-        os.environ["DJANGO_SETTINGS_MODULE"] = options.settings
+        os.environ["COTLETTE_SETTINGS_MODULE"] = options.settings
     if options.pythonpath:
         sys.path.insert(0, options.pythonpath)
 
@@ -99,7 +99,7 @@ def no_translations(handle_func):
     """Decorator that forces a command to run with translations deactivated."""
 
     def wrapper(*args, **kwargs):
-        from django.utils import translation
+        from cotlette.utils import translation
 
         saved_locale = translation.get_language()
         translation.deactivate_all()
@@ -113,7 +113,7 @@ def no_translations(handle_func):
     return wrapper
 
 
-class DjangoHelpFormatter(HelpFormatter):
+class CotletteHelpFormatter(HelpFormatter):
     """
     Customized formatter so that command-specific arguments appear in the
     --help output before arguments common to all commands.
@@ -198,7 +198,7 @@ class BaseCommand:
     the command-parsing and -execution behavior, the normal flow works
     as follows:
 
-    1. ``django-admin`` or ``manage.py`` loads the command class
+    1. ``cotlette`` or ``manage.py`` loads the command class
        and calls its ``run_from_argv()`` method.
 
     2. The ``run_from_argv()`` method calls ``create_parser()`` to get
@@ -289,8 +289,8 @@ class BaseCommand:
 
     def get_version(self):
         """
-        Return the Django version, which should be correct for all built-in
-        Django commands. User-supplied commands can override this method to
+        Return the Cotlette version, which should be correct for all built-in
+        Cotlette commands. User-supplied commands can override this method to
         return their own version.
         """
         # return cotlette.get_version()
@@ -301,7 +301,7 @@ class BaseCommand:
         Create and return the ``ArgumentParser`` which will be used to
         parse the arguments to this command.
         """
-        kwargs.setdefault("formatter_class", DjangoHelpFormatter)
+        kwargs.setdefault("formatter_class", CotletteHelpFormatter)
         parser = CommandParser(
             prog="%s %s" % (os.path.basename(prog_name), subcommand),
             description=self.help or None,
@@ -334,7 +334,7 @@ class BaseCommand:
             help=(
                 "The Python path to a settings module, e.g. "
                 '"myproject.settings.main". If this isn\'t provided, the '
-                "DJANGO_SETTINGS_MODULE environment variable will be used."
+                "COTLETTE_SETTINGS_MODULE environment variable will be used."
             ),
         )
         self.add_base_argument(
@@ -342,7 +342,7 @@ class BaseCommand:
             "--pythonpath",
             help=(
                 "A directory to add to the Python path, e.g. "
-                '"/home/djangoprojects/myproject".'
+                '"/home/cotletteprojects/myproject".'
             ),
         )
         self.add_base_argument(
@@ -400,7 +400,7 @@ class BaseCommand:
     def run_from_argv(self, argv):
         """
         Set up any environment changes requested (e.g., Python path
-        and Django settings), then run this command. If the
+        and Cotlette settings), then run this command. If the
         command raises a ``CommandError``, intercept it and print it sensibly
         to stderr. If the ``--traceback`` option is present or the raised
         ``Exception`` is not ``CommandError``, raise it.
@@ -485,7 +485,7 @@ class BaseCommand:
         databases=None,
     ):
         """
-        Use the system check framework to validate entire Django project.
+        Use the system check framework to validate entire Cotlette project.
         Raise CommandError for any serious message (error or critical errors).
         If there are only light messages (like warnings), print them to stderr
         and don't raise an exception.
@@ -582,7 +582,7 @@ class BaseCommand:
         Print a warning if the set of migrations on disk don't match the
         migrations in the database.
         """
-        from django.db.migrations.executor import MigrationExecutor
+        from cotlette.db.migrations.executor import MigrationExecutor
 
         try:
             executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
@@ -640,7 +640,7 @@ class AppCommand(BaseCommand):
         )
 
     def handle(self, *app_labels, **options):
-        from django.apps import apps
+        from cotlette.apps import apps
 
         try:
             app_configs = [apps.get_app_config(app_label) for app_label in app_labels]

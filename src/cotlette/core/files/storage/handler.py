@@ -1,7 +1,7 @@
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.utils.functional import cached_property
-from django.utils.module_loading import import_string
+from cotlette.conf import settings
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.utils.functional import cached_property
+from cotlette.utils.module_loading import import_string
 
 
 class InvalidStorageError(ImproperlyConfigured):

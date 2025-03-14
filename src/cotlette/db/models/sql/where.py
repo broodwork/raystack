@@ -5,12 +5,12 @@ Code to manage the creation and SQL rendering of 'where' constraints.
 import operator
 from functools import reduce
 
-from django.core.exceptions import EmptyResultSet, FullResultSet
-from django.db.models.expressions import Case, When
-from django.db.models.functions import Mod
-from django.db.models.lookups import Exact
-from django.utils import tree
-from django.utils.functional import cached_property
+from cotlette.core.exceptions import EmptyResultSet, FullResultSet
+from cotlette.db.models.expressions import Case, When
+from cotlette.db.models.functions import Mod
+from cotlette.db.models.lookups import Exact
+from cotlette.utils import tree
+from cotlette.utils.functional import cached_property
 
 # Connection types
 AND = "AND"
@@ -291,7 +291,7 @@ class WhereNode(tree.Node):
 
     @cached_property
     def output_field(self):
-        from django.db.models import BooleanField
+        from cotlette.db.models import BooleanField
 
         return BooleanField()
 

@@ -1,7 +1,7 @@
-from django.db.migrations.utils import field_references
-from django.db.models import NOT_PROVIDED
-from django.utils.copy import replace
-from django.utils.functional import cached_property
+from cotlette.db.migrations.utils import field_references
+from cotlette.db.models import NOT_PROVIDED
+from cotlette.utils.copy import replace
+from cotlette.utils.functional import cached_property
 
 from .base import Operation, OperationCategory
 

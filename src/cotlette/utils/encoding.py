@@ -7,7 +7,7 @@ from urllib.parse import quote
 from cotlette.utils.functional import Promise
 
 
-class DjangoUnicodeDecodeError(UnicodeDecodeError):
+class CotletteUnicodeDecodeError(UnicodeDecodeError):
     def __str__(self):
         return "%s. You passed in %r (%s)" % (
             super().__str__(),
@@ -66,7 +66,7 @@ def force_str(s, encoding="utf-8", strings_only=False, errors="strict"):
         else:
             s = str(s)
     except UnicodeDecodeError as e:
-        raise DjangoUnicodeDecodeError(*e.args) from None
+        raise CotletteUnicodeDecodeError(*e.args) from None
     return s
 
 
@@ -110,9 +110,9 @@ def iri_to_uri(iri):
     This is the algorithm from RFC 3987 Section 3.1, slightly simplified since
     the input is assumed to be a string rather than an arbitrary byte stream.
 
-    Take an IRI (string or UTF-8 bytes, e.g. '/I ♥ Django/' or
-    b'/I \xe2\x99\xa5 Django/') and return a string containing the encoded
-    result with ASCII chars only (e.g. '/I%20%E2%99%A5%20Django/').
+    Take an IRI (string or UTF-8 bytes, e.g. '/I ♥ Cotlette/' or
+    b'/I \xe2\x99\xa5 Cotlette/') and return a string containing the encoded
+    result with ASCII chars only (e.g. '/I%20%E2%99%A5%20Cotlette/').
     """
     # The list of safe characters here is constructed from the "reserved" and
     # "unreserved" characters specified in RFC 3986 Sections 2.2 and 2.3:
@@ -157,8 +157,8 @@ def uri_to_iri(uri):
 
     This is the algorithm from RFC 3987 Section 3.2, excluding step 4.
 
-    Take an URI in ASCII bytes (e.g. '/I%20%E2%99%A5%20Django/') and return
-    a string containing the encoded result (e.g. '/I%20♥%20Django/').
+    Take an URI in ASCII bytes (e.g. '/I%20%E2%99%A5%20Cotlette/') and return
+    a string containing the encoded result (e.g. '/I%20♥%20Cotlette/').
     """
     if uri is None:
         return uri

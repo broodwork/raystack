@@ -1,6 +1,6 @@
-from django.apps import AppConfig
+from cotlette.apps import AppConfig
 
 
 class {{ camel_case_app_name }}Config(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
+    default_auto_field = 'cotlette.db.models.BigAutoField'
     name = '{{ app_name }}'

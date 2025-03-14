@@ -11,14 +11,14 @@ MODELS_MODULE_NAME = "models"
 
 
 class AppConfig:
-    """Class representing a Django application and its configuration."""
+    """Class representing a Cotlette application and its configuration."""
 
     def __init__(self, app_name, app_module):
-        # Full Python path to the application e.g. 'django.contrib.admin'.
+        # Full Python path to the application e.g. 'cotlette.contrib.admin'.
         self.name = app_name
 
-        # Root module for the application e.g. <module 'django.contrib.admin'
-        # from 'django/contrib/admin/__init__.py'>.
+        # Root module for the application e.g. <module 'cotlette.contrib.admin'
+        # from 'cotlette/contrib/admin/__init__.py'>.
         self.module = app_module
 
         # Reference to the Apps registry that holds this AppConfig. Set by the
@@ -29,7 +29,7 @@ class AppConfig:
         # subclass, hence the test-and-set pattern.
 
         # Last component of the Python path to the application e.g. 'admin'.
-        # This value must be unique across a Django project.
+        # This value must be unique across a Cotlette project.
         if not hasattr(self, "label"):
             self.label = app_name.rpartition(".")[2]
         if not self.label.isidentifier():
@@ -42,12 +42,12 @@ class AppConfig:
             self.verbose_name = self.label.title()
 
         # Filesystem path to the application directory e.g.
-        # '/path/to/django/contrib/admin'.
+        # '/path/to/cotlette/contrib/admin'.
         if not hasattr(self, "path"):
             self.path = self._path_from_module(app_module)
 
-        # Module containing models e.g. <module 'django.contrib.admin.models'
-        # from 'django/contrib/admin/models.py'>. Set by import_models().
+        # Module containing models e.g. <module 'cotlette.contrib.admin.models'
+        # from 'cotlette/contrib/admin/models.py'>. Set by import_models().
         # None if the application doesn't have a models module.
         self.models_module = None
 
@@ -270,5 +270,5 @@ class AppConfig:
 
     def ready(self):
         """
-        Override this method in subclasses to run code when Django starts.
+        Override this method in subclasses to run code when Cotlette starts.
         """

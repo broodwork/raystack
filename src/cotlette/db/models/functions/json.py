@@ -1,8 +1,8 @@
-from django.db import NotSupportedError
-from django.db.models.expressions import Func, Value
-from django.db.models.fields import TextField
-from django.db.models.fields.json import JSONField
-from django.db.models.functions import Cast
+from cotlette.db import NotSupportedError
+from cotlette.db.models.expressions import Func, Value
+from cotlette.db.models.fields import TextField
+from cotlette.db.models.fields.json import JSONField
+from cotlette.db.models.functions import Cast
 
 
 class JSONArray(Func):

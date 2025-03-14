@@ -2,11 +2,11 @@ import gzip
 import os
 import warnings
 
-from django.apps import apps
-from django.core import serializers
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management.utils import parse_apps_and_model_labels
-from django.db import DEFAULT_DB_ALIAS, connections, router
+from cotlette.apps import apps
+from cotlette.core import serializers
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.core.management.utils import parse_apps_and_model_labels
+from cotlette.db import DEFAULT_DB_ALIAS, connections, router
 
 try:
     import bz2
@@ -86,7 +86,7 @@ class Command(BaseCommand):
             action="store_true",
             dest="use_base_manager",
             help=(
-                "Use Django's base manager to dump all models stored in the database, "
+                "Use Cotlette's base manager to dump all models stored in the database, "
                 "including those that would otherwise be filtered or modified by a "
                 "custom manager."
             ),

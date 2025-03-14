@@ -164,7 +164,7 @@ class Apps:
                     break
             raise LookupError(message)
 
-    # This method is performance-critical at least for Django's test suite.
+    # This method is performance-critical at least for Cotlette's test suite.
     @functools.cache
     def get_models(self, include_auto_created=False, include_swapped=False):
         """
@@ -243,7 +243,7 @@ class Apps:
         """
         Check whether an application with this name exists in the registry.
 
-        app_name is the full name of the app e.g. 'django.contrib.admin'.
+        app_name is the full name of the app e.g. 'cotlette.contrib.admin'.
         """
         self.check_apps_ready()
         return any(ac.name == app_name for ac in self.app_configs.values())
@@ -289,7 +289,7 @@ class Apps:
 
         This method is decorated with @functools.cache because it's performance
         critical when it comes to migrations. Since the swappable settings don't
-        change after Django has loaded the settings, there is no reason to get
+        change after Cotlette has loaded the settings, there is no reason to get
         the respective settings attribute over and over again.
         """
         to_string = to_string.lower()

@@ -1,19 +1,19 @@
 import datetime
 import posixpath
 
-from django import forms
-from django.core import checks
-from django.core.exceptions import FieldError
-from django.core.files.base import ContentFile, File
-from django.core.files.images import ImageFile
-from django.core.files.storage import Storage, default_storage
-from django.core.files.utils import validate_file_name
-from django.db.models import signals
-from django.db.models.expressions import DatabaseDefault
-from django.db.models.fields import Field
-from django.db.models.query_utils import DeferredAttribute
-from django.db.models.utils import AltersData
-from django.utils.translation import gettext_lazy as _
+from cotlette import forms
+from cotlette.core import checks
+from cotlette.core.exceptions import FieldError
+from cotlette.core.files.base import ContentFile, File
+from cotlette.core.files.images import ImageFile
+from cotlette.core.files.storage import Storage, default_storage
+from cotlette.core.files.utils import validate_file_name
+from cotlette.db.models import signals
+from cotlette.db.models.expressions import DatabaseDefault
+from cotlette.db.models.fields import Field
+from cotlette.db.models.query_utils import DeferredAttribute
+from cotlette.db.models.utils import AltersData
+from cotlette.utils.translation import gettext_lazy as _
 
 
 class FieldFile(File, AltersData):

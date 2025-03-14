@@ -12,7 +12,7 @@ from cotlette.core.files import File
 
 class ImageFile(File):
     """
-    A mixin for use alongside django.core.files.base.File, which provides
+    A mixin for use alongside cotlette.core.files.base.File, which provides
     additional features for dealing with images.
     """
 

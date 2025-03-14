@@ -1,7 +1,7 @@
 import operator
 
-from django.db.backends.base.features import BaseDatabaseFeatures
-from django.utils.functional import cached_property
+from cotlette.db.backends.base.features import BaseDatabaseFeatures
+from cotlette.utils.functional import cached_property
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
@@ -84,7 +84,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     test_now_utc_template = "UTC_TIMESTAMP(6)"
 
     @cached_property
-    def django_test_skips(self):
+    def cotlette_test_skips(self):
         skips = {
             "This doesn't work on MySQL.": {
                 "db_functions.comparison.test_greatest.GreatestTests."
@@ -152,7 +152,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
 
     @cached_property
     def _mysql_storage_engine(self):
-        "Internal method used in Django tests. Don't rely on this from your code"
+        "Internal method used in Cotlette tests. Don't rely on this from your code"
         return self.connection.mysql_server_data["default_storage_engine"]
 
     @cached_property

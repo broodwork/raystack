@@ -1,11 +1,11 @@
 """
-Django's support for templates.
+Cotlette's support for templates.
 
-The django.template namespace contains two independent subsystems:
+The cotlette.template namespace contains two independent subsystems:
 
 1. Multiple Template Engines: support for pluggable template backends,
    built-in backends and backend-independent APIs
-2. Django Template Language: Django's own template engine, including its
+2. Cotlette Template Language: Cotlette's own template engine, including its
    built-in loaders, context processors, tags and filters.
 
 Ideally these subsystems would be implemented in distinct packages. However
@@ -16,26 +16,26 @@ Here's a breakdown of which modules belong to which subsystem.
 
 Multiple Template Engines:
 
-- django.template.backends.*
-- django.template.loader
-- django.template.response
+- cotlette.template.backends.*
+- cotlette.template.loader
+- cotlette.template.response
 
-Django Template Language:
+Cotlette Template Language:
 
-- django.template.base
-- django.template.context
-- django.template.context_processors
-- django.template.loaders.*
-- django.template.debug
-- django.template.defaultfilters
-- django.template.defaulttags
-- django.template.engine
-- django.template.loader_tags
-- django.template.smartif
+- cotlette.template.base
+- cotlette.template.context
+- cotlette.template.context_processors
+- cotlette.template.loaders.*
+- cotlette.template.debug
+- cotlette.template.defaultfilters
+- cotlette.template.defaulttags
+- cotlette.template.engine
+- cotlette.template.loader_tags
+- cotlette.template.smartif
 
 Shared:
 
-- django.template.utils
+- cotlette.template.utils
 
 """
 
@@ -49,7 +49,7 @@ engines = EngineHandler()
 __all__ = ("Engine", "engines")
 
 
-# Django Template Language
+# Cotlette Template Language
 
 # Public exceptions
 from .base import VariableDoesNotExist  # NOQA isort:skip

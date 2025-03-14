@@ -3,24 +3,24 @@ import sys
 import warnings
 from itertools import takewhile
 
-from django.apps import apps
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError, no_translations
-from django.core.management.utils import run_formatters
-from django.db import DEFAULT_DB_ALIAS, OperationalError, connections, router
-from django.db.migrations import Migration
-from django.db.migrations.autodetector import MigrationAutodetector
-from django.db.migrations.loader import MigrationLoader
-from django.db.migrations.migration import SwappableTuple
-from django.db.migrations.optimizer import MigrationOptimizer
-from django.db.migrations.questioner import (
+from cotlette.apps import apps
+from cotlette.conf import settings
+from cotlette.core.management.base import BaseCommand, CommandError, no_translations
+from cotlette.core.management.utils import run_formatters
+from cotlette.db import DEFAULT_DB_ALIAS, OperationalError, connections, router
+from cotlette.db.migrations import Migration
+from cotlette.db.migrations.autodetector import MigrationAutodetector
+from cotlette.db.migrations.loader import MigrationLoader
+from cotlette.db.migrations.migration import SwappableTuple
+from cotlette.db.migrations.optimizer import MigrationOptimizer
+from cotlette.db.migrations.questioner import (
     InteractiveMigrationQuestioner,
     MigrationQuestioner,
     NonInteractiveMigrationQuestioner,
 )
-from django.db.migrations.state import ProjectState
-from django.db.migrations.utils import get_migration_name_timestamp
-from django.db.migrations.writer import MigrationWriter
+from cotlette.db.migrations.state import ProjectState
+from cotlette.db.migrations.utils import get_migration_name_timestamp
+from cotlette.db.migrations.writer import MigrationWriter
 
 
 class Command(BaseCommand):
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             "--no-input",
             action="store_false",
             dest="interactive",
-            help="Tells Django to NOT prompt the user for input of any kind.",
+            help="Tells Cotlette to NOT prompt the user for input of any kind.",
         )
         parser.add_argument(
             "-n",
@@ -147,7 +147,7 @@ class Command(BaseCommand):
         )
         for alias in sorted(aliases_to_check):
             connection = connections[alias]
-            if connection.settings_dict["ENGINE"] != "django.db.backends.dummy" and any(
+            if connection.settings_dict["ENGINE"] != "cotlette.db.backends.dummy" and any(
                 # At least one model must be migrated to the database.
                 router.allow_migrate(
                     connection.alias, app_label, model_name=model._meta.object_name

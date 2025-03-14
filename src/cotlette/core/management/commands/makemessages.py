@@ -6,22 +6,22 @@ from functools import total_ordering
 from itertools import dropwhile
 from pathlib import Path
 
-import django
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.core.files.temp import NamedTemporaryFile
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management.utils import (
+import cotlette
+from cotlette.conf import settings
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.core.files.temp import NamedTemporaryFile
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.core.management.utils import (
     find_command,
     handle_extensions,
     is_ignored_path,
     popen_wrapper,
 )
-from django.utils.encoding import DEFAULT_LOCALE_ENCODING
-from django.utils.functional import cached_property
-from django.utils.regex_helper import _lazy_re_compile
-from django.utils.text import get_text_list
-from django.utils.translation import templatize
+from cotlette.utils.encoding import DEFAULT_LOCALE_ENCODING
+from cotlette.utils.functional import cached_property
+from cotlette.utils.regex_helper import _lazy_re_compile
+from cotlette.utils.text import get_text_list
+from cotlette.utils.translation import templatize
 
 plural_forms_re = _lazy_re_compile(
     r'^(?P<value>"Plural-Forms.+?\\n")\s*$', re.MULTILINE | re.DOTALL
@@ -200,7 +200,7 @@ class Command(BaseCommand):
     help = (
         "Runs over the entire source tree of the current directory and pulls out all "
         "strings marked for translation. It creates (or updates) a message file in the "
-        "conf/locale (in the django tree) or locale (for projects and applications) "
+        "conf/locale (in the cotlette tree) or locale (for projects and applications) "
         "directory.\n\nYou must run this command with one of either the --locale, "
         "--exclude, or --all options."
     )
@@ -251,7 +251,7 @@ class Command(BaseCommand):
             dest="extensions",
             action="append",
             help='The file extension(s) to examine (default: "html,txt,py", or "js" '
-            'if the domain is "djangojs"). Separate multiple extensions with '
+            'if the domain is "cotlettejs"). Separate multiple extensions with '
             "commas, or use -e multiple times.",
         )
         parser.add_argument(
@@ -349,12 +349,12 @@ class Command(BaseCommand):
         self.no_obsolete = options["no_obsolete"]
         self.keep_pot = options["keep_pot"]
 
-        if self.domain not in ("fastapi", "djangojs"):
+        if self.domain not in ("fastapi", "cotlettejs"):
             raise CommandError(
                 "currently makemessages only supports domains "
-                "'fastapi' and 'djangojs'"
+                "'fastapi' and 'cotlettejs'"
             )
-        if self.domain == "djangojs":
+        if self.domain == "cotlettejs":
             exts = extensions or ["js"]
         else:
             exts = extensions or ["html", "txt", "py"]
@@ -372,14 +372,14 @@ class Command(BaseCommand):
                 % get_text_list(list(self.extensions), "and")
             )
 
-        self.invoked_for_django = False
+        self.invoked_for_cotlette = False
         self.locale_paths = []
         self.default_locale_path = None
         if os.path.isdir(os.path.join("conf", "locale")):
             self.locale_paths = [os.path.abspath(os.path.join("conf", "locale"))]
             self.default_locale_path = self.locale_paths[0]
             self.ignore_patterns.append("views/templates/i18n_catalog.js")
-            self.invoked_for_django = True
+            self.invoked_for_cotlette = True
         else:
             if self.settings_available:
                 self.locale_paths.extend(settings.LOCALE_PATHS)
@@ -599,7 +599,7 @@ class Command(BaseCommand):
                     "processing file %s in %s"
                     % (translatable.file, translatable.dirpath)
                 )
-            if self.domain not in ("djangojs", "fastapi"):
+            if self.domain not in ("cotlettejs", "fastapi"):
                 continue
             build_file = self.build_file_class(self, self.domain, translatable)
             try:
@@ -621,7 +621,7 @@ class Command(BaseCommand):
                 raise
             build_files.append(build_file)
 
-        if self.domain == "djangojs":
+        if self.domain == "cotlettejs":
             args = [
                 "xgettext",
                 "-d",
@@ -715,7 +715,7 @@ class Command(BaseCommand):
         else:
             with open(potfile, encoding="utf-8") as fp:
                 msgs = fp.read()
-            if not self.invoked_for_django:
+            if not self.invoked_for_cotlette:
                 msgs = self.copy_plural_forms(msgs, locale)
         msgs = normalize_eols(msgs)
         msgs = msgs.replace(
@@ -737,21 +737,21 @@ class Command(BaseCommand):
 
     def copy_plural_forms(self, msgs, locale):
         """
-        Copy plural forms header contents from a Django catalog of locale to
+        Copy plural forms header contents from a Cotlette catalog of locale to
         the msgs string, inserting it at the right place. msgs should be the
         contents of a newly created .po file.
         """
-        django_dir = os.path.normpath(os.path.join(os.path.dirname(django.__file__)))
-        if self.domain == "djangojs":
-            domains = ("djangojs", "fastapi")
+        cotlette_dir = os.path.normpath(os.path.join(os.path.dirname(cotlette.__file__)))
+        if self.domain == "cotlettejs":
+            domains = ("cotlettejs", "fastapi")
         else:
             domains = ("fastapi",)
         for domain in domains:
-            django_po = os.path.join(
-                django_dir, "conf", "locale", locale, "LC_MESSAGES", "%s.po" % domain
+            cotlette_po = os.path.join(
+                cotlette_dir, "conf", "locale", locale, "LC_MESSAGES", "%s.po" % domain
             )
-            if os.path.exists(django_po):
-                with open(django_po, encoding="utf-8") as fp:
+            if os.path.exists(cotlette_po):
+                with open(cotlette_po, encoding="utf-8") as fp:
                     m = plural_forms_re.search(fp.read())
                 if m:
                     plural_form_line = m["value"]

@@ -1,5 +1,5 @@
-from django.conf import DEFAULT_STORAGE_ALIAS
-from django.utils.functional import LazyObject
+from cotlette.conf import DEFAULT_STORAGE_ALIAS
+from cotlette.utils.functional import LazyObject
 
 from .base import Storage
 from .filesystem import FileSystemStorage

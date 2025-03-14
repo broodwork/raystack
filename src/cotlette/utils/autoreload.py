@@ -24,9 +24,9 @@ from cotlette.utils.version import get_version_tuple
 autoreload_started = Signal()
 file_changed = Signal()
 
-DJANGO_AUTORELOAD_ENV = "RUN_MAIN"
+COTLETTE_AUTORELOAD_ENV = "RUN_MAIN"
 
-logger = logging.getLogger("django.utils.autoreload")
+logger = logging.getLogger("cotlette.utils.autoreload")
 
 # If an error is raised while importing a file, it's not placed in sys.modules.
 # This means that any future modifications aren't caught. Keep a list of these
@@ -46,14 +46,14 @@ except ImportError:
     pywatchman = None
 
 
-def is_django_module(module):
-    """Return True if the given module is nested under Django."""
-    return module.__name__.startswith("django.")
+def is_cotlette_module(module):
+    """Return True if the given module is nested under Cotlette."""
+    return module.__name__.startswith("cotlette.")
 
 
-def is_django_path(path):
-    """Return True if the given file path is nested under Django."""
-    return Path(django.__file__).parent in Path(path).parents
+def is_cotlette_path(path):
+    """Return True if the given file path is nested under Cotlette."""
+    return Path(cotlette.__file__).parent in Path(path).parents
 
 
 def check_errors(fn):
@@ -268,7 +268,7 @@ def trigger_reload(filename):
 
 
 def restart_with_reloader():
-    new_environ = {**os.environ, DJANGO_AUTORELOAD_ENV: "true"}
+    new_environ = {**os.environ, COTLETTE_AUTORELOAD_ENV: "true"}
     args = get_child_arguments()
     while True:
         p = subprocess.run(args, env=new_environ, close_fds=False)
@@ -308,9 +308,9 @@ class BaseReloader:
                 for pattern in patterns:
                     yield from directory.glob(pattern)
 
-    def wait_for_apps_ready(self, app_reg, django_main_thread):
+    def wait_for_apps_ready(self, app_reg, cotlette_main_thread):
         """
-        Wait until Django reports that the apps have been loaded. If the given
+        Wait until Cotlette reports that the apps have been loaded. If the given
         thread has terminated before the apps are ready, then a SyntaxError or
         other non-recoverable error has been raised. In that case, stop waiting
         for the apps_ready event and continue processing.
@@ -319,17 +319,17 @@ class BaseReloader:
         triggered, or False if the thread is terminated while waiting for the
         event.
         """
-        while django_main_thread.is_alive():
+        while cotlette_main_thread.is_alive():
             if app_reg.ready_event.wait(timeout=0.1):
                 return True
         else:
-            logger.debug("Main Django thread has terminated before apps are ready.")
+            logger.debug("Main Cotlette thread has terminated before apps are ready.")
             return False
 
-    def run(self, django_main_thread):
+    def run(self, cotlette_main_thread):
         logger.debug("Waiting for apps ready_event.")
-        self.wait_for_apps_ready(apps, django_main_thread)
-        from django.urls import get_resolver
+        self.wait_for_apps_ready(apps, cotlette_main_thread)
+        from cotlette.urls import get_resolver
 
         # Prevent a race condition where URL modules aren't loaded when the
         # reloader starts by accessing the urlconf_module property.
@@ -432,7 +432,7 @@ class WatchmanReloader(BaseReloader):
     def __init__(self):
         self.roots = defaultdict(set)
         self.processed_request = threading.Event()
-        self.client_timeout = int(os.environ.get("DJANGO_WATCHMAN_TIMEOUT", 5))
+        self.client_timeout = int(os.environ.get("COTLETTE_WATCHMAN_TIMEOUT", 5))
         super().__init__()
 
     @cached_property
@@ -646,29 +646,29 @@ def get_reloader():
     return WatchmanReloader()
 
 
-def start_django(reloader, main_func, *args, **kwargs):
+def start_cotlette(reloader, main_func, *args, **kwargs):
     ensure_echo_on()
 
     main_func = check_errors(main_func)
-    django_main_thread = threading.Thread(
-        target=main_func, args=args, kwargs=kwargs, name="django-main-thread"
+    cotlette_main_thread = threading.Thread(
+        target=main_func, args=args, kwargs=kwargs, name="cotlette-main-thread"
     )
-    django_main_thread.daemon = True
-    django_main_thread.start()
+    cotlette_main_thread.daemon = True
+    cotlette_main_thread.start()
 
     while not reloader.should_stop:
-        reloader.run(django_main_thread)
+        reloader.run(cotlette_main_thread)
 
 
 def run_with_reloader(main_func, *args, **kwargs):
     signal.signal(signal.SIGTERM, lambda *args: sys.exit(0))
     try:
-        if os.environ.get(DJANGO_AUTORELOAD_ENV) == "true":
+        if os.environ.get(COTLETTE_AUTORELOAD_ENV) == "true":
             reloader = get_reloader()
             logger.info(
                 "Watching for file changes with %s", reloader.__class__.__name__
             )
-            start_django(reloader, main_func, *args, **kwargs)
+            start_cotlette(reloader, main_func, *args, **kwargs)
         else:
             exit_code = restart_with_reloader()
             sys.exit(exit_code)

@@ -1,17 +1,17 @@
 import json
 
-from django import forms
-from django.core import checks, exceptions
-from django.db import NotSupportedError, connections, router
-from django.db.models import expressions, lookups
-from django.db.models.constants import LOOKUP_SEP
-from django.db.models.fields import TextField
-from django.db.models.lookups import (
+from cotlette import forms
+from cotlette.core import checks, exceptions
+from cotlette.db import NotSupportedError, connections, router
+from cotlette.db.models import expressions, lookups
+from cotlette.db.models.constants import LOOKUP_SEP
+from cotlette.db.models.fields import TextField
+from cotlette.db.models.lookups import (
     FieldGetDbPrepValueMixin,
     PostgresOperatorLookup,
     Transform,
 )
-from django.utils.translation import gettext_lazy as _
+from cotlette.utils.translation import gettext_lazy as _
 
 from . import Field
 from .mixins import CheckFieldDefaultMixin

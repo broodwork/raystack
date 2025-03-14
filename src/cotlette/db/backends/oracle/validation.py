@@ -1,5 +1,5 @@
-from django.core import checks
-from django.db.backends.base.validation import BaseDatabaseValidation
+from cotlette.core import checks
+from cotlette.db.backends.base.validation import BaseDatabaseValidation
 
 
 class DatabaseValidation(BaseDatabaseValidation):

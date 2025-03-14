@@ -1,7 +1,7 @@
 import enum
 
-from django.db import router
-from django.utils.inspect import get_func_args
+from cotlette.db import router
+from cotlette.utils.inspect import get_func_args
 
 
 class OperationCategory(str, enum.Enum):
@@ -66,7 +66,7 @@ class Operation:
     def deconstruct(self):
         """
         Return a 3-tuple of class import path (or just name if it lives
-        under django.db.migrations), positional arguments, and keyword
+        under cotlette.db.migrations), positional arguments, and keyword
         arguments.
         """
         return (

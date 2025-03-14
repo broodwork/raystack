@@ -1,9 +1,9 @@
 import operator
 
-from django.db import transaction
-from django.db.backends.base.features import BaseDatabaseFeatures
-from django.db.utils import OperationalError
-from django.utils.functional import cached_property
+from cotlette.db import transaction
+from cotlette.db.backends.base.features import BaseDatabaseFeatures
+from cotlette.db.utils import OperationalError
+from cotlette.utils.functional import cached_property
 
 from .base import Database
 
@@ -48,8 +48,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         "non_default": "nocase",
         "virtual": "nocase",
     }
-    django_test_expected_failures = {
-        # The django_format_dtdelta() function doesn't properly handle mixed
+    cotlette_test_expected_failures = {
+        # The cotlette_format_dtdelta() function doesn't properly handle mixed
         # Date/DateTime fields and timedeltas.
         "expressions.tests.FTimeDeltaTests.test_mixed_comparisons1",
     }
@@ -65,7 +65,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_unlimited_charfield = True
 
     @cached_property
-    def django_test_skips(self):
+    def cotlette_test_skips(self):
         skips = {
             "SQLite stores values rounded to 15 significant digits.": {
                 "model_fields.test_decimalfield.DecimalFieldTests."

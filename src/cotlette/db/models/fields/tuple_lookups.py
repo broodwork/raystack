@@ -1,15 +1,15 @@
 import itertools
 
-from django.core.exceptions import EmptyResultSet
-from django.db.models import Field
-from django.db.models.expressions import (
+from cotlette.core.exceptions import EmptyResultSet
+from cotlette.db.models import Field
+from cotlette.db.models.expressions import (
     ColPairs,
     Func,
     ResolvedOuterRef,
     Subquery,
     Value,
 )
-from django.db.models.lookups import (
+from cotlette.db.models.lookups import (
     Exact,
     GreaterThan,
     GreaterThanOrEqual,
@@ -18,8 +18,8 @@ from django.db.models.lookups import (
     LessThan,
     LessThanOrEqual,
 )
-from django.db.models.sql import Query
-from django.db.models.sql.where import AND, OR, WhereNode
+from cotlette.db.models.sql import Query
+from cotlette.db.models.sql.where import AND, OR, WhereNode
 
 
 class Tuple(Func):

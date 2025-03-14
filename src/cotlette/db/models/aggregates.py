@@ -2,9 +2,9 @@
 Classes to represent the definitions of aggregate functions.
 """
 
-from django.core.exceptions import FieldError, FullResultSet
-from django.db import NotSupportedError
-from django.db.models.expressions import (
+from cotlette.core.exceptions import FieldError, FullResultSet
+from cotlette.db import NotSupportedError
+from cotlette.db.models.expressions import (
     Case,
     ColPairs,
     Func,
@@ -13,9 +13,9 @@ from django.db.models.expressions import (
     Value,
     When,
 )
-from django.db.models.fields import IntegerField, TextField
-from django.db.models.functions import Coalesce
-from django.db.models.functions.mixins import (
+from cotlette.db.models.fields import IntegerField, TextField
+from cotlette.db.models.functions import Coalesce
+from cotlette.db.models.functions.mixins import (
     FixDurationInputMixin,
     NumericOutputFieldMixin,
 )

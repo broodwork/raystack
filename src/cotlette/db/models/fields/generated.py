@@ -1,7 +1,7 @@
-from django.core import checks
-from django.db import connections, router
-from django.db.models.sql import Query
-from django.utils.functional import cached_property
+from cotlette.core import checks
+from cotlette.db import connections, router
+from cotlette.db.models.sql import Query
+from cotlette.utils.functional import cached_property
 
 from . import NOT_PROVIDED, Field
 
@@ -34,7 +34,7 @@ class GeneratedField(Field):
 
     @cached_property
     def cached_col(self):
-        from django.db.models.expressions import Col
+        from cotlette.db.models.expressions import Col
 
         return Col(self.model._meta.db_table, self, self.output_field)
 

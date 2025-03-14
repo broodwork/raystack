@@ -1,6 +1,6 @@
 from asgiref.local import Local
 
-from cotlette.conf import settings as django_settings
+from cotlette.conf import settings as cotlette_settings
 from cotlette.utils.functional import cached_property
 
 
@@ -47,7 +47,7 @@ class BaseConnectionHandler:
 
     def configure_settings(self, settings):
         if settings is None:
-            settings = getattr(django_settings, self.settings_name)
+            settings = getattr(cotlette_settings, self.settings_name)
         return settings
 
     def create_connection(self, alias):

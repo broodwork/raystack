@@ -54,7 +54,7 @@ and two directions (forward and reverse) for a total of six combinations.
 5. Related objects manager for related instances on the forward or reverse
    sides of a many-to-many relation: ``ManyToManyDescriptor``.
 
-   Many-to-many relations are symmetrical. The syntax of Django models
+   Many-to-many relations are symmetrical. The syntax of Cotlette models
    requires declaring them on one side but that's an implementation detail.
    They could be declared on the other side without any change in behavior.
    Therefore the forward and reverse descriptors can be the same.
@@ -65,23 +65,23 @@ and two directions (forward and reverse) for a total of six combinations.
 
 from asgiref.sync import sync_to_async
 
-from django.core.exceptions import FieldError
-from django.db import (
+from cotlette.core.exceptions import FieldError
+from cotlette.db import (
     DEFAULT_DB_ALIAS,
     NotSupportedError,
     connections,
     router,
     transaction,
 )
-from django.db.models import Manager, Q, Window, signals
-from django.db.models.expressions import ColPairs
-from django.db.models.fields.tuple_lookups import TupleIn
-from django.db.models.functions import RowNumber
-from django.db.models.lookups import GreaterThan, LessThanOrEqual
-from django.db.models.query import QuerySet
-from django.db.models.query_utils import DeferredAttribute
-from django.db.models.utils import AltersData, resolve_callables
-from django.utils.functional import cached_property
+from cotlette.db.models import Manager, Q, Window, signals
+from cotlette.db.models.expressions import ColPairs
+from cotlette.db.models.fields.tuple_lookups import TupleIn
+from cotlette.db.models.functions import RowNumber
+from cotlette.db.models.lookups import GreaterThan, LessThanOrEqual
+from cotlette.db.models.query import QuerySet
+from cotlette.db.models.query_utils import DeferredAttribute
+from cotlette.db.models.utils import AltersData, resolve_callables
+from cotlette.utils.functional import cached_property
 
 
 class ForeignKeyDeferredAttribute(DeferredAttribute):
@@ -1372,7 +1372,7 @@ def create_forward_many_to_many_manager(superclass, rel, reverse):
             """
             Return the set of ids of `objs` that the target field references.
             """
-            from django.db.models import Model
+            from cotlette.db.models import Model
 
             target_ids = set()
             target_field = self.through._meta.get_field(target_field_name)

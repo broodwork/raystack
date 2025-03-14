@@ -1,8 +1,8 @@
-from django.conf import settings
-from django.core.cache import caches
-from django.core.cache.backends.db import BaseDatabaseCache
-from django.core.management.base import BaseCommand, CommandError
-from django.db import (
+from cotlette.conf import settings
+from cotlette.core.cache import caches
+from cotlette.core.cache.backends.db import BaseDatabaseCache
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.db import (
     DEFAULT_DB_ALIAS,
     DatabaseError,
     connections,

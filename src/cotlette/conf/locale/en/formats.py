@@ -1,7 +1,7 @@
-# This file is distributed under the same license as the Django package.
+# This file is distributed under the same license as the Cotlette package.
 #
-# The *_FORMAT strings use the Django date format syntax,
-# see https://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+# The *_FORMAT strings use the Cotlette date format syntax,
+# see https://docs.cotletteproject.com/en/dev/ref/templates/builtins/#date
 
 # Formatting for date objects.
 DATE_FORMAT = "N j, Y"

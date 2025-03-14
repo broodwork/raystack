@@ -1,9 +1,9 @@
 import operator
 
-from django.db import DataError, InterfaceError
-from django.db.backends.base.features import BaseDatabaseFeatures
-from django.db.backends.postgresql.psycopg_any import is_psycopg3
-from django.utils.functional import cached_property
+from cotlette.db import DataError, InterfaceError
+from cotlette.db.backends.base.features import BaseDatabaseFeatures
+from cotlette.db.backends.postgresql.psycopg_any import is_psycopg3
+from cotlette.utils.functional import cached_property
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
@@ -85,7 +85,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     insert_test_table_with_defaults = "INSERT INTO {} DEFAULT VALUES"
 
     @cached_property
-    def django_test_skips(self):
+    def cotlette_test_skips(self):
         skips = {
             "opclasses are PostgreSQL only.": {
                 "indexes.tests.SchemaIndexesNotPostgreSQLTests."
@@ -118,7 +118,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         return skips
 
     @cached_property
-    def django_test_expected_failures(self):
+    def cotlette_test_expected_failures(self):
         expected_failures = set()
         if self.uses_server_side_binding:
             expected_failures.update(

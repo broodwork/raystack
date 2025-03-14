@@ -1,7 +1,7 @@
 import subprocess
 
-from django.core.management.base import BaseCommand, CommandError
-from django.db import DEFAULT_DB_ALIAS, connections
+from cotlette.core.management.base import BaseCommand, CommandError
+from cotlette.db import DEFAULT_DB_ALIAS, connections
 
 
 class Command(BaseCommand):

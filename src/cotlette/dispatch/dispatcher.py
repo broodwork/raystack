@@ -7,7 +7,7 @@ from asgiref.sync import async_to_sync, iscoroutinefunction, sync_to_async
 
 from cotlette.utils.inspect import func_accepts_kwargs
 
-logger = logging.getLogger("django.dispatch")
+logger = logging.getLogger("cotlette.dispatch")
 
 
 def _make_id(target):

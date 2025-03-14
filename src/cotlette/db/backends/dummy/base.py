@@ -1,19 +1,19 @@
 """
-Dummy database backend for Django.
+Dummy database backend for Cotlette.
 
-Django uses this if the database ENGINE setting is empty (None or empty string).
+Cotlette uses this if the database ENGINE setting is empty (None or empty string).
 
 Each of these API functions, except connection.close(), raise
 ImproperlyConfigured.
 """
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db.backends.base.base import BaseDatabaseWrapper
-from django.db.backends.base.client import BaseDatabaseClient
-from django.db.backends.base.creation import BaseDatabaseCreation
-from django.db.backends.base.introspection import BaseDatabaseIntrospection
-from django.db.backends.base.operations import BaseDatabaseOperations
-from django.db.backends.dummy.features import DummyDatabaseFeatures
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.db.backends.base.base import BaseDatabaseWrapper
+from cotlette.db.backends.base.client import BaseDatabaseClient
+from cotlette.db.backends.base.creation import BaseDatabaseCreation
+from cotlette.db.backends.base.introspection import BaseDatabaseIntrospection
+from cotlette.db.backends.base.operations import BaseDatabaseOperations
+from cotlette.db.backends.dummy.features import DummyDatabaseFeatures
 
 
 def complain(*args, **kwargs):

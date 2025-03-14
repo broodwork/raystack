@@ -5,8 +5,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from django.db import NotSupportedError
-from django.db.backends.base.creation import BaseDatabaseCreation
+from cotlette.db import NotSupportedError
+from cotlette.db.backends.base.creation import BaseDatabaseCreation
 
 
 class DatabaseCreation(BaseDatabaseCreation):
@@ -130,7 +130,7 @@ class DatabaseCreation(BaseDatabaseCreation):
     def setup_worker_connection(self, _worker_id):
         settings_dict = self.get_test_db_clone_settings(_worker_id)
         # connection.settings_dict must be updated in place for changes to be
-        # reflected in django.db.connections. Otherwise new threads would
+        # reflected in cotlette.db.connections. Otherwise new threads would
         # connect to the default database instead of the appropriate clone.
         start_method = multiprocessing.get_start_method()
         if start_method == "fork":
@@ -155,5 +155,5 @@ class DatabaseCreation(BaseDatabaseCreation):
             # connection.
             self.connection.connect()
             target_db.close()
-            if os.environ.get("RUNNING_DJANGOS_TEST_SUITE") == "true":
+            if os.environ.get("RUNNING_COTLETTES_TEST_SUITE") == "true":
                 self.mark_expected_failures_and_skips()

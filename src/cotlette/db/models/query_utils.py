@@ -1,7 +1,7 @@
 """
 Various data structures used in query construction.
 
-Factored out from django.db.models.query to avoid making the main module very
+Factored out from cotlette.db.models.query to avoid making the main module very
 large and/or so that they can be used by other modules without getting into
 circular import difficulties.
 """
@@ -12,14 +12,14 @@ import logging
 from collections import namedtuple
 from contextlib import nullcontext
 
-from django.core.exceptions import FieldError
-from django.db import DEFAULT_DB_ALIAS, DatabaseError, connections, transaction
-from django.db.models.constants import LOOKUP_SEP
-from django.utils import tree
-from django.utils.functional import cached_property
-from django.utils.hashable import make_hashable
+from cotlette.core.exceptions import FieldError
+from cotlette.db import DEFAULT_DB_ALIAS, DatabaseError, connections, transaction
+from cotlette.db.models.constants import LOOKUP_SEP
+from cotlette.utils import tree
+from cotlette.utils.functional import cached_property
+from cotlette.utils.hashable import make_hashable
 
-logger = logging.getLogger("django.db.models")
+logger = logging.getLogger("cotlette.db.models")
 
 # PathInfo is used when converting lookups (fk__somecol). The contents
 # describe the relation in Model terms (model Options and Fields for both
@@ -120,10 +120,10 @@ class Q(tree.Node):
         matches against the expressions.
         """
         # Avoid circular imports.
-        from django.db.models import BooleanField, Value
-        from django.db.models.functions import Coalesce
-        from django.db.models.sql import Query
-        from django.db.models.sql.constants import SINGLE
+        from cotlette.db.models import BooleanField, Value
+        from cotlette.db.models.functions import Coalesce
+        from cotlette.db.models.sql import Query
+        from cotlette.db.models.sql.constants import SINGLE
 
         query = Query(None)
         for name, value in against.items():
@@ -152,8 +152,8 @@ class Q(tree.Node):
 
     def deconstruct(self):
         path = "%s.%s" % (self.__class__.__module__, self.__class__.__name__)
-        if path.startswith("django.db.models.query_utils"):
-            path = path.replace("django.db.models.query_utils", "django.db.models")
+        if path.startswith("cotlette.db.models.query_utils"):
+            path = path.replace("cotlette.db.models.query_utils", "cotlette.db.models")
         args = tuple(self.children)
         kwargs = {}
         if self.connector != self.default:
@@ -190,7 +190,7 @@ class Q(tree.Node):
         excluding any fields referenced through joins.
         """
         # Avoid circular imports.
-        from django.db.models.sql import query
+        from cotlette.db.models.sql import query
 
         return {
             child.split(LOOKUP_SEP, 1)[0] for child in query.get_children_from_q(self)
@@ -279,7 +279,7 @@ class RegisterLookupMixin:
     get_class_lookups = classmethod(get_class_lookups)
 
     def get_lookup(self, lookup_name):
-        from django.db.models.lookups import Lookup
+        from cotlette.db.models.lookups import Lookup
 
         found = self._get_lookup(lookup_name)
         if found is None and hasattr(self, "output_field"):
@@ -289,7 +289,7 @@ class RegisterLookupMixin:
         return found
 
     def get_transform(self, lookup_name):
-        from django.db.models.lookups import Transform
+        from cotlette.db.models.lookups import Transform
 
         found = self._get_lookup(lookup_name)
         if found is None and hasattr(self, "output_field"):

@@ -36,7 +36,7 @@ class StopUpload(UploadFileException):
 
     def __init__(self, connection_reset=False):
         """
-        If ``connection_reset`` is ``True``, Django knows will halt the upload
+        If ``connection_reset`` is ``True``, Cotlette knows will halt the upload
         without consuming the rest of the upload. This will cause the browser to
         show a "connection reset" error.
         """
@@ -241,10 +241,10 @@ def load_handler(path, *args, **kwargs):
     Given a path to a handler, return an instance of that handler.
 
     E.g.::
-        >>> from django.http import HttpRequest
+        >>> from cotlette.http import HttpRequest
         >>> request = HttpRequest()
         >>> load_handler(
-        ...     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+        ...     'cotlette.core.files.uploadhandler.TemporaryFileUploadHandler',
         ...     request,
         ... )
         <TemporaryFileUploadHandler object at 0x...>

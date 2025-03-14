@@ -1,5 +1,5 @@
-from django.core.management.base import AppCommand
-from django.db import DEFAULT_DB_ALIAS, connections
+from cotlette.core.management.base import AppCommand
+from cotlette.db import DEFAULT_DB_ALIAS, connections
 
 
 class Command(AppCommand):

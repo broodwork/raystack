@@ -1,20 +1,20 @@
 import json
 from functools import lru_cache, partial
 
-from django.conf import settings
-from django.db.backends.base.operations import BaseDatabaseOperations
-from django.db.backends.postgresql.compiler import InsertUnnest
-from django.db.backends.postgresql.psycopg_any import (
+from cotlette.conf import settings
+from cotlette.db.backends.base.operations import BaseDatabaseOperations
+from cotlette.db.backends.postgresql.compiler import InsertUnnest
+from cotlette.db.backends.postgresql.psycopg_any import (
     Inet,
     Jsonb,
     errors,
     is_psycopg3,
     mogrify,
 )
-from django.db.backends.utils import split_tzname_delta
-from django.db.models.constants import OnConflict
-from django.db.models.functions import Cast
-from django.utils.regex_helper import _lazy_re_compile
+from cotlette.db.backends.utils import split_tzname_delta
+from cotlette.db.models.constants import OnConflict
+from cotlette.db.models.functions import Cast
+from cotlette.utils.regex_helper import _lazy_re_compile
 
 
 @lru_cache
@@ -25,7 +25,7 @@ def get_json_dumps(encoder):
 
 
 class DatabaseOperations(BaseDatabaseOperations):
-    compiler_module = "django.db.backends.postgresql.compiler"
+    compiler_module = "cotlette.db.backends.postgresql.compiler"
     cast_char_field_without_max_length = "varchar"
     explain_prefix = "EXPLAIN"
     explain_options = frozenset(
@@ -246,7 +246,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             return "TABLESPACE %s" % self.quote_name(tablespace)
 
     def sequence_reset_sql(self, style, model_list):
-        from django.db import models
+        from cotlette.db import models
 
         output = []
         qn = self.quote_name

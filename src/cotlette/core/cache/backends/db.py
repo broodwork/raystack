@@ -11,14 +11,14 @@ from cotlette.utils.timezone import now as tz_now
 
 
 class Options:
-    """A class that will quack like a Django model _meta class.
+    """A class that will quack like a Cotlette model _meta class.
 
     This allows cache operations to be controlled by the router
     """
 
     def __init__(self, table):
         self.db_table = table
-        self.app_label = "django_cache"
+        self.app_label = "cotlette_cache"
         self.model_name = "cacheentry"
         self.verbose_name = "cache entry"
         self.verbose_name_plural = "cache entries"

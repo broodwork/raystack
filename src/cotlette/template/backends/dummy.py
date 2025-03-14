@@ -1,8 +1,8 @@
 import string
 
-from django.core.exceptions import ImproperlyConfigured
-from django.template import Origin, TemplateDoesNotExist
-from django.utils.html import conditional_escape
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.template import Origin, TemplateDoesNotExist
+from cotlette.utils.html import conditional_escape
 
 from .base import BaseEngine
 from .utils import csrf_input_lazy, csrf_token_lazy

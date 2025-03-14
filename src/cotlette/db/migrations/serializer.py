@@ -11,12 +11,12 @@ import re
 import types
 import uuid
 
-from django.conf import SettingsReference
-from django.db import models
-from django.db.migrations.operations.base import Operation
-from django.db.migrations.utils import COMPILED_REGEX_TYPE, RegexObject
-from django.utils.functional import LazyObject, Promise
-from django.utils.version import get_docs_version
+from cotlette.conf import SettingsReference
+from cotlette.db import models
+from cotlette.db.migrations.operations.base import Operation
+from cotlette.db.migrations.utils import COMPILED_REGEX_TYPE, RegexObject
+from cotlette.utils.functional import LazyObject, Promise
+from cotlette.utils.version import get_docs_version
 
 FUNCTION_TYPES = (types.FunctionType, types.BuiltinFunctionType, types.MethodType)
 
@@ -110,8 +110,8 @@ class DeconstructableSerializer(BaseSerializer):
     @staticmethod
     def _serialize_path(path):
         module, name = path.rsplit(".", 1)
-        if module == "django.db.models":
-            imports = {"from django.db import models"}
+        if module == "cotlette.db.models":
+            imports = {"from cotlette.db import models"}
             name = "models.%s" % name
         else:
             imports = {"import %s" % module}
@@ -248,7 +248,7 @@ class ModelManagerSerializer(DeconstructableSerializer):
 
 class OperationSerializer(BaseSerializer):
     def serialize(self):
-        from django.db.migrations.writer import OperationWriter
+        from cotlette.db.migrations.writer import OperationWriter
 
         string, imports = OperationWriter(self.value, indentation=0).serialize()
         # Nested operation, trailing comma is handled in upper OperationWriter._write()
@@ -299,7 +299,7 @@ class SetSerializer(BaseUnorderedSequenceSerializer):
 class SettingsReferenceSerializer(BaseSerializer):
     def serialize(self):
         return "settings.%s" % self.value.setting_name, {
-            "from django.conf import settings"
+            "from cotlette.conf import settings"
         }
 
 
@@ -313,7 +313,7 @@ class TupleSerializer(BaseSequenceSerializer):
 class TypeSerializer(BaseSerializer):
     def serialize(self):
         special_cases = [
-            (models.Model, "models.Model", ["from django.db import models"]),
+            (models.Model, "models.Model", ["from cotlette.db import models"]),
             (types.NoneType, "types.NoneType", ["import types"]),
         ]
         for case, string, imports in special_cases:
@@ -395,7 +395,7 @@ def serializer_factory(value):
         if isinstance(value, type_):
             return serializer_cls(value)
     raise ValueError(
-        "Cannot serialize: %r\nThere are some values Django cannot serialize into "
-        "migration files.\nFor more, see https://docs.djangoproject.com/en/%s/"
+        "Cannot serialize: %r\nThere are some values Cotlette cannot serialize into "
+        "migration files.\nFor more, see https://docs.cotletteproject.com/en/%s/"
         "topics/migrations/#migration-serializing" % (value, get_docs_version())
     )

@@ -5,11 +5,11 @@ import traceback
 from collections import defaultdict
 from importlib import import_module
 
-from django.apps import apps
-from django.core.exceptions import AppRegistryNotReady
-from django.core.management import BaseCommand, CommandError
-from django.utils.datastructures import OrderedSet
-from django.utils.module_loading import import_string as import_dotted_path
+from cotlette.apps import apps
+from cotlette.core.exceptions import AppRegistryNotReady
+from cotlette.core.management import BaseCommand, CommandError
+from cotlette.utils.datastructures import OrderedSet
+from cotlette.utils.module_loading import import_string as import_dotted_path
 
 
 class Command(BaseCommand):
@@ -49,7 +49,7 @@ class Command(BaseCommand):
             "-c",
             "--command",
             help=(
-                "Instead of opening an interactive shell, run a command as Django and "
+                "Instead of opening an interactive shell, run a command as Cotlette and "
                 "exit."
             ),
         )
@@ -131,12 +131,12 @@ class Command(BaseCommand):
         For example, for an unchanged INSTALLED_APPS, this method returns:
 
         [
-            "django.contrib.sessions.models.Session",
-            "django.contrib.contenttypes.models.ContentType",
-            "django.contrib.auth.models.User",
-            "django.contrib.auth.models.Group",
-            "django.contrib.auth.models.Permission",
-            "django.contrib.admin.models.LogEntry",
+            "cotlette.contrib.sessions.models.Session",
+            "cotlette.contrib.contenttypes.models.ContentType",
+            "cotlette.contrib.auth.models.User",
+            "cotlette.contrib.auth.models.Group",
+            "cotlette.contrib.auth.models.Permission",
+            "cotlette.contrib.admin.models.LogEntry",
         ]
 
         """
@@ -157,10 +157,10 @@ class Command(BaseCommand):
             apps.check_models_ready()
         except AppRegistryNotReady:
             if verbosity > 0:
-                settings_env_var = os.getenv("DJANGO_SETTINGS_MODULE")
+                settings_env_var = os.getenv("COTLETTE_SETTINGS_MODULE")
                 self.stdout.write(
                     "Automatic imports are disabled since settings are not configured."
-                    f"\nDJANGO_SETTINGS_MODULE value is {settings_env_var!r}.\n"
+                    f"\nCOTLETTE_SETTINGS_MODULE value is {settings_env_var!r}.\n"
                     "HINT: Ensure that the settings module is configured and set.",
                     self.style.ERROR,
                     ending="\n\n",

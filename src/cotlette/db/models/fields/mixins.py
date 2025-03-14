@@ -1,5 +1,5 @@
-from django.core import checks
-from django.utils.functional import cached_property
+from cotlette.core import checks
+from cotlette.utils.functional import cached_property
 
 NOT_PROVIDED = object()
 

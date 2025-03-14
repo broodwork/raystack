@@ -1,10 +1,10 @@
-from django.db.models.sql.compiler import (
+from cotlette.db.models.sql.compiler import (
     SQLAggregateCompiler,
     SQLCompiler,
     SQLDeleteCompiler,
 )
-from django.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
-from django.db.models.sql.compiler import SQLUpdateCompiler
+from cotlette.db.models.sql.compiler import SQLInsertCompiler as BaseSQLInsertCompiler
+from cotlette.db.models.sql.compiler import SQLUpdateCompiler
 
 __all__ = [
     "SQLAggregateCompiler",

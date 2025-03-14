@@ -3,8 +3,8 @@ from functools import partial, reduce
 from itertools import chain
 from operator import attrgetter, or_
 
-from django.db import IntegrityError, connections, models, transaction
-from django.db.models import query_utils, signals, sql
+from cotlette.db import IntegrityError, connections, models, transaction
+from cotlette.db.models import query_utils, signals, sql
 
 
 class ProtectedError(IntegrityError):
@@ -62,7 +62,7 @@ def SET(value):
 
         set_on_delete.lazy_sub_objs = True
 
-    set_on_delete.deconstruct = lambda: ("django.db.models.SET", (value,), {})
+    set_on_delete.deconstruct = lambda: ("cotlette.db.models.SET", (value,), {})
     return set_on_delete
 
 

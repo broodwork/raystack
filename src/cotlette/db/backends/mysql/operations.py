@@ -1,17 +1,17 @@
 import uuid
 
-from django.conf import settings
-from django.db.backends.base.operations import BaseDatabaseOperations
-from django.db.backends.utils import split_tzname_delta
-from django.db.models import Exists, ExpressionWrapper, Lookup
-from django.db.models.constants import OnConflict
-from django.utils import timezone
-from django.utils.encoding import force_str
-from django.utils.regex_helper import _lazy_re_compile
+from cotlette.conf import settings
+from cotlette.db.backends.base.operations import BaseDatabaseOperations
+from cotlette.db.backends.utils import split_tzname_delta
+from cotlette.db.models import Exists, ExpressionWrapper, Lookup
+from cotlette.db.models.constants import OnConflict
+from cotlette.utils import timezone
+from cotlette.utils.encoding import force_str
+from cotlette.utils.regex_helper import _lazy_re_compile
 
 
 class DatabaseOperations(BaseDatabaseOperations):
-    compiler_module = "django.db.backends.mysql.compiler"
+    compiler_module = "cotlette.db.backends.mysql.compiler"
 
     # MySQL stores positive fields as UNSIGNED ints.
     integer_field_ranges = {

@@ -1,3 +1,3 @@
-from django.dispatch import Signal
+from cotlette.dispatch import Signal
 
 connection_created = Signal()

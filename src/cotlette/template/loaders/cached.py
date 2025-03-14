@@ -5,8 +5,8 @@ to load templates from them in order, caching the result.
 
 import hashlib
 
-from django.template import TemplateDoesNotExist
-from django.template.backends.django import copy_exception
+from cotlette.template import TemplateDoesNotExist
+from cotlette.template.backends.cotlette import copy_exception
 
 from .base import Loader as BaseLoader
 

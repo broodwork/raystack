@@ -1,10 +1,10 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import signals
-from django.db.models.aggregates import *  # NOQA
-from django.db.models.aggregates import __all__ as aggregates_all
-from django.db.models.constraints import *  # NOQA
-from django.db.models.constraints import __all__ as constraints_all
-from django.db.models.deletion import (
+from cotlette.core.exceptions import ObjectDoesNotExist
+from cotlette.db.models import signals
+from cotlette.db.models.aggregates import *  # NOQA
+from cotlette.db.models.aggregates import __all__ as aggregates_all
+from cotlette.db.models.constraints import *  # NOQA
+from cotlette.db.models.constraints import __all__ as constraints_all
+from cotlette.db.models.deletion import (
     CASCADE,
     DO_NOTHING,
     PROTECT,
@@ -15,9 +15,9 @@ from django.db.models.deletion import (
     ProtectedError,
     RestrictedError,
 )
-from django.db.models.enums import *  # NOQA
-from django.db.models.enums import __all__ as enums_all
-from django.db.models.expressions import (
+from cotlette.db.models.enums import *  # NOQA
+from cotlette.db.models.enums import __all__ as enums_all
+from cotlette.db.models.expressions import (
     Case,
     Exists,
     Expression,
@@ -36,28 +36,28 @@ from django.db.models.expressions import (
     WindowFrame,
     WindowFrameExclusion,
 )
-from django.db.models.fields import *  # NOQA
-from django.db.models.fields import __all__ as fields_all
-from django.db.models.fields.composite import CompositePrimaryKey
-from django.db.models.fields.files import FileField, ImageField
-from django.db.models.fields.generated import GeneratedField
-from django.db.models.fields.json import JSONField
-from django.db.models.fields.proxy import OrderWrt
-from django.db.models.indexes import *  # NOQA
-from django.db.models.indexes import __all__ as indexes_all
-from django.db.models.lookups import Lookup, Transform
-from django.db.models.manager import Manager
-from django.db.models.query import (
+from cotlette.db.models.fields import *  # NOQA
+from cotlette.db.models.fields import __all__ as fields_all
+from cotlette.db.models.fields.composite import CompositePrimaryKey
+from cotlette.db.models.fields.files import FileField, ImageField
+from cotlette.db.models.fields.generated import GeneratedField
+from cotlette.db.models.fields.json import JSONField
+from cotlette.db.models.fields.proxy import OrderWrt
+from cotlette.db.models.indexes import *  # NOQA
+from cotlette.db.models.indexes import __all__ as indexes_all
+from cotlette.db.models.lookups import Lookup, Transform
+from cotlette.db.models.manager import Manager
+from cotlette.db.models.query import (
     Prefetch,
     QuerySet,
     aprefetch_related_objects,
     prefetch_related_objects,
 )
-from django.db.models.query_utils import FilteredRelation, Q
+from cotlette.db.models.query_utils import FilteredRelation, Q
 
 # Imports that would create circular imports if sorted
-from django.db.models.base import DEFERRED, Model  # isort:skip
-from django.db.models.fields.related import (  # isort:skip
+from cotlette.db.models.base import DEFERRED, Model  # isort:skip
+from cotlette.db.models.fields.related import (  # isort:skip
     ForeignKey,
     ForeignObject,
     OneToOneField,

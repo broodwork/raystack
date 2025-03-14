@@ -1,5 +1,5 @@
 """
-Global Django exception classes.
+Global Cotlette exception classes.
 """
 
 import operator
@@ -14,7 +14,7 @@ class FieldDoesNotExist(Exception):
 
 
 class AppRegistryNotReady(Exception):
-    """The django.apps registry is not populated yet"""
+    """The cotlette.apps registry is not populated yet"""
 
     pass
 
@@ -121,7 +121,7 @@ class MiddlewareNotUsed(Exception):
 
 
 class ImproperlyConfigured(Exception):
-    """Django is somehow improperly configured"""
+    """Cotlette is somehow improperly configured"""
 
     pass
 

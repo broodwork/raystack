@@ -1,9 +1,9 @@
 import sys
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db.backends.base.creation import BaseDatabaseCreation
-from django.db.backends.postgresql.psycopg_any import errors
-from django.db.backends.utils import strip_quotes
+from cotlette.core.exceptions import ImproperlyConfigured
+from cotlette.db.backends.base.creation import BaseDatabaseCreation
+from cotlette.db.backends.postgresql.psycopg_any import errors
+from cotlette.db.backends.utils import strip_quotes
 
 
 class DatabaseCreation(BaseDatabaseCreation):

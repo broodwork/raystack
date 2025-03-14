@@ -3,8 +3,8 @@ import inspect
 from functools import wraps
 from importlib import import_module
 
-from django.db import router
-from django.db.models.query import QuerySet
+from cotlette.db import router
+from cotlette.db.models.query import QuerySet
 
 
 class BaseManager:

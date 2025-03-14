@@ -93,9 +93,9 @@ def json_script(value, element_id=None, encoder=None):
     value is safe to be output anywhere except for inside a tag attribute. Wrap
     the escaped JSON in a script tag.
     """
-    from django.core.serializers.json import DjangoJSONEncoder
+    from cotlette.core.serializers.json import CotletteJSONEncoder
 
-    json_str = json.dumps(value, cls=encoder or DjangoJSONEncoder).translate(
+    json_str = json.dumps(value, cls=encoder or CotletteJSONEncoder).translate(
         _json_script_escapes
     )
     if element_id:
@@ -111,7 +111,7 @@ def conditional_escape(text):
     """
     Similar to escape(), except that it doesn't operate on pre-escaped strings.
 
-    This function relies on the __html__ convention used both by Django's
+    This function relies on the __html__ convention used both by Cotlette's
     SafeData class and by third-party libraries like markupsafe.
     """
     if isinstance(text, Promise):
@@ -479,7 +479,7 @@ def avoid_wrapping(value):
 
 def html_safe(klass):
     """
-    A decorator that defines the __html__ method. This helps non-Django
+    A decorator that defines the __html__ method. This helps non-Cotlette
     templates to detect classes whose __str__ methods return SafeString.
     """
     if "__html__" in klass.__dict__:
