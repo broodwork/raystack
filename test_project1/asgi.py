@@ -11,6 +11,6 @@ import os
 
 from cotlette.core.asgi import get_asgi_application
 
-os.environ.setdefault('COTLETTE_SETTINGS_MODULE', 'test_project1.settings')
+os.environ.setdefault('COTLETTE_SETTINGS_MODULE', 'settings')
 
 application = get_asgi_application()

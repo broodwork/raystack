@@ -385,36 +385,40 @@ class ManagementUtility:
         except ImportError as exc:
             self.settings_exception = exc
 
-        if settings.configured:
+        if settings.configured:  # TODO
             # Start the auto-reloading dev server even if the code is broken.
             # The hardcoded condition is a code smell but we can't rely on a
             # flag on the command class because we haven't located it yet.
-            if subcommand == "runserver" and "--noreload" not in self.argv:
-                try:
-                    autoreload.check_errors(cotlette.setup)()
-                except Exception:
-                    # The exception will be raised later in the child process
-                    # started by the autoreloader. Pretend it didn't happen by
-                    # loading an empty list of applications.
-                    apps.all_models = defaultdict(dict)
-                    apps.app_configs = {}
-                    apps.apps_ready = apps.models_ready = apps.ready = True
+            # if subcommand == "runserver":
+            #     pass
+            #     # try:
+            #     #     autoreload.check_errors(cotlette.setup)()
+            #     # except Exception:
+            #     #     # The exception will be raised later in the child process
+            #     #     # started by the autoreloader. Pretend it didn't happen by
+            #     #     # loading an empty list of applications.
+            #     #     apps.all_models = defaultdict(dict)
+            #     #     apps.app_configs = {}
+            #     #     apps.apps_ready = apps.models_ready = apps.ready = True
 
-                    # Remove options not compatible with the built-in runserver
-                    # (e.g. options for the contrib.staticfiles' runserver).
-                    # Changes here require manually testing as described in
-                    # #27522.
-                    _parser = self.fetch_command("runserver").create_parser(
-                        "fastapi", "runserver"
-                    )
-                    _options, _args = _parser.parse_known_args(self.argv[2:])
-                    for _arg in _args:
-                        self.argv.remove(_arg)
+            #     #     # Remove options not compatible with the built-in runserver
+            #     #     # (e.g. options for the contrib.staticfiles' runserver).
+            #     #     # Changes here require manually testing as described in
+            #     #     # #27522.
+            #     #     _parser = self.fetch_command("runserver").create_parser(
+            #     #         "fastapi", "runserver"
+            #     #     )
+            #     #     _options, _args = _parser.parse_known_args(self.argv[2:])
+            #     #     for _arg in _args:
+            #     #         self.argv.remove(_arg)
 
-            # In all other cases, cotlette.setup() is required to succeed.
-            else:
-                cotlette.setup()
-
+            # # In all other cases, cotlette.setup() is required to succeed.
+            # else:
+            #     print('self.argv', self.argv)
+            #     print('cotlette', cotlette)
+            #     print('dir', dir(cotlette))
+            #     cotlette.setup()
+            pass
         self.autocomplete()
 
         if subcommand == "help":

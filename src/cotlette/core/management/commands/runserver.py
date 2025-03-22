@@ -7,7 +7,7 @@ from datetime import datetime
 
 from cotlette.conf import settings
 from cotlette.core.management.base import BaseCommand, CommandError
-from cotlette.core.servers.basehttp import WSGIServer, get_internal_wsgi_application, run
+# from cotlette.core.servers.basehttp import WSGIServer, get_internal_wsgi_application, run
 from cotlette.db import connections
 from cotlette.utils import autoreload
 from cotlette.utils.regex_helper import _lazy_re_compile
@@ -34,7 +34,7 @@ class Command(BaseCommand):
     default_addr_ipv6 = "::1"
     default_port = "8000"
     protocol = "http"
-    server_cls = WSGIServer
+    # server_cls = WSGIServer
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -67,10 +67,6 @@ class Command(BaseCommand):
             # compromise considering `runserver` runs indefinitely.
             os.environ["COTLETTE_COLORS"] = "nocolor"
         super().execute(*args, **options)
-
-    def get_handler(self, *args, **options):
-        """Return the default WSGI handler for the runner."""
-        return get_internal_wsgi_application()
 
     def get_check_kwargs(self, options):
         """Validation is called explicitly each time the server reloads."""
@@ -113,89 +109,8 @@ class Command(BaseCommand):
         """Run the server, using the autoreloader if needed."""
         use_reloader = options["use_reloader"]
 
-        if use_reloader:
-            autoreload.run_with_reloader(self.inner_run, **options)
-        else:
-            self.inner_run(None, **options)
-
-    def inner_run(self, *args, **options):
-        # If an exception was silenced in ManagementUtility.execute in order
-        # to be raised in the child process, raise it now.
-        autoreload.raise_last_exception()
-
-        threading = options["use_threading"]
-        # 'shutdown_message' is a stealth option.
-        shutdown_message = options.get("shutdown_message", "")
-
-        if not options["skip_checks"]:
-            self.stdout.write("Performing system checks...\n\n")
-            check_kwargs = super().get_check_kwargs(options)
-            check_kwargs["display_num_errors"] = True
-            self.check(**check_kwargs)
-        # Need to check migrations here, so can't use the
-        # requires_migrations_check attribute.
-        self.check_migrations()
-        # Close all connections opened during migration checking.
-        for conn in connections.all(initialized_only=True):
-            conn.close()
-
-        try:
-            handler = self.get_handler(*args, **options)
-            run(
-                self.addr,
-                int(self.port),
-                handler,
-                ipv6=self.use_ipv6,
-                threading=threading,
-                on_bind=self.on_bind,
-                server_cls=self.server_cls,
-            )
-        except OSError as e:
-            # Use helpful error messages instead of ugly tracebacks.
-            ERRORS = {
-                errno.EACCES: "You don't have permission to access that port.",
-                errno.EADDRINUSE: "That port is already in use.",
-                errno.EADDRNOTAVAIL: "That IP address can't be assigned to.",
-            }
-            try:
-                error_text = ERRORS[e.errno]
-            except KeyError:
-                error_text = e
-            self.stderr.write("Error: %s" % error_text)
-            # Need to use an OS exit because sys.exit doesn't work in a thread
-            os._exit(1)
-        except KeyboardInterrupt:
-            if shutdown_message:
-                self.stdout.write(shutdown_message)
-            sys.exit(0)
-
-    def on_bind(self, server_port):
-        quit_command = "CTRL-BREAK" if sys.platform == "win32" else "CONTROL-C"
-
-        if self._raw_ipv6:
-            addr = f"[{self.addr}]"
-        elif self.addr == "0":
-            addr = "0.0.0.0"
-        else:
-            addr = self.addr
-
-        now = datetime.now().strftime("%B %d, %Y - %X")
-        version = self.get_version()
-        print(
-            f"{now}\n"
-            f"Cotlette version {version}, using settings {settings.SETTINGS_MODULE!r}\n"
-            f"Starting development server at {self.protocol}://{addr}:{server_port}/\n"
-            f"Quit the server with {quit_command}.",
-            file=self.stdout,
-        )
-        docs_version = get_docs_version()
-        if os.environ.get("HIDE_PRODUCTION_WARNING") != "true":
-            self.stdout.write(
-                self.style.WARNING(
-                    "WARNING: This is a development server. Do not use it in a "
-                    "production setting. Use a production WSGI or ASGI server "
-                    "instead.\nFor more information on production servers see: "
-                    f"https://docs.cotletteproject.com/en/{docs_version}/howto/"
-                    "deployment/"
-                )
-            )
+        # if use_reloader:
+        #     autoreload.run_with_reloader(self.inner_run, **options)
+        # else:
+        # self.inner_run(None, **options)
+        print("RUN")

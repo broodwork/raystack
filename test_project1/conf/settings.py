@@ -10,3 +10,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'test_db.sqlite3',  # Путь к файлу базы данных
     }
 }
+
+ALLOWED_HOSTS = ['*']
+
+DEBUG = False
+
+INSTALLED_APPS = []
