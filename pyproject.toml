@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cotlette"
-version = "0.0.1"
+version = "0.0.7"
 requires-python = ">= 3.6"
 dependencies = [
     "uvicorn",
@@ -34,7 +34,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-    "Topic :: Internet :: WWW/HTTP :: ASGI",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -47,3 +46,6 @@ Homepage = "https://github.com/ForceFledgling/cotlette"
 Documentation = "https://github.com/ForceFledgling/cotlette"
 Source = "https://github.com/ForceFledgling/cotlette"
 Tracker = "https://github.com/ForceFledgling/cotlette/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
