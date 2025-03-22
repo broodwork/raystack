@@ -1,20 +1,28 @@
-# database.py
 import sqlite3
+from settings import DATABASES
 
 class Database:
-    def __init__(self, db_url):
-        self.connection = sqlite3.connect(db_url)
-        self.cursor = self.connection.cursor()
+    def __init__(self):
+        # Получаем путь к базе данных из настроек
+        db_settings = DATABASES['default']
+        self.db_url = db_settings['NAME']
 
-    def execute(self, query, params=None):
-        self.cursor.execute(query, params or ())
-        return self.cursor.fetchall()
+    def connect(self):
+        """Создает новое соединение с базой данных."""
+        return sqlite3.connect(self.db_url)
+    
+    def execute(self, query, params=None, fetch=False):
+        """Выполняет SQL-запрос и возвращает результат (если требуется)."""
+        with self.connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, params or ())
+            if fetch:
+                return cursor.fetchall()
 
     def commit(self):
-        self.connection.commit()
+        """Фиксирует изменения в базе данных."""
+        with self.connect() as conn:
+            conn.commit()
 
-    def close(self):
-        self.connection.close()
-
-# Создаем глобальный объект подключения
-db = Database("example.db")
+# Создаем экземпляр Database
+db = Database()

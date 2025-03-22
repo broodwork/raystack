@@ -4,6 +4,7 @@ class QuerySet:
     def __init__(self, model_class):
         self.model_class = model_class
         self.query = f"SELECT * FROM {model_class.__name__}"
+        self.params = None
 
     def filter(self, **kwargs):
         conditions = " AND ".join([f"{key}=?" for key in kwargs])
@@ -12,7 +13,7 @@ class QuerySet:
         return self
 
     def all(self):
-        result = db.execute(self.query, getattr(self, 'params', None))
+        result = db.execute(self.query, self.params, fetch=True)
         return [self.model_class(**dict(zip(self.model_class._fields.keys(), row))) for row in result]
 
     def create(self, **kwargs):
@@ -31,7 +32,7 @@ class QuerySet:
 
         # Выполняем запрос
         db.execute(insert_query, values)
-        db.commit()
+        db.commit()  # Фиксируем изменения
 
         # Возвращаем созданный объект модели
         return self.model_class(**kwargs)

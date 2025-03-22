@@ -1,6 +1,6 @@
 from .fields import CharField, IntegerField, Field
-from .database import db
 from .manager import Manager
+from .database import db
 
 class ModelMeta(type):
     def __new__(cls, name, bases, attrs):
@@ -13,7 +13,6 @@ class ModelMeta(type):
         return super().__new__(cls, name, bases, attrs)
 
 class Model(metaclass=ModelMeta):
-    
     objects = Manager(None)
 
     def __init__(self, **kwargs):
@@ -33,5 +32,5 @@ class Model(metaclass=ModelMeta):
                 column_def += " PRIMARY KEY"
             columns.append(column_def)
         query = f"CREATE TABLE IF NOT EXISTS {cls.__name__} ({', '.join(columns)})"
-        db.execute(query)
-        db.commit()
+        db.execute(query)  # Выполняем запрос на создание таблицы
+        db.commit()        # Фиксируем изменения
