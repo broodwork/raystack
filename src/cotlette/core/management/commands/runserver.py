@@ -114,3 +114,11 @@ class Command(BaseCommand):
         # else:
         # self.inner_run(None, **options)
         print("RUN")
+        import uvicorn
+
+        uvicorn.run(
+            'core:app',
+            host="0.0.0.0",
+            port=8100,
+            reload=True
+        )

@@ -1,10 +1,12 @@
 import sqlite3
-from settings import DATABASES
+
+from cotlette.conf import settings
+
 
 class Database:
     def __init__(self):
         # Получаем путь к базе данных из настроек
-        db_settings = DATABASES['default']
+        db_settings = settings.DATABASES['default']
         self.db_url = db_settings['NAME']
 
     def connect(self):
@@ -23,6 +25,7 @@ class Database:
         """Фиксирует изменения в базе данных."""
         with self.connect() as conn:
             conn.commit()
+
 
 # Создаем экземпляр Database
 db = Database()
