@@ -1,7 +1,9 @@
-from cotlette.core.checks.security.base import SECRET_KEY_INSECURE_PREFIX
 from cotlette.core.management.templates import TemplateCommand
 
 from ..utils import get_random_secret_key
+
+
+SECRET_KEY_INSECURE_PREFIX = "insecure-"
 
 
 class Command(TemplateCommand):
