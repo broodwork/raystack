@@ -23,7 +23,7 @@ from cotlette.core.management.base import (
     handle_default_options,
 )
 from cotlette.core.management.color import color_style
-from cotlette.utils import autoreload
+# from cotlette.utils import autoreload
 
 
 def find_commands(management_dir):

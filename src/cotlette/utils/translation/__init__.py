@@ -5,7 +5,7 @@ Internationalization support.
 from contextlib import ContextDecorator
 from decimal import ROUND_UP, Decimal
 
-from cotlette.utils.autoreload import autoreload_started, file_changed
+# from cotlette.utils.autoreload import autoreload_started, file_changed
 from cotlette.utils.functional import lazy
 from cotlette.utils.regex_helper import _lazy_re_compile
 

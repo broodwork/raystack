@@ -4,12 +4,13 @@ import re
 import socket
 import sys
 from datetime import datetime
+import uvicorn
 
 from cotlette.conf import settings
 from cotlette.core.management.base import BaseCommand, CommandError
 # from cotlette.core.servers.basehttp import WSGIServer, get_internal_wsgi_application, run
 from cotlette.db import connections
-from cotlette.utils import autoreload
+# from cotlette.utils import autoreload
 from cotlette.utils.regex_helper import _lazy_re_compile
 from cotlette.utils.version import get_docs_version
 
@@ -48,25 +49,19 @@ class Command(BaseCommand):
             help="Tells Cotlette to use an IPv6 address.",
         )
         parser.add_argument(
-            "--nothreading",
-            action="store_false",
-            dest="use_threading",
-            help="Tells Cotlette to NOT use threading.",
-        )
-        parser.add_argument(
-            "--noreload",
-            action="store_false",
+            "--reload",
+            action="store_true",
             dest="use_reloader",
             help="Tells Cotlette to NOT use the auto-reloader.",
         )
 
-    def execute(self, *args, **options):
-        if options["no_color"]:
-            # We rely on the environment because it's currently the only
-            # way to reach WSGIRequestHandler. This seems an acceptable
-            # compromise considering `runserver` runs indefinitely.
-            os.environ["COTLETTE_COLORS"] = "nocolor"
-        super().execute(*args, **options)
+    # def execute(self, *args, **options):
+    #     if options["no_color"]:
+    #         # We rely on the environment because it's currently the only
+    #         # way to reach WSGIRequestHandler. This seems an acceptable
+    #         # compromise considering `runserver` runs indefinitely.
+    #         os.environ["COTLETTE_COLORS"] = "nocolor"
+    #     super().execute(*args, **options)
 
     def get_check_kwargs(self, options):
         """Validation is called explicitly each time the server reloads."""
@@ -113,12 +108,10 @@ class Command(BaseCommand):
         #     autoreload.run_with_reloader(self.inner_run, **options)
         # else:
         # self.inner_run(None, **options)
-        print("RUN")
-        import uvicorn
 
         uvicorn.run(
             'core:app',
-            host="0.0.0.0",
-            port=8100,
-            reload=True
+            host=self.addr or default_addr,
+            port=int(self.port) or default_port,
+            reload=options["use_reloader"]
         )

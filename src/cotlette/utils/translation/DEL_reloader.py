@@ -3,7 +3,7 @@ from pathlib import Path
 from asgiref.local import Local
 
 from cotlette.apps import apps
-from cotlette.utils.autoreload import is_cotlette_module
+# from cotlette.utils.autoreload import is_cotlette_module
 
 
 def watch_for_translation_changes(sender, **kwargs):

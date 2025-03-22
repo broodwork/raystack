@@ -4,7 +4,7 @@ from cotlette.dispatch import receiver
 from cotlette.template import engines
 from cotlette.template.backends.cotlette import CotletteTemplates
 from cotlette.utils._os import to_path
-from cotlette.utils.autoreload import autoreload_started, file_changed, is_cotlette_path
+# from cotlette.utils.autoreload import autoreload_started, file_changed, is_cotlette_path
 
 
 def get_template_directories():
