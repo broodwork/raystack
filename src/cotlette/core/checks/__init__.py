@@ -15,7 +15,6 @@ from .registry import Tags, register, run_checks, tag_exists
 
 # Import these to force registration of checks
 import cotlette.core.checks.async_checks  # NOQA isort:skip
-import cotlette.core.checks.caches  # NOQA isort:skip
 import cotlette.core.checks.commands  # NOQA isort:skip
 import cotlette.core.checks.compatibility.cotlette_4_0  # NOQA isort:skip
 import cotlette.core.checks.database  # NOQA isort:skip

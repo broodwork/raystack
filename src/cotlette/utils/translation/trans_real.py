@@ -13,8 +13,8 @@ from cotlette.apps import apps
 from cotlette.conf import settings
 from cotlette.conf.locale import LANG_INFO
 from cotlette.core.exceptions import AppRegistryNotReady
-from cotlette.core.signals import setting_changed
-from cotlette.dispatch import receiver
+# from cotlette.core.signals import setting_changed
+# from cotlette.dispatch import receiver
 from cotlette.utils.regex_helper import _lazy_re_compile
 from cotlette.utils.safestring import SafeData, mark_safe
 
@@ -56,18 +56,6 @@ language_code_re = _lazy_re_compile(
 )
 
 language_code_prefix_re = _lazy_re_compile(r"^/(\w+([@-]\w+){0,2})(/|$)")
-
-
-@receiver(setting_changed)
-def reset_cache(*, setting, **kwargs):
-    """
-    Reset global state when LANGUAGES setting has been changed, as some
-    languages should no longer be accepted.
-    """
-    if setting in ("LANGUAGES", "LANGUAGE_CODE"):
-        check_for_language.cache_clear()
-        get_languages.cache_clear()
-        get_supported_language_variant.cache_clear()
 
 
 class TranslationCatalog:

@@ -1,4 +1,3 @@
-from cotlette.core import signals
 from cotlette.db.utils import (
     DEFAULT_DB_ALIAS,
     COTLETTE_VERSION_PICKLE_KEY,
@@ -49,15 +48,8 @@ def reset_queries(**kwargs):
         conn.queries_log.clear()
 
 
-signals.request_started.connect(reset_queries)
-
-
 # Register an event to reset transaction state and close connections past
 # their lifetime.
 def close_old_connections(**kwargs):
     for conn in connections.all(initialized_only=True):
         conn.close_if_unusable_or_obsolete()
-
-
-signals.request_started.connect(close_old_connections)
-signals.request_finished.connect(close_old_connections)
