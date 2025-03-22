@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cotlette"
-version = "0.1.0"  # Явная версия проекта
+version = "0.0.1"
 requires-python = ">= 3.6"
 dependencies = [
     "uvicorn",
@@ -16,7 +16,7 @@ authors = [
   {name = "Vladimir Penzin", email = "pvenv@icloud.com"},
 ]
 
-description = "A FastAPI-based admin interface."
+description = "Manager for FastAPI."
 
 readme = "README.md"
 license = {text = "MIT License"}
@@ -43,8 +43,7 @@ classifiers = [
 cotlette = "cotlette.core.management:execute_from_command_line"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/cotlette"
-Documentation = "https://your-docs-url.com/"
-"Release notes" = "https://github.com/yourusername/cotlette/releases"
-Source = "https://github.com/yourusername/cotlette"
-Tracker = "https://github.com/yourusername/cotlette/issues"
+Homepage = "https://github.com/ForceFledgling/cotlette"
+Documentation = "https://github.com/ForceFledgling/cotlette"
+Source = "https://github.com/ForceFledgling/cotlette"
+Tracker = "https://github.com/ForceFledgling/cotlette/issues"
