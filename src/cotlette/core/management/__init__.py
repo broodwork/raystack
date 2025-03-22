@@ -13,7 +13,7 @@ from difflib import get_close_matches
 from importlib import import_module
 
 import cotlette
-from cotlette.apps import apps
+# from cotlette.apps import apps
 from cotlette.conf import settings
 from cotlette.core.exceptions import ImproperlyConfigured
 from cotlette.core.management.base import (
@@ -72,10 +72,6 @@ def get_commands():
 
     if not settings.configured:
         return commands
-
-    for app_config in reversed(apps.get_app_configs()):
-        path = os.path.join(app_config.path, "management")
-        commands.update({name: app_config.name for name in find_commands(path)})
 
     return commands
 
