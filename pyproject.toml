@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cotlette"
-version = "0.0.7"
+version = "0.0.10"
 requires-python = ">= 3.6"
 dependencies = [
     "uvicorn",
@@ -16,7 +16,7 @@ authors = [
   {name = "Vladimir Penzin", email = "pvenv@icloud.com"},
 ]
 
-description = "Manager for FastAPI."
+description = "Cotlette is a modern web framework built on top of FastAPI, offering convenient tools for rapid web application development. Inspired by Django, it includes its own ORM, template rendering support, and built-in commands for project management, as well as an admin panel."
 
 readme = "README.md"
 license = {text = "MIT License"}
