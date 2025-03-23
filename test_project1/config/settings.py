@@ -14,6 +14,23 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['*']
 
-DEBUG = False
+DEBUG = True
 
-INSTALLED_APPS = []
+INSTALLED_APPS = [
+    # 'home',
+    'apps/home'
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
+        "DIRS": ["templates"],
+        "APP_DIRS": True,
+        # "OPTIONS": {
+        #     "context_processors": [
+        #         # "django.template.context_processors.debug",
+        #         # "django.template.context_processors.request",
+        #     ],
+        # },
+    },
+]

@@ -32,6 +32,14 @@ def create_tables():
 def read_root():
     return {"message": "Добро пожаловать в FastAPI!"}
 
+@app.get("/test", response_model=None)
+async def test():
+    from cotlette.responses import HTMLResponse
+    from cotlette.template.loader import get_template
+    template = get_template("test.html")
+    response = HTMLResponse(template.render())
+    return response
+
 # Создание нового пользователя (POST)
 @app.post("/users/", response_model=User)
 def create_user(user: UserCreate):

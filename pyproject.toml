@@ -10,6 +10,7 @@ dependencies = [
     "uvicorn",
     "fastapi",
     "asgiref",
+    "jinja2",
 ]
 
 authors = [

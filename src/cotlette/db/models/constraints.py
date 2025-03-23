@@ -1,7 +1,7 @@
 from enum import Enum
-from types import NoneType
+# from types import NoneType
 
-from cotlette.core import checks
+# from cotlette.core import checks
 from cotlette.core.exceptions import FieldDoesNotExist, ValidationError
 from cotlette.db import connections
 from cotlette.db.models.constants import LOOKUP_SEP
@@ -98,14 +98,15 @@ class BaseConstraint:
                 and field.get_transform(first_lookup) is None
                 and field.get_lookup(first_lookup) is None
             ):
-                errors.append(
-                    checks.Error(
-                        "'constraints' refers to the joined field '%s'."
-                        % LOOKUP_SEP.join([field_name] + lookups),
-                        obj=model,
-                        id="models.E041",
-                    )
-                )
+                # errors.append(
+                #     checks.Error(
+                #         "'constraints' refers to the joined field '%s'."
+                #         % LOOKUP_SEP.join([field_name] + lookups),
+                #         obj=model,
+                #         id="models.E041",
+                #     )
+                # )
+                pass
         errors.extend(model._check_local_fields(fields, "constraints"))
         return errors
 
@@ -153,17 +154,18 @@ class CheckConstraint(BaseConstraint):
             connection.features.supports_table_check_constraints
             or "supports_table_check_constraints" in model._meta.required_db_features
         ):
-            errors.append(
-                checks.Warning(
-                    f"{connection.display_name} does not support check constraints.",
-                    hint=(
-                        "A constraint won't be created. Silence this warning if you "
-                        "don't care about it."
-                    ),
-                    obj=model,
-                    id="models.W027",
-                )
-            )
+            # errors.append(
+            #     checks.Warning(
+            #         f"{connection.display_name} does not support check constraints.",
+            #         hint=(
+            #             "A constraint won't be created. Silence this warning if you "
+            #             "don't care about it."
+            #         ),
+            #         obj=model,
+            #         id="models.W027",
+            #     )
+            # )
+            pass
         elif (
             connection.features.supports_table_check_constraints
             or "supports_table_check_constraints"
@@ -174,15 +176,16 @@ class CheckConstraint(BaseConstraint):
             if isinstance(condition, Q):
                 references.update(model._get_expr_references(condition))
             if any(isinstance(expr, RawSQL) for expr in condition.flatten()):
-                errors.append(
-                    checks.Warning(
-                        f"Check constraint {self.name!r} contains RawSQL() expression "
-                        "and won't be validated during the model full_clean().",
-                        hint="Silence this warning if you don't care about it.",
-                        obj=model,
-                        id="models.W045",
-                    ),
-                )
+                # errors.append(
+                #     checks.Warning(
+                #         f"Check constraint {self.name!r} contains RawSQL() expression "
+                #         "and won't be validated during the model full_clean().",
+                #         hint="Silence this warning if you don't care about it.",
+                #         obj=model,
+                #         id="models.W045",
+                #     ),
+                # )
+                pass
             errors.extend(self._check_references(model, references))
         return errors
 
@@ -282,7 +285,7 @@ class UniqueConstraint(BaseConstraint):
             raise ValueError(
                 "UniqueConstraint.fields and expressions are mutually exclusive."
             )
-        if not isinstance(condition, (NoneType, Q)):
+        if not isinstance(condition, (None, Q)):
             raise ValueError("UniqueConstraint.condition must be a Q instance.")
         if condition and deferrable:
             raise ValueError("UniqueConstraint with conditions cannot be deferred.")
@@ -297,15 +300,15 @@ class UniqueConstraint(BaseConstraint):
                 "UniqueConstraint.opclasses cannot be used with expressions. "
                 "Use cotlette.contrib.postgres.indexes.OpClass() instead."
             )
-        if not isinstance(deferrable, (NoneType, Deferrable)):
+        if not isinstance(deferrable, (None, Deferrable)):
             raise TypeError(
                 "UniqueConstraint.deferrable must be a Deferrable instance."
             )
-        if not isinstance(include, (NoneType, list, tuple)):
+        if not isinstance(include, (None, list, tuple)):
             raise TypeError("UniqueConstraint.include must be a list or tuple.")
         if not isinstance(opclasses, (list, tuple)):
             raise TypeError("UniqueConstraint.opclasses must be a list or tuple.")
-        if not isinstance(nulls_distinct, (NoneType, bool)):
+        if not isinstance(nulls_distinct, (None, bool)):
             raise TypeError("UniqueConstraint.nulls_distinct must be a bool.")
         if opclasses and len(fields) != len(opclasses):
             raise ValueError(
@@ -339,82 +342,87 @@ class UniqueConstraint(BaseConstraint):
             connection.features.supports_partial_indexes
             or "supports_partial_indexes" in required_db_features
         ):
-            errors.append(
-                checks.Warning(
-                    f"{connection.display_name} does not support unique constraints "
-                    "with conditions.",
-                    hint=(
-                        "A constraint won't be created. Silence this warning if you "
-                        "don't care about it."
-                    ),
-                    obj=model,
-                    id="models.W036",
-                )
-            )
+            # errors.append(
+            #     checks.Warning(
+            #         f"{connection.display_name} does not support unique constraints "
+            #         "with conditions.",
+            #         hint=(
+            #             "A constraint won't be created. Silence this warning if you "
+            #             "don't care about it."
+            #         ),
+            #         obj=model,
+            #         id="models.W036",
+            #     )
+            # )
+            pass
         if self.deferrable is not None and not (
             connection.features.supports_deferrable_unique_constraints
             or "supports_deferrable_unique_constraints" in required_db_features
         ):
-            errors.append(
-                checks.Warning(
-                    f"{connection.display_name} does not support deferrable unique "
-                    "constraints.",
-                    hint=(
-                        "A constraint won't be created. Silence this warning if you "
-                        "don't care about it."
-                    ),
-                    obj=model,
-                    id="models.W038",
-                )
-            )
+            # errors.append(
+            #     checks.Warning(
+            #         f"{connection.display_name} does not support deferrable unique "
+            #         "constraints.",
+            #         hint=(
+            #             "A constraint won't be created. Silence this warning if you "
+            #             "don't care about it."
+            #         ),
+            #         obj=model,
+            #         id="models.W038",
+            #     )
+            # )
+            pass
         if self.include and not (
             connection.features.supports_covering_indexes
             or "supports_covering_indexes" in required_db_features
         ):
-            errors.append(
-                checks.Warning(
-                    f"{connection.display_name} does not support unique constraints "
-                    "with non-key columns.",
-                    hint=(
-                        "A constraint won't be created. Silence this warning if you "
-                        "don't care about it."
-                    ),
-                    obj=model,
-                    id="models.W039",
-                )
-            )
+            # errors.append(
+            #     checks.Warning(
+            #         f"{connection.display_name} does not support unique constraints "
+            #         "with non-key columns.",
+            #         hint=(
+            #             "A constraint won't be created. Silence this warning if you "
+            #             "don't care about it."
+            #         ),
+            #         obj=model,
+            #         id="models.W039",
+            #     )
+            # )
+            pass
         if self.contains_expressions and not (
             connection.features.supports_expression_indexes
             or "supports_expression_indexes" in required_db_features
         ):
-            errors.append(
-                checks.Warning(
-                    f"{connection.display_name} does not support unique constraints on "
-                    "expressions.",
-                    hint=(
-                        "A constraint won't be created. Silence this warning if you "
-                        "don't care about it."
-                    ),
-                    obj=model,
-                    id="models.W044",
-                )
-            )
+            # errors.append(
+            #     checks.Warning(
+            #         f"{connection.display_name} does not support unique constraints on "
+            #         "expressions.",
+            #         hint=(
+            #             "A constraint won't be created. Silence this warning if you "
+            #             "don't care about it."
+            #         ),
+            #         obj=model,
+            #         id="models.W044",
+            #     )
+            # )
+            pass
         if self.nulls_distinct is not None and not (
             connection.features.supports_nulls_distinct_unique_constraints
             or "supports_nulls_distinct_unique_constraints" in required_db_features
         ):
-            errors.append(
-                checks.Warning(
-                    f"{connection.display_name} does not support unique constraints "
-                    "with nulls distinct.",
-                    hint=(
-                        "A constraint won't be created. Silence this warning if you "
-                        "don't care about it."
-                    ),
-                    obj=model,
-                    id="models.W047",
-                )
-            )
+            # errors.append(
+            #     checks.Warning(
+            #         f"{connection.display_name} does not support unique constraints "
+            #         "with nulls distinct.",
+            #         hint=(
+            #             "A constraint won't be created. Silence this warning if you "
+            #             "don't care about it."
+            #         ),
+            #         obj=model,
+            #         id="models.W047",
+            #     )
+            # )
+            pass
         references = set()
         if (
             connection.features.supports_partial_indexes
