@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from cotlette.models import Model
 from cotlette.fields import CharField, IntegerField
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 
 
 # Настройка логирования
@@ -14,8 +15,12 @@ logger.error("ERROR")
 # Создаем экземпляр FastAPI
 app = FastAPI()
 
+# Подключение urls
 from config.urls import router as urls_router
 app.include_router(urls_router)
+
+# Подключение директории static
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # Pydantic-модель для создания нового пользователя

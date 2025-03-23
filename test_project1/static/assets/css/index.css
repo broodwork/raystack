@@ -129,6 +129,16 @@ h1, .h1 {
   }
 }
 
+.sidebar-menu .header {
+  font-size: 12px;
+  font-weight: bold;
+  color: rgb(0, 0, 0);
+  text-transform: uppercase;
+  padding: 10px 15px;
+  cursor: default;
+  text-align: center;
+}
+
 h2, .h2 {
   font-size: calc(1.3rem + 0.6vw);
 }
