@@ -45,9 +45,9 @@ def create_tables():
     UserModel.create_table()
 
 # Пример GET-эндпоинта: приветствие
-@app.get("/")
-def read_root():
-    return {"message": "Добро пожаловать в FastAPI!"}
+# @app.get("/")
+# def read_root():
+#     return {"message": "Добро пожаловать в FastAPI!"}
 
 # @app.get("/test", response_model=None)
 # async def test(request: Request):    

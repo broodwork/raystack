@@ -19,14 +19,27 @@ def url_for(endpoint, **kwargs):
     return ""
 
 
+@router.get("/", response_model=None)
+async def test(request: Request):    
+    return render(request=request, template_name="pages/index.html", context={
+        "url_for": url_for,
+        "parent": "/",
+        "segment": "test"
+    })
+
+@router.get("/tables", response_model=None)
+async def test(request: Request):    
+    return render(request=request, template_name="pages/tables.html", context={
+        "url_for": url_for,
+        "parent": "/",
+        "segment": "test"
+    })
+
+
 
 @router.get("/test", response_model=None)
 async def test(request: Request):    
-    return render(request=request, template_name="pages/billing.html", context={
-        "config": {
-            "ASSETS_ROOT": "static/assets",
-            "APP_NAME": "Cotlette"
-        },
+    return render(request=request, template_name="pages/profile.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test"
