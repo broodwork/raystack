@@ -3,9 +3,17 @@ from cotlette.shortcuts import render
 
 router = APIRouter()
 
+import os
+def url_for(filename, **kwargs):
+    print('path', filename)
+    return
+
 @router.get("/test", response_model=None)
 async def test(request: Request):    
-    return render(request=request, template_name="blank.html", context={"config": {
-        "ASSETS_ROOT": "static/assets",
-        "APP_NAME": "Cotlette"
-    }})
+    return render(request=request, template_name="pages/index.html", context={
+        "config": {
+            "ASSETS_ROOT": "static/assets",
+            "APP_NAME": "Cotlette"
+        },
+        "url_for": url_for
+    })
