@@ -29,10 +29,7 @@ class Jinja2(BaseEngine):
         if "loader" not in options:
             print('jinja2.FileSystemLoader', jinja2.FileSystemLoader)  # FIXME
             print('self.template_dirs', self.template_dirs)  # FIXME
-
-            print(111111)
             options["loader"] = jinja2.FileSystemLoader(self.template_dirs)
-            print(222222)
         options.setdefault("autoescape", True)
         options.setdefault("auto_reload", settings.DEBUG)
         options.setdefault(

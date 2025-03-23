@@ -1,7 +1,9 @@
-from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from cotlette.models import Model
 from cotlette.fields import CharField, IntegerField
+from cotlette.shortcuts import render
+from fastapi import FastAPI, Request
+
 
 # Создаем экземпляр FastAPI
 app = FastAPI()
@@ -33,12 +35,14 @@ def read_root():
     return {"message": "Добро пожаловать в FastAPI!"}
 
 @app.get("/test", response_model=None)
-async def test():
-    from cotlette.responses import HTMLResponse
-    from cotlette.template.loader import get_template
-    template = get_template("test.html")
-    response = HTMLResponse(template.render())
-    return response
+async def test(request: Request):    
+    return render(request=request, template_name="test.html")
+# async def test():
+#     from cotlette.responses import HTMLResponse
+#     from cotlette.template.loader import get_template
+#     template = get_template("test.html")
+#     response = HTMLResponse(template.render())
+#     return response
 
 # Создание нового пользователя (POST)
 @app.post("/users/", response_model=User)
