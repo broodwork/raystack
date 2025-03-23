@@ -17,8 +17,7 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    # 'home',
-    'apps/home'
+    'apps/admin'
 ]
 
 TEMPLATES = [

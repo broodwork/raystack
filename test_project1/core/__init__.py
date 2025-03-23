@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from cotlette.models import Model
 from cotlette.fields import CharField, IntegerField
-from cotlette.shortcuts import render
 from fastapi import FastAPI, Request
 
 
@@ -14,6 +13,10 @@ logger.error("ERROR")
 
 # Создаем экземпляр FastAPI
 app = FastAPI()
+
+from config.urls import router as urls_router
+app.include_router(urls_router)
+
 
 # Pydantic-модель для создания нового пользователя
 class UserCreate(BaseModel):
@@ -41,9 +44,9 @@ def create_tables():
 def read_root():
     return {"message": "Добро пожаловать в FastAPI!"}
 
-@app.get("/test", response_model=None)
-async def test(request: Request):    
-    return render(request=request, template_name="test.html")
+# @app.get("/test", response_model=None)
+# async def test(request: Request):    
+#     return render(request=request, template_name="test.html")
 # async def test():
 #     from cotlette.responses import HTMLResponse
 #     from cotlette.template.loader import get_template

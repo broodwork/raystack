@@ -3,4 +3,4 @@ from cotlette.apps import AppConfig
 
 class {{ camel_case_app_name }}Config(AppConfig):
     default_auto_field = 'cotlette.db.models.BigAutoField'
-    name = '{{ app_name }}'
+    name = 'apps.{{ app_name }}'
