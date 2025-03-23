@@ -26,7 +26,7 @@
 ### **Install via pip**
 
 ```
-pip install git+https://github.com/ForceFledgling/cotlette.git
+pip install cotlette
 ```
 
 ---
