@@ -83,13 +83,13 @@ async def home():
 ### **Working with the ORM**
 
 ```
-# Создание записи
+# Creating a record
 article = await Article.objects.create(title="Hello World", content="This is a test article.")
 
-# Получение всех записей
+# Fetching all records
 articles = await Article.objects.all()
 
-# Фильтрация записей
+# Filtering records
 published_articles = await Article.objects.filter(published_at__isnull=False)
 ```
 
