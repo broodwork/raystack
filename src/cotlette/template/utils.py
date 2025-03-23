@@ -88,8 +88,6 @@ class EngineHandler:
 
             self._engines[alias] = engine
 
-            print('engine', engine)
-
             return engine
 
     def __iter__(self):
@@ -110,15 +108,8 @@ def get_app_template_dirs(dirname):
     # Immutable return value because it will be cached and shared by callers.
     template_dirs = tuple()
     for app_config in apps.get_app_configs():
-        print('app_config', app_config)
-        print('app_config.path', app_config.path)
-        # if app_config.path and (path := Path(app_config.path) / dirname).is_dir():
-        print('dirname', dirname)
-        
         if app_config.path:
             dir_name = os.path.join(app_config.path, dirname)
-            print('dir_name', dir_name)
             if os.path.isdir(dir_name):
-                print('app_config.path', app_config.path)
                 template_dirs = template_dirs + (dir_name,)
     return template_dirs

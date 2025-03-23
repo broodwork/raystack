@@ -5,6 +5,13 @@ from cotlette.shortcuts import render
 from fastapi import FastAPI, Request
 
 
+# Настройка логирования
+import logging
+logger = logging.getLogger("uvicorn")
+logger.info("STARTED")
+logger.warning("WARNING")
+logger.error("ERROR")
+
 # Создаем экземпляр FastAPI
 app = FastAPI()
 

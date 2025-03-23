@@ -25,6 +25,44 @@ naiveip_re = _lazy_re_compile(
 )
 
 
+# Конфигурация логгера
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "()": "uvicorn.logging.DefaultFormatter",
+            "fmt": "%(levelprefix)s %(asctime)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "use_colors": True,
+        },
+        "access": {
+            "()": "uvicorn.logging.AccessFormatter",
+            "fmt": '%(levelprefix)s %(asctime)s - "%(request_line)s" %(status_code)s',
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "use_colors": True,
+        },
+    },
+    "handlers": {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+    },
+    "loggers": {
+        "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
+        "uvicorn.error": {"level": "INFO"},
+        "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+    },
+}
+
+
 class Command(BaseCommand):
     help = "Starts a lightweight web server for development."
 
@@ -110,8 +148,22 @@ class Command(BaseCommand):
         # self.inner_run(None, **options)
 
         uvicorn.run(
+            # Путь до приложение
             'core:app',
+
+            # Адрес и порт
             host=self.addr or default_addr,
             port=int(self.port) or default_port,
-            reload=options["use_reloader"]
+            
+            # Авторелоад, при изменении py файлов
+            reload=options["use_reloader"],
+            
+            # Уровень логгирования
+            log_level="debug" if settings.DEBUG else "info",
+            
+            # Логи HTTP-запросов включены
+            access_log=True,
+
+            # Конфигурация логгера uvicorn
+            log_config=LOGGING_CONFIG,
         )
