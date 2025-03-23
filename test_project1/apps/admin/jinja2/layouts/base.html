@@ -1,78 +1,65 @@
+
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>
-        Flask Adminator - {% block title %}{% endblock %} | AppSeed
+      Soft UI Dashboard - {% block title %}{% endblock %} | AppSeed
     </title>
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
-      integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link type="text/css" href="{{ config.ASSETS_ROOT }}/css/index.css" rel="stylesheet">
-    
-    <!-- Specific Page CSS goes HERE -->
-    {% block stylesheets %}{% endblock stylesheets %}
+    <!-- Favicon -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', filename = 'assets/img/apple-icon.png' )}}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename = 'assets/img/favicon.png' )}}">
 
-  </head>
-  <body class="app">
-    <!-- @TOC -->
-    <!-- =================================================== -->
-    <!--
-      + @Page Loader
-      + @App Content
-          - #Left Sidebar
-              > $Sidebar Header
-              > $Sidebar Menu
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <!-- Nucleo Icons -->
+    <link href="{{ url_for('static', filename = 'assets/css/nucleo-icons.css' )}}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename = 'assets/css/nucleo-svg.css' )}}" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link href="{{ url_for('static', filename = 'assets/css/nucleo-svg.css' )}}" rel="stylesheet" />
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{{ url_for('static', filename = 'assets/css/soft-ui-dashboard.css' )}}" rel="stylesheet" />
+    <link id="pagestyle_dark" href="{{ url_for('static', filename = 'assets/css/dark-theme-core.css' )}}" rel="stylesheet" />
 
-          - #Main
-              > $Topbar
-              > $App Screen Content
-    -->
+</head>
 
-    <!-- @Page Loader -->
-    <!-- =================================================== -->
-    <div id='loader'>
-      <div class="spinner"></div>
-    </div>
+<body class="g-sidenav-show bg-gray-100">
 
-    <script>
-      window.addEventListener('load', function load() {
-        const loader = document.getElementById('loader');
-        setTimeout(function() {
-          loader.classList.add('fadeOut');
-        }, 300);
-      });
-    </script>
+    {% include "includes/sidebar.html" %}
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        {% include "includes/navigation.html" %} 
+        {% block content %}{% endblock content %}
+    </main>
 
-    <!-- @App Content -->
-    <!-- =================================================== -->
-    <div>
+    <!-- APP Configurator -->
+    {% include "includes/fixed-plugin.html" %} 
 
-        {% include 'includes/sidebar.html' %}    
+<!--   Core JS Files   -->
+{% include 'includes/scripts.html' %}
 
-      <!-- #Main ============================ -->
-      <div class="page-container">
 
-        {% include 'includes/navigation.html' %}
+{% block scripts %}{% endblock scripts %}
 
-        {% block content %}{% endblock content %} 
+<script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+</script>
 
-        {% include 'includes/footer.html' %}
-
-      </div>
-
-    </div>
-
-    {% include 'includes/scripts.html' %}
-
-    <!-- Specific Page JS goes HERE -->
-    {% block javascripts %}{% endblock javascripts %}    
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{{ url_for('static', filename = 'assets/js/soft-ui-dashboard.min.js' )}}"></script>
+<script src="{{ url_for('static', filename = 'assets/js/scripts.js' )}}"></script>
 
 </body>
 </html>
