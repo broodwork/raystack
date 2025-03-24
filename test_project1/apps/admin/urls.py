@@ -38,7 +38,15 @@ async def test(request: Request):
         "segment": "test"
     })
 
-@router.get("/tables", response_model=None)
+@router.get("/accounts_register", response_model=None)
+async def test(request: Request):    
+    return render(request=request, template_name="accounts/register.html", context={
+        "url_for": url_for,
+        "parent": "home",
+        "segment": "test"
+    })
+
+@router.get("/pages_tables", response_model=None)
 async def test(request: Request):    
     return render(request=request, template_name="pages/tables.html", context={
         "url_for": url_for,
@@ -48,9 +56,25 @@ async def test(request: Request):
 
 
 
-@router.get("/test", response_model=None)
+@router.get("/pages_billing", response_model=None)
+async def test(request: Request):    
+    return render(request=request, template_name="pages/billing.html", context={
+        "url_for": url_for,
+        "parent": "/",
+        "segment": "test"
+    })
+
+@router.get("/pages_profile", response_model=None)
 async def test(request: Request):    
     return render(request=request, template_name="pages/profile.html", context={
+        "url_for": url_for,
+        "parent": "/",
+        "segment": "test"
+    })
+
+@router.get("/accounts_password_change", response_model=None)
+async def test(request: Request):    
+    return render(request=request, template_name="accounts/password_change.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test"
