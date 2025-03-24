@@ -23,12 +23,6 @@ TEMPLATES = [
     {
         "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
         "DIRS": ["templates"],
-        "APP_DIRS": True,
-        # "OPTIONS": {
-        #     "context_processors": [
-        #         # "django.template.context_processors.debug",
-        #         # "django.template.context_processors.request",
-        #     ],
-        # },
+        "APP_DIRS": True
     },
 ]

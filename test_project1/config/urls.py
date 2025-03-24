@@ -1,5 +1,10 @@
 from fastapi import APIRouter, Request
-from apps.admin.urls import router as admin_urls
+
 
 router = APIRouter()
-router.include_router(admin_urls, include_in_schema=False)
+
+# Import your routers and include your urls here
+
+# Example:
+# from apps.example.urls import router as example_urls
+# router.include_router(example_urls, include_in_schema=False)
