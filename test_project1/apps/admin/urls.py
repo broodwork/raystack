@@ -1,10 +1,11 @@
+import os
+
 from fastapi import APIRouter, Request
 from cotlette.shortcuts import render
 
+from cotlette.conf import settings
+
 router = APIRouter()
-
-import os
-
 
 
 def url_for(endpoint, **kwargs):
@@ -27,7 +28,8 @@ async def test(request: Request):
     return render(request=request, template_name="pages/index.html", context={
         "url_for": url_for,
         "parent": "home",
-        "segment": "test"
+        "segment": "test",
+        "config": settings,
     })
 
 @router.get("/accounts_login", response_model=None)

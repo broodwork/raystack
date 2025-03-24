@@ -159,6 +159,9 @@ class Settings:
 
         mod = importlib.import_module(self.SETTINGS_MODULE)
 
+        # Передача версии в settings
+        setattr(mod, "VERSION", cotlette.__version__)
+
         tuple_settings = (
             "ALLOWED_HOSTS",
             "INSTALLED_APPS",

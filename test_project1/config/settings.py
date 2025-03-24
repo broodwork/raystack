@@ -1,6 +1,5 @@
 import pathlib
 
-
 # Базовая директория проекта
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
