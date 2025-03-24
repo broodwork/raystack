@@ -1,13 +1,9 @@
 import sqlite3
 
-from cotlette.conf import settings
-
 
 class Database:
     def __init__(self):
-        # Получаем путь к базе данных из настроек
-        db_settings = settings.DATABASES['default']
-        self.db_url = db_settings['NAME']
+        self.db_url = "db.sqlite3"
 
     def connect(self):
         """Создает новое соединение с базой данных."""

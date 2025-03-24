@@ -1,6 +1,5 @@
 import pathlib
 
-
 # Базовая директория проекта
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
@@ -14,6 +13,17 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['*']
 
-DEBUG = False
+DEBUG = True
 
-INSTALLED_APPS = []
+INSTALLED_APPS = [
+    'cotlette.apps.admin',
+    'cotlette.apps.users'
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
+        "DIRS": ["templates"],
+        "APP_DIRS": True
+    },
+]
