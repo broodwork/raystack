@@ -7,7 +7,7 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'test_db.sqlite3',  # Путь к файлу базы данных
+        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к файлу базы данных
     }
 }
 
@@ -16,7 +16,8 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    'apps/admin'
+    'cotlette.apps.admin',
+    'cotlette.apps.users'
 ]
 
 TEMPLATES = [
