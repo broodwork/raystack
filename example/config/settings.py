@@ -17,7 +17,10 @@ DEBUG = True
 
 INSTALLED_APPS = [
     'cotlette.apps.admin',
-    'cotlette.apps.users'
+    'cotlette.apps.users',
+    # 'example.apps.home',
+    'apps.home',
+    # 'example.apps.test'
 ]
 
 TEMPLATES = [
