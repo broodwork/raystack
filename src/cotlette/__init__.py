@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from cotlette.conf import settings
+from cotlette import shortcuts
 
 
 __version__ = "0.0.0"
@@ -20,6 +21,7 @@ class Cotlette(FastAPI):
         super().__init__()
 
         self.settings = settings
+        self.shortcuts = shortcuts
         
         # Подключение роутеров
         self.include_routers()
