@@ -7,6 +7,6 @@ router = APIRouter()
 # Include your routes here.
 
 # Example:
-@router.get("/example")
-def example():
-    return {"message": "text"}
+# @router.get("/example")
+# def example():
+#     return {"message": "text"}
