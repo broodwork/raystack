@@ -16,11 +16,10 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    'cotlette.apps.admin',
+    # 'cotlette.apps.admin',
     'cotlette.apps.users',
-    # 'example.apps.home',
     'apps.home',
-    # 'example.apps.test'
+    'apps.admin',
 ]
 
 TEMPLATES = [
