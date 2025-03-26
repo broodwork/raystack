@@ -3,7 +3,8 @@ Wrapper for loading templates from the filesystem.
 """
 
 from cotlette.core.exceptions import SuspiciousFileOperation
-from cotlette.template import Origin, TemplateDoesNotExist
+from cotlette.template.base import Origin
+from cotlette.template import TemplateDoesNotExist
 from cotlette.utils._os import safe_join
 
 from .base import Loader as BaseLoader

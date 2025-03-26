@@ -22,11 +22,8 @@ class Apps:
         # because it cannot be populated at that point. Other registries must
         # provide a list of installed apps and are populated immediately.
         
-        # FIXME
-        installed_apps = [
-            "cotlette.apps.admin",
-            "cotlette.apps.users"
-        ]  # TODO !!!!!!
+        from cotlette.conf import settings
+        installed_apps = settings.INSTALLED_APPS
         
         if installed_apps is None and hasattr(sys.modules[__name__], "apps"):
             raise RuntimeError("You must supply an installed_apps argument.")

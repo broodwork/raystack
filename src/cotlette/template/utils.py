@@ -106,6 +106,7 @@ def get_app_template_dirs(dirname):
     installed applications.
     """
     # Immutable return value because it will be cached and shared by callers.
+
     template_dirs = tuple()
     for app_config in apps.get_app_configs():
         if app_config.path:

@@ -1,4 +1,5 @@
-from cotlette.template import Template, TemplateDoesNotExist
+from cotlette.template.base import Template
+from cotlette.template import TemplateDoesNotExist
 
 
 class Loader:

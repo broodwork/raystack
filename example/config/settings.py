@@ -18,14 +18,17 @@ DEBUG = True
 INSTALLED_APPS = [
     # 'cotlette.apps.admin',
     'cotlette.apps.users',
-    'apps.home',
+    # 'apps.home',
     'apps.admin',
 ]
 
 TEMPLATES = [
     {
         "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
-        "DIRS": ["templates"],
+        "DIRS": [
+            "templates",
+            "jinja2"
+        ],
         "APP_DIRS": True
     },
 ]

@@ -1,3 +1,6 @@
+__version__ = "0.0.0"
+
+
 import os
 import logging
 # import importlib.util
@@ -10,7 +13,6 @@ from cotlette.conf import settings
 from cotlette import shortcuts
 
 
-__version__ = "0.0.0"
 
 logger = logging.getLogger("uvicorn")
 
@@ -38,6 +40,11 @@ class Cotlette(FastAPI):
         # from cotlette.urls import urls_router, api_router
         # self.include_router(urls_router)
         # self.include_router(api_router, prefix="/api", tags=["common"],)
+
+        for template in self.settings.TEMPLATES:
+            template_dirs = template.get("DIRS")
+            template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
+        print('template_dirs', template_dirs)
 
         # Проверка и импорт установленных приложений
         logger.info(f"Loading apps and routers:")

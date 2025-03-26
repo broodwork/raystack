@@ -27,7 +27,7 @@ def url_for(endpoint, **kwargs):
 async def test(request: Request):    
     return request.app.shortcuts.render(request=request, template_name="pages/index.html", context={
         "url_for": url_for,
-        "parent": "home",
+        "parent": "home1",
         "segment": "test",
         "config": request.app.settings,
     })
