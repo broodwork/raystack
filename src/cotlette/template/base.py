@@ -151,7 +151,7 @@ class Template:
         self.origin = origin
         self.engine = engine
         self.source = str(template_string)  # May be lazy.
-        self.nodelist = self.compile_nodelist()
+        # self.nodelist = self.compile_nodelist()
 
     def __repr__(self):
         return '<%s template_string="%s...">' % (
@@ -159,18 +159,18 @@ class Template:
             self.source[:20].replace("\n", ""),
         )
 
-    def _render(self, context):
-        return self.nodelist.render(context)
+    # def _render(self, context):
+    #     return self.nodelist.render(context)
 
-    def render(self, context):
-        "Display stage -- can be called many times"
-        with context.render_context.push_state(self):
-            if context.template is None:
-                with context.bind_template(self):
-                    context.template_name = self.name
-                    return self._render(context)
-            else:
-                return self._render(context)
+    # def render(self, context):
+    #     "Display stage -- can be called many times"
+    #     with context.render_context.push_state(self):
+    #         if context.template is None:
+    #             with context.bind_template(self):
+    #                 context.template_name = self.name
+    #                 return self._render(context)
+    #         else:
+    #             return self._render(context)
 
     def compile_nodelist(self):
         """
@@ -965,31 +965,31 @@ class Node:
         """
         pass
 
-    def render_annotated(self, context):
-        """
-        Render the node. If debug is True and an exception occurs during
-        rendering, the exception is annotated with contextual line information
-        where it occurred in the template. For internal usage this method is
-        preferred over using the render method directly.
-        """
-        try:
-            return self.render(context)
-        except Exception as e:
-            if context.template.engine.debug:
-                # Store the actual node that caused the exception.
-                if not hasattr(e, "_culprit_node"):
-                    e._culprit_node = self
-                if (
-                    not hasattr(e, "template_debug")
-                    and context.render_context.template.origin == e._culprit_node.origin
-                ):
-                    e.template_debug = (
-                        context.render_context.template.get_exception_info(
-                            e,
-                            e._culprit_node.token,
-                        )
-                    )
-            raise
+    # def render_annotated(self, context):
+    #     """
+    #     Render the node. If debug is True and an exception occurs during
+    #     rendering, the exception is annotated with contextual line information
+    #     where it occurred in the template. For internal usage this method is
+    #     preferred over using the render method directly.
+    #     """
+    #     try:
+    #         return self.render(context)
+    #     except Exception as e:
+    #         if context.template.engine.debug:
+    #             # Store the actual node that caused the exception.
+    #             if not hasattr(e, "_culprit_node"):
+    #                 e._culprit_node = self
+    #             if (
+    #                 not hasattr(e, "template_debug")
+    #                 and context.render_context.template.origin == e._culprit_node.origin
+    #             ):
+    #                 e.template_debug = (
+    #                     context.render_context.template.get_exception_info(
+    #                         e,
+    #                         e._culprit_node.token,
+    #                     )
+    #                 )
+    #         raise
 
     def get_nodes_by_type(self, nodetype):
         """

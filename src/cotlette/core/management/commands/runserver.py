@@ -38,7 +38,7 @@ LOGGING_CONFIG = {
         },
         "access": {
             "()": "uvicorn.logging.AccessFormatter",
-            "fmt": '%(levelprefix)s %(asctime)s - "%(request_line)s" %(status_code)s - Client IP: %(client_addr)s',
+            "fmt": '%(levelprefix)s %(asctime)s - %(client_addr)s - "%(request_line)s" %(status_code)s',
             "datefmt": "%Y-%m-%d %H:%M:%S",
             "use_colors": True,
         },

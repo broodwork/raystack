@@ -7,7 +7,7 @@ from cotlette.utils.module_loading import import_string
 from .base import Template
 from .context import Context, _builtin_context_processors
 from .exceptions import TemplateDoesNotExist
-from .library import import_library
+# from .library import import_library
 
 
 class Engine:
@@ -58,9 +58,9 @@ class Engine:
         self.string_if_invalid = string_if_invalid
         self.file_charset = file_charset
         self.libraries = libraries
-        self.template_libraries = self.get_template_libraries(libraries)
+        # self.template_libraries = self.get_template_libraries(libraries)
         self.builtins = self.default_builtins + builtins
-        self.template_builtins = self.get_template_builtins(self.builtins)
+        # self.template_builtins = self.get_template_builtins(self.builtins)
 
     def __repr__(self):
         return (
@@ -117,14 +117,14 @@ class Engine:
         context_processors += tuple(self.context_processors)
         return tuple(import_string(path) for path in context_processors)
 
-    def get_template_builtins(self, builtins):
-        return [import_library(x) for x in builtins]
+    # def get_template_builtins(self, builtins):
+    #     return [import_library(x) for x in builtins]
 
-    def get_template_libraries(self, libraries):
-        loaded = {}
-        for name, path in libraries.items():
-            loaded[name] = import_library(path)
-        return loaded
+    # def get_template_libraries(self, libraries):
+    #     loaded = {}
+    #     for name, path in libraries.items():
+    #         loaded[name] = import_library(path)
+    #     return loaded
 
     @cached_property
     def template_loaders(self):

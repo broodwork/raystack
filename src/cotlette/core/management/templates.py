@@ -201,7 +201,7 @@ class TemplateCommand(BaseCommand):
                     with open(old_path, encoding="utf-8") as template_file:
                         content = template_file.read()
                     template = Engine().from_string(content)
-                    content = template.render(context)
+                    # content = template.render(context)
                     with open(new_path, "w", encoding="utf-8") as new_file:
                         new_file.write(content)
                 else:

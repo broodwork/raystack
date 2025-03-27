@@ -23,7 +23,14 @@ class Apps:
         # provide a list of installed apps and are populated immediately.
         
         from cotlette.conf import settings
-        installed_apps = settings.INSTALLED_APPS
+        
+        # Используется в командах runserver, startproject, startapp
+        try:
+            installed_apps = settings.INSTALLED_APPS
+        except Exception:
+            settings.configure()
+            installed_apps = settings.INSTALLED_APPS
+        
         
         if installed_apps is None and hasattr(sys.modules[__name__], "apps"):
             raise RuntimeError("You must supply an installed_apps argument.")
