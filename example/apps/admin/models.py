@@ -1,3 +1,3 @@
-from cotlette.db import models
+# from cotlette.db import models
 
 # Create your models here.

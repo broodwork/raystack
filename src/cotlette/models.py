@@ -1,6 +1,6 @@
 from .fields import CharField, IntegerField, Field
 from .manager import Manager
-from .database import db
+from cotlette.core.database.base import db
 
 class ModelMeta(type):
     def __new__(cls, name, bases, attrs):

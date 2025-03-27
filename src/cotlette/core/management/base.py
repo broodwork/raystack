@@ -14,7 +14,7 @@ import cotlette
 # from cotlette.core import checks
 from cotlette.core.exceptions import ImproperlyConfigured
 from cotlette.core.management.color import color_style, no_style
-from cotlette.db import DEFAULT_DB_ALIAS, connections
+# from cotlette.db import DEFAULT_DB_ALIAS, connections
 
 ALL_CHECKS = "__all__"
 
@@ -425,13 +425,6 @@ class BaseCommand:
             else:
                 self.stderr.write("%s: %s" % (e.__class__.__name__, e))
             sys.exit(e.returncode)
-        finally:
-            try:
-                connections.close_all()
-            except ImproperlyConfigured:
-                # Ignore if connections aren't setup at this point (e.g. no
-                # configured settings).
-                pass
 
     def execute(self, *args, **options):
         """

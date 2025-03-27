@@ -1,4 +1,4 @@
-from .database import db
+from cotlette.core.database.base import db
 
 class QuerySet:
     def __init__(self, model_class):

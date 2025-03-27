@@ -9,7 +9,7 @@ import uvicorn
 from cotlette.conf import settings
 from cotlette.core.management.base import BaseCommand, CommandError
 # from cotlette.core.servers.basehttp import WSGIServer, get_internal_wsgi_application, run
-from cotlette.db import connections
+# from cotlette.db import connections
 # from cotlette.utils import autoreload
 from cotlette.utils.regex_helper import _lazy_re_compile
 from cotlette.utils.version import get_docs_version
