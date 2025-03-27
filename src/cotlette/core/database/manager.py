@@ -1,4 +1,4 @@
-from .query import QuerySet
+from cotlette.core.database.query import QuerySet
 
 class Manager:
     def __init__(self, model_class):

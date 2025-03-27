@@ -1,6 +1,6 @@
-from .fields import CharField, IntegerField, Field
-from .manager import Manager
-from cotlette.core.database.base import db
+from cotlette.core.database.fields import CharField, IntegerField, Field
+from cotlette.core.database.manager import Manager
+from cotlette.core.database.backends.sqlite3 import db
 
 class ModelMeta(type):
     def __new__(cls, name, bases, attrs):
