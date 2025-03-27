@@ -5,15 +5,16 @@ for convenience's sake.
 """
 
 from cotlette.responses import HTMLResponse
-from cotlette.template import loader
 
 
-def render(
+def render_template(
     request, template_name, context=None, content_type=None, status=None, using=None
 ):
     """
     Return an HttpResponse whose content is filled with the result of calling
     cotlette.template.loader.render_to_string() with the passed arguments.
     """
+    from cotlette.template import loader
+    
     content = loader.render_to_string(template_name, context, request, using=using)
     return HTMLResponse(content)

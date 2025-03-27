@@ -3,7 +3,7 @@ import os
 from fastapi import APIRouter, Request
 
 # from cotlette.conf import settings
-# from cotlette.shortcuts import render
+from cotlette.shortcuts import render_template
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ def url_for(endpoint, **kwargs):
 
 @router.get("/", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="pages/index.html", context={
+    return render_template(request=request, template_name="pages/index.html", context={
         "url_for": url_for,
         "parent": "home1",
         "segment": "test",
@@ -34,7 +34,7 @@ async def test(request: Request):
 
 @router.get("/accounts_login", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="accounts/login.html", context={
+    return render_template(request=request, template_name="accounts/login.html", context={
         "url_for": url_for,
         "parent": "home",
         "segment": "test",
@@ -43,7 +43,7 @@ async def test(request: Request):
 
 @router.get("/accounts_register", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="accounts/register.html", context={
+    return render_template(request=request, template_name="accounts/register.html", context={
         "url_for": url_for,
         "parent": "home",
         "segment": "test",
@@ -52,7 +52,7 @@ async def test(request: Request):
 
 @router.get("/pages_tables", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="pages/tables.html", context={
+    return render_template(request=request, template_name="pages/tables.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test",
@@ -63,7 +63,7 @@ async def test(request: Request):
 
 @router.get("/pages_billing", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="pages/billing.html", context={
+    return render_template(request=request, template_name="pages/billing.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test",
@@ -72,7 +72,7 @@ async def test(request: Request):
 
 @router.get("/pages_profile", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="pages/profile.html", context={
+    return render_template(request=request, template_name="pages/profile.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test",
@@ -81,7 +81,7 @@ async def test(request: Request):
 
 @router.get("/accounts_password_change", response_model=None)
 async def test(request: Request):    
-    return request.app.shortcuts.render(request=request, template_name="accounts/password_change.html", context={
+    return render_template(request=request, template_name="accounts/password_change.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test",
