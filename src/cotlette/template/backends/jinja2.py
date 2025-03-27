@@ -8,7 +8,6 @@ from cotlette.utils.functional import cached_property
 from cotlette.utils.module_loading import import_string
 
 from .base import BaseEngine
-# from .utils import csrf_input_lazy, csrf_token_lazy
 
 
 class Jinja2(BaseEngine):
@@ -22,22 +21,13 @@ class Jinja2(BaseEngine):
 
         self.context_processors = options.pop("context_processors", [])
 
-        
         environment = options.pop("environment", "jinja2.Environment")
         environment_cls = import_string(environment)
         
         if "loader" not in options:
             options["loader"] = jinja2.FileSystemLoader(self.template_dirs)
-        options.setdefault("autoescape", True)
-        options.setdefault("auto_reload", settings.DEBUG)
-        options.setdefault(
-            "undefined", jinja2.DebugUndefined if settings.DEBUG else jinja2.Undefined
-        )
 
         self.env = environment_cls(**options)
-
-    # def from_string(self, template_code):
-    #     return Template(self.env.from_string(template_code), self)
 
     def get_template(self, template_name):
         try:
@@ -46,7 +36,6 @@ class Jinja2(BaseEngine):
             raise TemplateDoesNotExist(exc.name, backend=self) from exc
         except jinja2.TemplateSyntaxError as exc:
             new = TemplateSyntaxError(exc.args)
-            new.template_debug = get_exception_info(exc)
             raise new from exc
 
     @cached_property
@@ -74,7 +63,6 @@ class Template:
             return self.template.render(context)
         except jinja2.TemplateSyntaxError as exc:
             new = TemplateSyntaxError(exc.args)
-            new.template_debug = get_exception_info(exc)
             raise new from exc
 
 
@@ -87,39 +75,3 @@ class Origin:
     def __init__(self, name, template_name):
         self.name = name
         self.template_name = template_name
-
-
-def get_exception_info(exception):
-    """
-    Format exception information for display on the debug page using the
-    structure described in the template API documentation.
-    """
-    context_lines = 10
-    lineno = exception.lineno
-    source = exception.source
-    if source is None:
-        exception_file = Path(exception.filename)
-        if exception_file.exists():
-            source = exception_file.read_text()
-    if source is not None:
-        lines = list(enumerate(source.strip().split("\n"), start=1))
-        during = lines[lineno - 1][1]
-        total = len(lines)
-        top = max(0, lineno - context_lines - 1)
-        bottom = min(total, lineno + context_lines)
-    else:
-        during = ""
-        lines = []
-        total = top = bottom = 0
-    return {
-        "name": exception.filename,
-        "message": exception.message,
-        "source_lines": lines[top:bottom],
-        "line": lineno,
-        "before": "",
-        "during": during,
-        "after": "",
-        "total": total,
-        "top": top,
-        "bottom": bottom,
-    }

@@ -6,7 +6,6 @@ from cotlette.utils.functional import cached_property
 
 class BaseEngine:
     # Core methods: engines have to provide their own implementation
-    #               (except for from_string which is optional).
 
     def __init__(self, params):
         """
@@ -23,26 +22,6 @@ class BaseEngine:
                 "Unknown parameters: {}".format(", ".join(params))
             )
 
-    def check(self, **kwargs):
-        return []
-
-    @property
-    def app_dirname(self):
-        raise ImproperlyConfigured(
-            "{} doesn't support loading templates from installed "
-            "applications.".format(self.__class__.__name__)
-        )
-
-    def from_string(self, template_code):
-        """
-        Create and return a template for the given source code.
-
-        This method is optional.
-        """
-        raise NotImplementedError(
-            "subclasses of BaseEngine should provide a from_string() method"
-        )
-
     def get_template(self, template_name):
         """
         Load and return a template for the given name.
@@ -52,9 +31,6 @@ class BaseEngine:
         raise NotImplementedError(
             "subclasses of BaseEngine must provide a get_template() method"
         )
-
-    # Utility methods: they are provided to minimize code duplication and
-    #                  security issues in third-party backends.
 
     @cached_property
     def template_dirs(self):
@@ -66,18 +42,3 @@ class BaseEngine:
         if self.app_dirs:
             result += get_app_template_dirs(self.app_dirname)
         return result
-
-    def iter_template_filenames(self, template_name):
-        """
-        Iterate over candidate files for template_name.
-
-        Ignore files that don't lie inside configured template dirs to avoid
-        directory traversal attacks.
-        """
-        for template_dir in self.template_dirs:
-            try:
-                yield safe_join(template_dir, template_name)
-            except SuspiciousFileOperation:
-                # The joined path was located outside of this template_dir
-                # (it might be inside another one, so this isn't fatal).
-                pass
