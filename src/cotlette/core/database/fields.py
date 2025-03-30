@@ -11,3 +11,9 @@ class CharField(Field):
 class IntegerField(Field):
     def __init__(self, **kwargs):
         super().__init__("INTEGER", **kwargs)
+
+class AutoField(Field):
+    def __init__(self, **kwargs):
+        # Устанавливаем тип поля как INTEGER и делаем его первичным ключом
+        # super().__init__("INTEGER", primary_key=True, **kwargs)
+        super().__init__("INTEGER", **kwargs)

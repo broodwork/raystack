@@ -11,6 +11,8 @@ dependencies = [
     "fastapi",
     "asgiref",
     "jinja2",
+    "bcrypt",
+    "python-jose",
 ]
 
 authors = [

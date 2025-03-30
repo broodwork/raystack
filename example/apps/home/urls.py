@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from cotlette.shortcuts import render
+from cotlette.shortcuts import render_template
 
 
 router = APIRouter()
@@ -8,6 +8,6 @@ router = APIRouter()
 # Include your routes here.
 
 # Example:
-@router.get("/example_url")
+@router.get("/")
 async def example(request: Request):    
-    return render(request=request, template_name="example/index.html", context={})
+    return render_template(request=request, template_name="home.html", context={})

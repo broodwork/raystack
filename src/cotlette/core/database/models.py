@@ -34,3 +34,44 @@ class Model(metaclass=ModelMeta):
         query = f"CREATE TABLE IF NOT EXISTS {cls.__name__} ({', '.join(columns)})"
         db.execute(query)  # Выполняем запрос на создание таблицы
         db.commit()        # Фиксируем изменения
+    
+    def save(self):
+        """
+        Сохраняет текущий объект в базе данных.
+        Если объект уже существует (имеет id), выполняется UPDATE.
+        Если объект новый (id отсутствует или равен None), выполняется INSERT.
+        """
+        # Получаем значения полей объекта
+        data = {field: getattr(self, field, None) for field in self._fields}
+
+        # Преобразуем значения в поддерживаемые SQLite типы
+        def convert_value(value):
+            if isinstance(value, (int, float, str, bytes, type(None))):
+                return value
+            elif hasattr(value, '__str__'):
+                return str(value)  # Преобразуем объект в строку, если это возможно
+            else:
+                raise ValueError(f"Unsupported type for database: {type(value)}")
+
+        data = {key: convert_value(value) for key, value in data.items()}
+
+        # Проверяем, существует ли объект в базе данных
+        if hasattr(self, 'id') and self.id is not None:
+            # Обновляем существующую запись (UPDATE)
+            fields = ', '.join([f"{key}=?" for key in data if key != 'id'])
+            values = tuple(data[key] for key in data if key != 'id') + (self.id,)
+            update_query = f"UPDATE {self.__class__.__name__} SET {fields} WHERE id=?"
+            db.execute(update_query, values)
+            db.commit()
+        else:
+            # Создаем новую запись (INSERT)
+            fields = ', '.join([key for key in data if key != 'id'])
+            placeholders = ', '.join(['?'] * len(data))
+            values = tuple(data[key] for key in data if key != 'id')
+
+            insert_query = f"INSERT INTO {self.__class__.__name__} ({fields}) VALUES ({placeholders})"
+            db.execute(insert_query, values)
+            db.commit()
+
+            # Получаем id созданной записи
+            self.id = db.lastrowid
