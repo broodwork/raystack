@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Page</title>
+</head>
+<body>
+    <h1>Welcome to the Protected Page</h1>
+    <button id="fetch-data">Fetch Protected Data</button>
+
+    <script>
+        const accessToken = localStorage.getItem('accessToken');
+
+        document.getElementById('fetch-data').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/admin/protected', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(`Server Response: ${JSON.stringify(data)}`);
+                } else {
+                    alert(`Error: ${response.status} - ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while fetching data.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -4,6 +4,12 @@
 
 {% block content %}
 
+    {% if user_email %}
+      <p>Welcome, {{ user_email }}!</p>
+    {% else %}
+      <p>You are not authorized.</p>
+    {% endif %}
+
     <div class="container-fluid py-4">
 
       <div class="row">
@@ -631,7 +637,35 @@
 
 <!-- Specific JS goes HERE --> 
 {% block scripts %}
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const token = localStorage.getItem('accessToken'); // Получаем токен из localStorage
 
+        if (!token) {
+            alert("You are not authorized. Please log in.");
+            window.location.href = '/login'; // Перенаправляем на страницу логина
+            return;
+        }
+
+        try {
+            const response = await fetch('/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Добавляем токен в заголовок
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load the page');
+            }
+
+            const html = await response.text();
+            document.body.innerHTML = html; // Обновляем страницу
+        } catch (error) {
+            alert(error.message || 'An error occurred while loading the page.');
+        }
+    });
+  </script>
   <script src="{{ url_for('static', filename = 'assets/js/plugins/chartjs.min.js' )}}"></script>
   <script>
     var ctx = document.getElementById("chart-bars").getContext("2d");
