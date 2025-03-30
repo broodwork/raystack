@@ -5,11 +5,9 @@ from pydantic import BaseModel
 from jose import jwt, JWTError
 from datetime import timedelta
 from .models import UserModel, UserCreate, User
-from .utils import hash_password, create_access_token
+from .utils import hash_password, create_access_token, verify_password
 
-# Конфигурация JWT
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter()
@@ -32,9 +30,19 @@ class TokenData(BaseModel):
 # Эндпоинт для аутентификации пользователя
 @router.post("/login/", response_model=Token)
 def login_for_access_token(user_login: UserLogin):
+    
+    users = UserModel.objects.all()
+    for user in users:
+        print('111 user.__dict__', user.__dict__)
+
     # Ищем пользователя по email
     user = UserModel.objects.filter(email=user_login.email).first()
-    if not user or not UserModel.verify_password(user_login.password, user.password_hash):
+    print('user_login.password', user_login.password)
+    print('user', user)
+    print('user.__dict__', user.__dict__)
+    print('user.password_hash', user.password_hash)
+
+    if not user or not verify_password(user_login.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

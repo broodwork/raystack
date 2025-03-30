@@ -1,6 +1,10 @@
 import bcrypt
 from typing import Union
 from datetime import datetime, timedelta
+import jwt
+
+from config.settings import SECRET_KEY
+ALGORITHM = "HS256"
 
 
 # Хешируем пароль с использованием bcrypt

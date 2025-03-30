@@ -33,3 +33,5 @@ TEMPLATES = [
         "APP_DIRS": True
     },
 ]
+
+SECRET_KEY = "insecure-"
