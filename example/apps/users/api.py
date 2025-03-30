@@ -3,9 +3,9 @@ from typing import Union
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from datetime import timedelta
 from .models import UserModel, UserCreate, User
-from .utils import hash_password
+from .utils import hash_password, create_access_token
 
 # Конфигурация JWT
 SECRET_KEY = "your_secret_key"
@@ -28,16 +28,6 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Union[str] = None
 
-# Функция для создания JWT-токена
-def create_access_token(data: dict, expires_delta: Union[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 # Эндпоинт для аутентификации пользователя
 @router.post("/login/", response_model=Token)
