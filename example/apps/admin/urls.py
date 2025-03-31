@@ -54,32 +54,7 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
-
-# @router.get("/accounts_login", response_model=None)
-# async def test(request: Request):    
-#     return render_template(request=request, template_name="accounts/login.html", context={
-#         "url_for": url_for,
-#         "parent": "home",
-#         "segment": "test",
-#         "config": request.app.settings,
-#     })
-
-# @app.post("/logout")
-# def logout():
-#     response = JSONResponse(content={"message": "Logout successful"})
-#     response.delete_cookie("access_token")
-#     return response
-
-# @router.get("/accounts_register", response_model=None)
-# async def test(request: Request):    
-#     return render_template(request=request, template_name="accounts/register.html", context={
-#         "url_for": url_for,
-#         "parent": "home",
-#         "segment": "test",
-#         "config": request.app.settings,
-#     })
-
-@router.get("/pages_tables", response_model=None)
+@router.get("/tables", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/tables.html", context={
         "url_for": url_for,
@@ -88,9 +63,7 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
-
-
-@router.get("/pages_billing", response_model=None)
+@router.get("/billing", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/billing.html", context={
         "url_for": url_for,
@@ -99,7 +72,7 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
-@router.get("/pages_profile", response_model=None)
+@router.get("/profile", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/profile.html", context={
         "url_for": url_for,
@@ -107,12 +80,3 @@ async def test(request: Request):
         "segment": "test",
         "config": request.app.settings,
     })
-
-# @router.get("/accounts_password_change", response_model=None)
-# async def test(request: Request):    
-#     return render_template(request=request, template_name="accounts/password_change.html", context={
-#         "url_for": url_for,
-#         "parent": "/",
-#         "segment": "test",
-#         "config": request.app.settings,
-#     })
