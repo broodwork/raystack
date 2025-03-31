@@ -40,12 +40,6 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
-@router.post("/logout", response_model=None)
-def logout():
-    response = JSONResponse(content={"message": "Logout successful"})
-    response.delete_cookie("access_token")
-    return response
-
 @router.get("/register", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="accounts/register.html", context={

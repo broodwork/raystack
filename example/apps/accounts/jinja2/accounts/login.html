@@ -52,6 +52,32 @@
   {% include 'includes/footer-fullscreen.html' %}
 
   <!-- JavaScript для отправки запроса -->
+
+  <script>
+      document.addEventListener('DOMContentLoaded', async function () {
+          try {
+              // Отправляем POST-запрос на разлогирование
+              const response = await fetch('/api/users/logout/', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+              });
+
+              if (!response.ok) {
+                  console.error('Failed to logout:', response.statusText);
+              } else {
+                  console.log('Logout request sent successfully.');
+              }
+
+              // Удаляем токен из localStorage (если он там есть)
+              localStorage.removeItem('accessToken');
+          } catch (error) {
+              console.error('An error occurred during logout:', error.message);
+          }
+      });
+  </script>
+
   <script>
     document.getElementById('loginForm').addEventListener('submit', async function (event) {
       event.preventDefault();
@@ -63,7 +89,7 @@
           return;
       }
       try {
-          const response = await fetch('/api/login2/', {
+          const response = await fetch('/api/users/login/', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -79,7 +105,6 @@
           }
 
           const data = await response.json();
-          localStorage.setItem('accessToken', data.access_token);
           window.location.href = '/admin';
       } catch (error) {
           alert(error.message || 'An error occurred during login.');
