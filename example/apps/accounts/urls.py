@@ -23,20 +23,6 @@ def url_for(endpoint, **kwargs):
     return path
 
 
-# @router.get("/", response_model=None)
-# async def test(request: Request):    
-#     return render_template(request=request, template_name="pages/index.html", context={
-#         "url_for": url_for,
-#         "parent": "home1",
-#         "segment": "test",
-#         "config": request.app.settings,
-#     })
-
-
-# TODO
-
-
-
 from fastapi import Depends, HTTPException, status
 from jose import jwt, JWTError
 
@@ -45,7 +31,7 @@ from config.settings import SECRET_KEY, ALGORITHM
 from fastapi.security import OAuth2PasswordBearer
 
 
-@router.get("/accounts_login", response_model=None)
+@router.get("/login", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="accounts/login.html", context={
         "url_for": url_for,
@@ -54,13 +40,13 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
-@app.post("/accounts_logout", response_model=None)
+@router.post("/logout", response_model=None)
 def logout():
     response = JSONResponse(content={"message": "Logout successful"})
     response.delete_cookie("access_token")
     return response
 
-@router.get("/accounts_register", response_model=None)
+@router.get("/register", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="accounts/register.html", context={
         "url_for": url_for,
@@ -69,7 +55,7 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
-@router.get("/accounts_password_change", response_model=None)
+@router.get("/password_change", response_model=None)
 async def test(request: Request):    
     return render_template(request=request, template_name="accounts/password_change.html", context={
         "url_for": url_for,

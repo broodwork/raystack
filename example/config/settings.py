@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'apps.home',
     'apps.admin',
     'apps.users',
+    'apps.accounts',
 ]
 
 TEMPLATES = [

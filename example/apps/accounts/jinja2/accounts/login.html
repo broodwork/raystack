@@ -80,7 +80,7 @@
 
           const data = await response.json();
           localStorage.setItem('accessToken', data.access_token);
-          // window.location.href = '/admin';
+          window.location.href = '/admin';
       } catch (error) {
           alert(error.message || 'An error occurred during login.');
       }
