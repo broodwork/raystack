@@ -35,3 +35,4 @@ TEMPLATES = [
 ]
 
 SECRET_KEY = "insecure-"
+ALGORITHM = "HS256"

@@ -37,10 +37,6 @@ def login_for_access_token(user_login: UserLogin):
 
     # Ищем пользователя по email
     user = UserModel.objects.filter(email=user_login.email).first()
-    print('user_login.password', user_login.password)
-    print('user', user)
-    print('user.__dict__', user.__dict__)
-    print('user.password_hash', user.password_hash)
 
     if not user or not verify_password(user_login.password, user.password_hash):
         raise HTTPException(
@@ -51,6 +47,51 @@ def login_for_access_token(user_login: UserLogin):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+# TODO
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import JSONResponse
+from datetime import timedelta, datetime
+from jose import JWTError, jwt
+# Настройки для JWT
+SECRET_KEY = "your-secret-key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Эндпоинт для аутентификации пользователя
+@router.post("/login2/", response_model=Token)
+def login_for_access_token(user_login: UserLogin):
+    
+    # Ищем пользователя по email
+    user = UserModel.objects.filter(email=user_login.email).first()
+
+    if not user or not verify_password(user_login.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    # Создаем cookie с токеном
+    response = JSONResponse(content={"message": "Login successful"})
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,  # Защищает от доступа через JavaScript
+        # secure=True,    # Требует HTTPS (уберите для тестирования на localhost)
+        samesite="lax", # Защита от CSRF
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
+    return response
+
+
+
+
 
 # Создание таблицы при запуске приложения
 @router.on_event("startup")
