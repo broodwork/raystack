@@ -28,15 +28,15 @@ cotlette runserver
 
 Open your browser and navigate to [http://127.0.0.1:8000](http://127.0.0.1:8000/).
 
-![/](.docs/img/first_page.jpg)
+![/](https://github.com/ForceFledgling/cotlette/blob/main/.docs/img/first_page.jpg)
 
 Login page:
 
-![/accounts/login](.docs/img/login_page.jpg)
+![/accounts/login](https://github.com/ForceFledgling/cotlette/blob/main/.docs/img/login_page.jpg)
 
 Admin page:
 
-![/admin](.docs/img/admin_page.jpg)
+![/admin](https://github.com/ForceFledgling/cotlette/blob/main/.docs/img/admin_page.jpg)
 
 ---
 
