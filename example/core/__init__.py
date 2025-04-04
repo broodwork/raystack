@@ -10,9 +10,17 @@ from starlette.authentication import (
 )
 from starlette.middleware.sessions import SessionMiddleware
 
+from cotlette.shortcuts import render_template
+
 
 app = Cotlette()
 
+
+@app.exception_handler(403)
+async def not_found(request, exc):
+    context = {"request": request}
+    # return templates.TemplateResponse("403.html", context, status_code=404)
+    return render_template(request=request, template_name="401.html", context={})
 
 # Класс для аутентификации
 class userAuthentication(AuthenticationBackend):

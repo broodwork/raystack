@@ -71,7 +71,7 @@
               }
 
               // Удаляем токен из localStorage (если он там есть)
-              localStorage.removeItem('accessToken');
+              localStorage.removeItem('jwt');
           } catch (error) {
               console.error('An error occurred during logout:', error.message);
           }
@@ -105,12 +105,11 @@
             }
 
             // Получаем URL для перенаправления из заголовков ответа
-            const redirectUrl = response.headers.get('Location');
-            if (redirectUrl) {
-                window.location.href = redirectUrl; // Выполняем перенаправление
-            } else {
-                console.error('Redirect URL not found in response headers.');
-            }
+            if (response.url) {
+                window.location.href = response.url; // Выполняем перенаправление
+              } else {
+                  console.error('Redirect URL not found in response body.');
+              }
         } catch (error) {
             alert(error.message || 'An error occurred during login.');
         }

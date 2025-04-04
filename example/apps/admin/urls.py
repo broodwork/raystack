@@ -44,8 +44,10 @@ from config.settings import SECRET_KEY, ALGORITHM
 
 from fastapi.security import OAuth2PasswordBearer
 
+from starlette.authentication import requires
 
 @router.get("/", response_model=None)
+@requires('user_auth')
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/index.html", context={
         "url_for": url_for,
@@ -55,6 +57,7 @@ async def test(request: Request):
     })
 
 @router.get("/tables", response_model=None)
+@requires('user_auth')
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/tables.html", context={
         "url_for": url_for,
@@ -64,6 +67,7 @@ async def test(request: Request):
     })
 
 @router.get("/billing", response_model=None)
+@requires('user_auth')
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/billing.html", context={
         "url_for": url_for,
@@ -73,6 +77,7 @@ async def test(request: Request):
     })
 
 @router.get("/profile", response_model=None)
+@requires('user_auth')
 async def test(request: Request):    
     return render_template(request=request, template_name="pages/profile.html", context={
         "url_for": url_for,

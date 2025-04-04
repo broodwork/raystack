@@ -134,7 +134,7 @@ async def login_user(request):
 @router.post("/logout", response_model=None)
 def logout():
     response = JSONResponse(content={"message": "Logout successful"})
-    response.delete_cookie("access_token")
+    response.delete_cookie("jwt")
     return response
 
 
