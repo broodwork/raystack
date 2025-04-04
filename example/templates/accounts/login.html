@@ -80,36 +80,41 @@
 
   <script>
     document.getElementById('loginForm').addEventListener('submit', async function (event) {
-      event.preventDefault();
+        event.preventDefault();
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      if (!email || !password) {
-          alert("Please fill in both email and password fields.");
-          return;
-      }
-      try {
-          const response = await fetch('/api/users/login/', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  email: email,
-                  password: password
-              }),
-          });
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-          if (!response.ok) {
-              throw new Error('Incorrect email or password');
-          }
+        if (!email || !password) {
+            alert("Please fill in both email and password fields.");
+            return;
+        }
 
-          const data = await response.json();
-          window.location.href = '/admin';
-      } catch (error) {
-          alert(error.message || 'An error occurred during login.');
-      }
-  });
+        try {
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('password', password);
+
+            const response = await fetch('/api/users/login/', {
+                method: 'POST',
+                body: formData, // Отправляем данные в формате FormData
+            });
+
+            if (!response.ok) {
+                throw new Error('Incorrect email or password');
+            }
+
+            // Получаем URL для перенаправления из заголовков ответа
+            const redirectUrl = response.headers.get('Location');
+            if (redirectUrl) {
+                window.location.href = redirectUrl; // Выполняем перенаправление
+            } else {
+                console.error('Redirect URL not found in response headers.');
+            }
+        } catch (error) {
+            alert(error.message || 'An error occurred during login.');
+        }
+    });
   </script>
 
 {% endblock content %}
