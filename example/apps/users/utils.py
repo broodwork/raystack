@@ -43,4 +43,5 @@ def generate_jwt(user_id: int):
     payload = {'user_id': user_id}
     # token = jwt.encode(payload, str(SECRET_KEY), algorithm=ALGORITHM).decode('utf-8')
     token = jwt.encode(payload, str(SECRET_KEY), algorithm=ALGORITHM)
+    print('token', token)
     return token
