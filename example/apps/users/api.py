@@ -141,23 +141,31 @@ def logout():
 # Создание таблицы при запуске приложения
 @router.on_event("startup")
 def create_tables():
+    print('UserModel', UserModel)
     UserModel.create_table()
 
+
+from apps.groups.models import GroupModel
 
 # Создание нового пользователя (POST)
 @router.post("/", response_model=None)
 async def create_user(user: UserCreate):
     hashed_password = await hash_password(user.password)
+    group = GroupModel.objects.filter(id=user.group_id).first()
+    print('group', group)
     new_user = UserModel.objects.create(
         name=user.name,
         age=user.age,
         email=user.email,
-        password_hash=hashed_password
+        password_hash=hashed_password,
+        group=group
     )
+    print('new_user', new_user)
     return User(
         name=new_user.name,
         age=new_user.age,
-        email=new_user.email
+        email=new_user.email,
+        group=new_user.group.id
     )
 
 

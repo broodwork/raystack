@@ -27,14 +27,20 @@ class Model(metaclass=ModelMeta):
     def create_table(cls):
         columns = []
         for field_name, field in cls._fields.items():
-            column_def = f"{field_name} {field.column_type}"
+            # Экранируем имя столбца
+            column_def = f'"{field_name}" {field.column_type}'
             if field.primary_key:
                 column_def += " PRIMARY KEY"
+            if field.unique:
+                column_def += " UNIQUE"
             columns.append(column_def)
-        query = f"CREATE TABLE IF NOT EXISTS {cls.__name__} ({', '.join(columns)})"
+        
+        # Экранируем имя таблицы
+        query = f'CREATE TABLE IF NOT EXISTS "{cls.__name__}" ({", ".join(columns)})'
+        
         db.execute(query)  # Выполняем запрос на создание таблицы
         db.commit()        # Фиксируем изменения
-    
+
     def save(self):
         """
         Сохраняет текущий объект в базе данных.

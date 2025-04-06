@@ -49,16 +49,16 @@ class Cotlette(FastAPI):
         # Проверка и импорт установленных приложений
         logger.info(f"Loading apps and routers:")
         for app_path in self.settings.INSTALLED_APPS:
-            try:
-                # Динамически импортируем модуль
-                module = importlib.import_module(app_path)
-                logger.info(f"✅'{app_path}'")
+            # try:
+            # Динамически импортируем модуль
+            module = importlib.import_module(app_path)
+            logger.info(f"✅'{app_path}'")
 
-                # Если модуль содержит роутеры, подключаем их
-                if hasattr(module, "router"):
-                    self.include_router(module.router)
-                    logger.info(f"✅'{app_path}.router'")
-                else:
-                    logger.warning(f"⚠️ '{app_path}.router'")
-            except Exception as e:
-                logger.error(f"❌'{app_path}': {str(e)}")
+            # Если модуль содержит роутеры, подключаем их
+            if hasattr(module, "router"):
+                self.include_router(module.router)
+                logger.info(f"✅'{app_path}.router'")
+            else:
+                logger.warning(f"⚠️ '{app_path}.router'")
+            # except Exception as e:
+            #     logger.error(f"❌'{app_path}': {str(e)}")

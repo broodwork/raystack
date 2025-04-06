@@ -4,18 +4,24 @@ from cotlette.core.database.backends.sqlite3 import db
 class QuerySet:
     def __init__(self, model_class):
         self.model_class = model_class
-        self.query = f"SELECT * FROM {model_class.__name__}"
+        # Экранируем имя таблицы
+        self.query = f'SELECT * FROM "{model_class.__name__}"'
         self.params = None
 
     def filter(self, **kwargs):
-        conditions = " AND ".join([f"{key}=?" for key in kwargs])
+        # Экранируем имена полей
+        conditions = " AND ".join([f'"{key}"=?' for key in kwargs])
         self.query += f" WHERE {conditions}"
         self.params = tuple(kwargs.values())
         return self
 
     def all(self):
         result = db.execute(self.query, self.params, fetch=True)
-        return [self.model_class(**dict(zip(self.model_class._fields.keys(), row))) for row in result]
+        # Преобразуем результаты в объекты модели
+        return [
+            self.model_class(**dict(zip(self.model_class._fields.keys(), row)))
+            for row in result
+        ]
 
     def create(self, **kwargs):
         """
@@ -23,13 +29,13 @@ class QuerySet:
         :param kwargs: Значения полей для новой записи.
         :return: Созданный экземпляр модели.
         """
-        # Формируем список полей и значений для INSERT
-        fields = ', '.join(kwargs.keys())
+        # Экранируем имена полей
+        fields = ', '.join([f'"{key}"' for key in kwargs.keys()])
         placeholders = ', '.join(['?'] * len(kwargs))
         values = tuple(kwargs.values())
 
-        # Формируем SQL-запрос
-        insert_query = f"INSERT INTO {self.model_class.__name__} ({fields}) VALUES ({placeholders})"
+        # Формируем SQL-запрос с экранированием
+        insert_query = f'INSERT INTO "{self.model_class.__name__}" ({fields}) VALUES ({placeholders})'
 
         # Выполняем запрос
         db.execute(insert_query, values)
@@ -37,7 +43,7 @@ class QuerySet:
 
         # Возвращаем созданный объект модели
         return self.model_class(**kwargs)
-    
+
     def first(self):
         """
         Возвращает первый объект модели из результата запроса.
@@ -52,24 +58,26 @@ class QuerySet:
             row = result[0]
             return self.model_class(**dict(zip(self.model_class._fields.keys(), row)))
         return None
-    
+
     def save(self, instance):
         data = instance.__dict__
 
         if hasattr(instance, 'id') and instance.id is not None:
             # Обновление существующей записи
-            fields = ', '.join([f"{key}=?" for key in data if key != 'id'])
+            # Экранируем имена полей
+            fields = ', '.join([f'"{key}"=?' for key in data if key != 'id'])
             values = tuple(data[key] for key in data if key != 'id') + (instance.id,)
-            update_query = f"UPDATE {self.model_class.__name__} SET {fields} WHERE id=?"
+            update_query = f'UPDATE "{self.model_class.__name__}" SET {fields} WHERE id=?'
             db.execute(update_query, values)
             db.commit()
         else:
             # Создание новой записи
-            fields = ', '.join([key for key in data if key != 'id'])
+            # Экранируем имена полей
+            fields = ', '.join([f'"{key}"' for key in data if key != 'id'])
             placeholders = ', '.join(['?'] * len(data))
             values = tuple(data[key] for key in data if key != 'id')
 
-            insert_query = f"INSERT INTO {self.model_class.__name__} ({fields}) VALUES ({placeholders})"
+            insert_query = f'INSERT INTO "{self.model_class.__name__}" ({fields}) VALUES ({placeholders})'
             db.execute(insert_query, values)
             db.commit()
 
