@@ -152,9 +152,7 @@ from apps.groups.models import GroupModel
 async def create_user(user: UserCreate):
     hashed_password = await hash_password(user.password)
     group = GroupModel.objects.filter(id=user.group_id).first()
-    print('group.id, group:', group.id, group)
 
-    print('UserModel.objects.model_class', UserModel.objects.model_class)
     new_user = UserModel.objects.create(
         name=user.name,
         age=user.age,
@@ -162,7 +160,6 @@ async def create_user(user: UserCreate):
         password_hash=hashed_password,
         group=group.id
     )
-    print('new_user', new_user)
     return User(
         name=new_user.name,
         age=new_user.age,

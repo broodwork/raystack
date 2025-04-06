@@ -36,8 +36,14 @@ class QuerySet:
         return new_queryset
 
     def all(self):
-        # Возвращаем текущий QuerySet без изменений
-        return self
+        result = db.execute(self.query, self.params, fetch=True)
+        return [
+            self.model_class(**{
+                key: value for key, value in zip(self.model_class._fields.keys(), row)
+                if key in self.model_class._fields
+            })
+            for row in result
+        ]
 
     def first(self):
         # Добавляем LIMIT 1 к текущему запросу

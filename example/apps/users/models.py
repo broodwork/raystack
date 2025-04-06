@@ -1,8 +1,10 @@
 from pydantic import BaseModel
+from typing import Optional
 from cotlette.core.database.models import Model
 from cotlette.core.database.fields import CharField, IntegerField, AutoField
 from cotlette.core.database.fields.related import ForeignKeyField
 
+from apps.groups.models import Group, GroupModel
 
 # Pydantic-модель для создания пользователя
 class UserCreate(BaseModel):
@@ -18,7 +20,10 @@ class User(BaseModel):
     name: str
     age: int
     email: str
-    group: dict  # Информация о группе, к которой принадлежит пользователь
+    group: Optional[Group] = None
+
+    class Config:
+        from_attributes = True
 
 # Модель базы данных
 class UserModel(Model):

@@ -11,6 +11,9 @@ class Group(BaseModel):
     id: int
     name: str
 
+    class Config:
+        from_attributes = True
+
 # # Модель базы данных для групп
 # class GroupModel(Model):
 #     id = AutoField()  # Первичный ключ

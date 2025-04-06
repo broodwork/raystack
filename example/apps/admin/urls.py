@@ -39,7 +39,11 @@ def url_for(endpoint, **kwargs):
 @router.get("/users", response_model=None)
 @requires("user_auth")
 async def test(request: Request):
-    users = [User(name=user.name, age=user.age, email=user.email) for user in UserModel.objects.all()]
+    for user in UserModel.objects.all():
+        print('user', user)
+        print('user.group', user.group)
+        print('User.from_orm(user)', User.from_orm(user))
+    users = [User.from_orm(user) for user in UserModel.objects.all()]
     return render_template(request=request, template_name="admin/users.html", context={
         "url_for": url_for,
         "parent": "/",

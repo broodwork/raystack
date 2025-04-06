@@ -19,6 +19,7 @@ class ModelMeta(type):
         fields = {}
         for attr_name, attr_value in attrs.items():
             if isinstance(attr_value, Field):  # Проверяем, является ли атрибут экземпляром Field
+                attr_value.contribute_to_class(new_class, attr_name)  # Вызываем contribute_to_class
                 fields[attr_name] = attr_value
 
         # Присоединяем _fields к классу
@@ -43,6 +44,27 @@ class Model(metaclass=ModelMeta):
         super().__init_subclass__(**kwargs)
         cls.objects = Manager(cls)
         cls.objects.model_class = cls
+    
+    def __getattr__(self, name):
+        """
+        Динамический доступ к атрибутам объекта.
+        Если атрибут не существует, вызывается AttributeError.
+        """
+        if name in self.__dict__:
+            return self.__dict__[name]
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+
+    def __setattr__(self, name, value):
+        """
+        Динамическая установка значений атрибутов.
+        """
+        self.__dict__[name] = value
+
+    def to_dict(self):
+        """
+        Преобразование объекта модели в словарь.
+        """
+        return {key: getattr(self, key) for key in self.__dict__ if not key.startswith("_")}
 
     @classmethod
     def create_table(cls):
