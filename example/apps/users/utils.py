@@ -24,7 +24,8 @@ def asyncify(func):
     return inner
 
 @asyncify
-def hash_password(password:str):
+def hash_password(password: str):
+    print('password', password)
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 # @asyncify

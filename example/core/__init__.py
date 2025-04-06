@@ -44,19 +44,6 @@ async def update_session_history(request, call_next):
     return response
 
 
-# # Middleware для проверки прав доступа
-# @app.middleware("http")
-# async def verify_user(request, call_next):
-#     print('request', request.__dict__)
-#     if not hasattr(request, "user") or not request.user.is_authenticated:
-#         return HTMLResponse('Forbidden', status_code=403)
-
-#     if request.user.display_name == request.path_params.get('user_id'):
-#         response = await call_next(request)
-#         return response
-
-#     return HTMLResponse('Forbidden', status_code=403)
-
 # Middleware для работы с сессиями
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 

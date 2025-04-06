@@ -122,7 +122,7 @@ async def login_user(request):
     if not valid_pass:
         return RedirectResponse(previous, status_code=303)
 
-    if previous == '/api/users/login/':
+    if previous.count('/api/users/login'):
         previous = '/admin'
 
     response = RedirectResponse(previous, status_code=303)
@@ -146,8 +146,8 @@ def create_tables():
 
 # Создание нового пользователя (POST)
 @router.post("/", response_model=None)
-def create_user(user: UserCreate):
-    hashed_password = hash_password(user.password)
+async def create_user(user: UserCreate):
+    hashed_password = await hash_password(user.password)
     new_user = UserModel.objects.create(
         name=user.name,
         age=user.age,
