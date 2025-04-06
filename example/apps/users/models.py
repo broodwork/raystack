@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from cotlette.core.database.models import Model
-from cotlette.core.database.fields import CharField, IntegerField, AutoField, ForeignKeyField
+from cotlette.core.database.fields import CharField, IntegerField, AutoField
+from cotlette.core.database.fields.related import ForeignKeyField
 
 
 # Pydantic-модель для создания пользователя

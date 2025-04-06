@@ -11,10 +11,24 @@ class Group(BaseModel):
     id: int
     name: str
 
-# Модель базы данных для групп
+# # Модель базы данных для групп
+# class GroupModel(Model):
+#     id = AutoField()  # Первичный ключ
+#     name = CharField(max_length=100, unique=True)  # Название группы (уникальное)
+
+#     def __str__(self):
+#         return self.name
+
 class GroupModel(Model):
     id = AutoField()  # Первичный ключ
     name = CharField(max_length=100, unique=True)  # Название группы (уникальное)
+
+    @property
+    def users(self):
+        """
+        Свойство для получения всех пользователей, связанных с этой группой.
+        """
+        return UserModel.objects.filter(group=self.id)
 
     def __str__(self):
         return self.name

@@ -1,7 +1,7 @@
 from cotlette.core.database.fields import CharField, IntegerField, Field
 from cotlette.core.database.manager import Manager
 from cotlette.core.database.backends.sqlite3 import db
-from cotlette.core.database.fields import ForeignKeyField
+from cotlette.core.database.fields.related import ForeignKeyField
 
 
 class ModelMeta(type):
@@ -34,7 +34,6 @@ class ModelMeta(type):
 
 
 class Model(metaclass=ModelMeta):
-    objects = Manager(None)
 
     def __init__(self, **kwargs):
         for field, value in kwargs.items():
@@ -42,6 +41,7 @@ class Model(metaclass=ModelMeta):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
+        cls.objects = Manager(cls)
         cls.objects.model_class = cls
 
     @classmethod

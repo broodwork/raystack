@@ -16,6 +16,6 @@ class Manager:
         :param kwargs: Значения полей для новой записи.
         :return: Созданный экземпляр модели.
         """
-        print('self.model_class', self.model_class)
-        print('kwargs', kwargs)
+        # print('self.model_class', self.model_class)
+        # print('kwargs', kwargs)
         return QuerySet(self.model_class).create(**kwargs)

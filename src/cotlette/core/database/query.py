@@ -1,5 +1,5 @@
 from cotlette.core.database.backends.sqlite3 import db
-from cotlette.core.database.fields import ForeignKeyField
+from cotlette.core.database.fields.related import ForeignKeyField
 
 
 class QuerySet:
@@ -9,55 +9,10 @@ class QuerySet:
         self.params = None
 
     def filter(self, **kwargs):
-        if not kwargs:
-            return self
-
-        conditions = " AND ".join([f'"{key}"=?' for key in kwargs])
-        self.query += f" WHERE {conditions}"
-        self.params = tuple(kwargs.values())
-        return self
-
-    def all(self):
-        result = db.execute(self.query, self.params, fetch=True)
-        return [
-            self.model_class(**{
-                key: value for key, value in zip(self.model_class._fields.keys(), row)
-                if key in self.model_class._fields
-            })
-            for row in result
-        ]
-
-    # def create(self, **kwargs):
-    #     fields = []
-    #     placeholders = []
-    #     values = []
-
-    #     for field_name, value in kwargs.items():
-    #         field = self.model_class._fields[field_name]
-
-    #         if isinstance(field, ForeignKeyField):
-    #             related_model = field.get_related_model()
-    #             if isinstance(value, related_model):
-    #                 value = value.id
-    #             elif not isinstance(value, int):
-    #                 raise ValueError(f"Invalid value for foreign key '{field_name}': {value}")
-
-    #         fields.append(f'"{field_name}"')
-    #         placeholders.append("?")
-    #         values.append(value)
-
-    #     insert_query = f'INSERT INTO "{self.model_class.__name__}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
-    #     cursor = db.execute(insert_query, values)
-    #     db.commit()
-
-    #     if not hasattr(cursor, 'lastrowid') or cursor.lastrowid is None:
-    #         raise RuntimeError("Failed to retrieve the ID of the newly created record.")
-    #     return self.model_class.objects.get(id=cursor.lastrowid)
-
-    def create(self, **kwargs):
-        fields = []
-        placeholders = []
-        values = []
+        # Создаем новый QuerySet для цепочки запросов
+        new_queryset = QuerySet(self.model_class)
+        conditions = []
+        params = []
 
         for field_name, value in kwargs.items():
             if field_name not in self.model_class._fields:
@@ -69,22 +24,23 @@ class QuerySet:
                 related_model = field.get_related_model()
                 if isinstance(value, related_model):
                     value = value.id  # Извлекаем id, если передан объект модели
-                elif not isinstance(value, int):  # Проверяем, что значение — число
+                elif not isinstance(value, int):
                     raise ValueError(f"Invalid value for foreign key '{field_name}': {value}")
 
-            fields.append(f'"{field_name}"')
-            placeholders.append("?")
-            values.append(value)
+            conditions.append(f'"{field_name}"=?')
+            params.append(value)
 
-        insert_query = f'INSERT INTO "{self.model_class.__name__}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
-        cursor = db.execute(insert_query, values)
-        db.commit()
+        # Формируем новый запрос с условиями
+        new_queryset.query = f"{self.query} WHERE {' AND '.join(conditions)}"
+        new_queryset.params = tuple(params)
+        return new_queryset
 
-        if not hasattr(cursor, 'lastrowid') or cursor.lastrowid is None:
-            raise RuntimeError("Failed to retrieve the ID of the newly created record.")
-        return self.model_class.objects.get(id=cursor.lastrowid)
+    def all(self):
+        # Возвращаем текущий QuerySet без изменений
+        return self
 
     def first(self):
+        # Добавляем LIMIT 1 к текущему запросу
         query = f"{self.query} LIMIT 1"
         result = db.execute(query, self.params, fetch=True)
 
@@ -95,6 +51,48 @@ class QuerySet:
                 if key in self.model_class._fields
             })
         return None
+
+    def execute(self):
+        # Выполняем текущий запрос и возвращаем результат
+        result = db.execute(self.query, self.params, fetch=True)
+        return [
+            self.model_class(**dict(zip(self.model_class._fields.keys(), row)))
+            for row in result
+        ]
+
+    def create(self, **kwargs):
+        fields = []
+        placeholders = []
+        values = []
+
+        for field_name, value in kwargs.items():
+            # Проверяем, существует ли поле в текущей модели
+            print('self.model_class._fields', self.model_class._fields)
+            if field_name not in self.model_class._fields:
+                raise KeyError(f"Field '{field_name}' does not exist in model '{self.model_class.__name__}'")
+
+            field = self.model_class._fields[field_name]
+
+            # Обработка внешних ключей
+            if isinstance(field, ForeignKeyField):
+                related_model = field.get_related_model()
+                if isinstance(value, related_model):
+                    value = value.id  # Извлекаем id, если передан объект модели
+                elif not isinstance(value, int):  # Проверяем, что значение — число
+                    raise ValueError(f"Invalid value for foreign key '{field_name}': {value}")
+
+            fields.append(f'"{field_name}"')
+            placeholders.append("?")
+            values.append(value)
+
+        # Формируем SQL-запрос
+        insert_query = f'INSERT INTO "{self.model_class.__name__}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
+        cursor = db.execute(insert_query, values)
+        db.commit()
+
+        if not hasattr(cursor, 'lastrowid') or cursor.lastrowid is None:
+            raise RuntimeError("Failed to retrieve the ID of the newly created record.")
+        return self.model_class.objects.get(id=cursor.lastrowid)
 
     def save(self, instance):
         data = instance.__dict__
