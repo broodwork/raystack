@@ -13,6 +13,8 @@ class Database:
         """Выполняет SQL-запрос и возвращает результат (если требуется)."""
         with self.connect() as conn:
             cursor = conn.cursor()
+            print('query', query)
+            print('params', params)
             cursor.execute(query, params or ())
             if fetch:
                 return cursor.fetchall()

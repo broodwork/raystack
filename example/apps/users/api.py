@@ -158,7 +158,7 @@ async def create_user(user: UserCreate):
         age=user.age,
         email=user.email,
         password_hash=hashed_password,
-        group=group
+        group=group.id
     )
     print('new_user', new_user)
     return User(

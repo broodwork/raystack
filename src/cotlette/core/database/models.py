@@ -1,16 +1,37 @@
 from cotlette.core.database.fields import CharField, IntegerField, Field
 from cotlette.core.database.manager import Manager
 from cotlette.core.database.backends.sqlite3 import db
+from cotlette.core.database.fields import ForeignKeyField
+
 
 class ModelMeta(type):
+    _registry = {}  # Словарь для хранения зарегистрированных моделей
+
     def __new__(cls, name, bases, attrs):
+        # Создаем новый класс
+        new_class = super().__new__(cls, name, bases, attrs)
+
+        # Регистрируем модель в реестре, если это не базовый класс Model
         if name != "Model":
-            fields = {}
-            for key, value in attrs.items():
-                if isinstance(value, Field):
-                    fields[key] = value
-            attrs['_fields'] = fields
-        return super().__new__(cls, name, bases, attrs)
+            cls._registry[name] = new_class
+
+        # Собираем поля в словарь _fields
+        fields = {}
+        for attr_name, attr_value in attrs.items():
+            if isinstance(attr_value, Field):  # Проверяем, является ли атрибут экземпляром Field
+                fields[attr_name] = attr_value
+
+        # Присоединяем _fields к классу
+        new_class._fields = fields
+        return new_class
+
+    @classmethod
+    def get_model(cls, name):
+        """
+        Возвращает модель по имени из реестра.
+        """
+        return cls._registry.get(name)
+
 
 class Model(metaclass=ModelMeta):
     objects = Manager(None)
@@ -26,18 +47,30 @@ class Model(metaclass=ModelMeta):
     @classmethod
     def create_table(cls):
         columns = []
+        foreign_keys = []
+
         for field_name, field in cls._fields.items():
-            # Экранируем имя столбца
+            # Формируем определение столбца
             column_def = f'"{field_name}" {field.column_type}'
             if field.primary_key:
                 column_def += " PRIMARY KEY"
             if field.unique:
                 column_def += " UNIQUE"
             columns.append(column_def)
-        
-        # Экранируем имя таблицы
-        query = f'CREATE TABLE IF NOT EXISTS "{cls.__name__}" ({", ".join(columns)})'
-        
+
+            # Проверяем, является ли поле внешним ключом
+            if isinstance(field, ForeignKeyField):
+                related_model = field.get_related_model()
+                foreign_keys.append(
+                    f'FOREIGN KEY ("{field_name}") REFERENCES "{related_model.__name__}"("id")'
+                )
+
+        # Объединяем колонки и внешние ключи в один список
+        all_parts = columns + foreign_keys
+
+        # Формируем финальный SQL-запрос
+        query = f'CREATE TABLE IF NOT EXISTS "{cls.__name__}" ({", ".join(all_parts)});'
+
         db.execute(query)  # Выполняем запрос на создание таблицы
         db.commit()        # Фиксируем изменения
 

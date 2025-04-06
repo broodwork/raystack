@@ -44,12 +44,22 @@ class ForeignKeyField(Field):
             model_class._meta['foreign_keys'] = []
         model_class._meta['foreign_keys'].append(self)
 
+    # def get_related_model(self):
+    #     """
+    #     Возвращает связанную модель.
+    #     Если self.to — строка, то ищет модель по имени.
+    #     """
+    #     if isinstance(self.to, str):
+    #         # Предполагается, что модели доступны в глобальном пространстве имён
+    #         return globals()[self.to]
+    #     return self.to
+
     def get_related_model(self):
         """
         Возвращает связанную модель.
-        Если self.to — строка, то ищет модель по имени.
+        Если self.to — строка, то ищет модель в реестре.
         """
+        from cotlette.core.database.models import ModelMeta
         if isinstance(self.to, str):
-            # Предполагается, что модели доступны в глобальном пространстве имён
-            return globals()[self.to]
+            return ModelMeta.get_model(self.to)
         return self.to
