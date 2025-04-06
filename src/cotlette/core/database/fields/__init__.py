@@ -43,11 +43,23 @@ class RelatedField(Field):
 
     def contribute_to_class(self, model_class, name):
         """
-        Расширенный метод для полей, связанных с внешними моделями.
+        Добавляет поле в метаданные модели и настраивает связь.
         """
-        super().contribute_to_class(model_class, name)  # Вызываем родительский метод
+        super().contribute_to_class(model_class, name)
+        self.name = name
+        self.cache_name = f"_{name}_cache"  # Устанавливаем cache_name здесь
 
-        # Добавляем обратную связь в связанную модель
+        # Создаем атрибут для хранения значения внешнего ключа
+        setattr(model_class, f"_{name}", None)
+
+        # Добавляем поле в метаданные модели
+        if not hasattr(model_class, '_meta'):
+            model_class._meta = {}
+        if 'foreign_keys' not in model_class._meta:
+            model_class._meta['foreign_keys'] = []
+        model_class._meta['foreign_keys'].append(self)
+
+        # Настраиваем обратную связь в связанной модели
         related_model = self.get_related_model()
         if self.related_name and hasattr(related_model, '_meta'):
             if 'reverse_relations' not in related_model._meta:

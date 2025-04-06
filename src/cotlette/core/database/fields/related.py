@@ -19,8 +19,30 @@ class ForeignKeyField(RelatedField):
         self.on_delete = on_delete  # Поведение при удалении
         self.related_name = related_name  # Имя для обратной связи
         self.to_field = to_field  # Поле в связанной модели
-        # self.cache_name = f"_{self.name}_cache"  # Имя для кэширования связанного объекта
-        self.cache_name = None
+        self.cache_name = None  # Имя для кэширования связанного объекта
+
+    def contribute_to_class(self, model_class, name):
+        """
+        Добавляет поле в метаданные модели и настраивает связь.
+        """
+        super().contribute_to_class(model_class, name)
+        self.name = name
+        self.cache_name = f"_{name}_cache"
+
+        # Создаем атрибут для хранения значения внешнего ключа
+        setattr(model_class, f"_{name}", None)
+
+        if not hasattr(model_class, '_meta'):
+            model_class._meta = {}
+        if 'foreign_keys' not in model_class._meta:
+            model_class._meta['foreign_keys'] = []
+        model_class._meta['foreign_keys'].append(self)
+
+        related_model = self.get_related_model()
+        if self.related_name and hasattr(related_model, '_meta'):
+            if 'reverse_relations' not in related_model._meta:
+                related_model._meta['reverse_relations'] = {}
+            related_model._meta['reverse_relations'][self.related_name] = model_class
 
     def get_related_model(self):
         """
@@ -45,51 +67,30 @@ class ForeignKeyField(RelatedField):
         if not isinstance(value, related_model):
             raise ValidationError(f"Value must be an instance of {related_model.__name__}.")
 
-    def contribute_to_class(self, model_class, name):
-        """
-        Добавляет поле в метаданные модели и настраивает связь.
-        """
-        super().contribute_to_class(model_class, name)
-        self.name = name
-        self.cache_name = f"_{name}_cache"  # Устанавливаем cache_name здесь
-
-        # Добавляем поле в метаданные модели
-        if not hasattr(model_class, '_meta'):
-            model_class._meta = {}
-        if 'foreign_keys' not in model_class._meta:
-            model_class._meta['foreign_keys'] = []
-        model_class._meta['foreign_keys'].append(self)
-
-        # Настраиваем обратную связь в связанной модели
-        related_model = self.get_related_model()
-        if self.related_name and hasattr(related_model, '_meta'):
-            if 'reverse_relations' not in related_model._meta:
-                related_model._meta['reverse_relations'] = {}
-            related_model._meta['reverse_relations'][self.related_name] = model_class
-
     def __get__(self, instance, owner):
         """
         Дескриптор для получения связанного объекта.
         """
         if instance is None:
-            return self  # Если вызвано на уровне класса, возвращаем само поле
+            return self
 
-        # Проверяем, есть ли кэшированный объект
-        if hasattr(instance, self.cache_name):  # Проверяем, что cache_name установлен
+        if hasattr(instance, self.cache_name):
             return getattr(instance, self.cache_name)
 
-        # Загружаем связанный объект из базы данных
         related_model = self.get_related_model()
+        print('instance, owner:', instance, owner)
+        print('related_model', related_model)
         related_id = getattr(instance, f"_{self.name}", None)  # Читаем значение из внутреннего атрибута
+        print(f"DEBUG: Related ID for field '{self.name}': {related_id}")  # Логирование значения related_id
+
         if related_id is None:
-            return None  # Если внешний ключ пустой, возвращаем None
+            return None
 
         try:
             related_object = related_model.objects.filter(id=related_id).first()
         except Exception as e:
             raise ValueError(f"Failed to load related object for field '{self.name}': {e}")
 
-        # Кэшируем объект
         setattr(instance, self.cache_name, related_object)
         return related_object
 
@@ -104,7 +105,8 @@ class ForeignKeyField(RelatedField):
 
         # Устанавливаем значение через внутренний атрибут, чтобы избежать рекурсии
         setattr(instance, f"_{self.name}", value)
+        print('SET self.name, value:', self.name, value)
 
         # Очищаем кэш при изменении значения
-        if hasattr(instance, self.cache_name):  # Проверяем, что cache_name установлен
+        if hasattr(instance, self.cache_name):
             delattr(instance, self.cache_name)

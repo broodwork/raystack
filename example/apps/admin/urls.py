@@ -43,6 +43,8 @@ async def test(request: Request):
 
     for user in users:
         print('user', user)
+        print('user.__dict__', user.__dict__)
+        print('_group attribute:', getattr(user, '_group', None))  # Логирование значения _group
         print('user.group', user.group)
 
     return render_template(request=request, template_name="admin/users.html", context={

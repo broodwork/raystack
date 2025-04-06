@@ -22,8 +22,8 @@ class User(BaseModel):
     email: str
     group: Optional[Group] = None
 
-    class Config:
-        from_attributes = True
+    # class Config:
+    #     from_attributes = True
 
 # Модель базы данных
 class UserModel(Model):
