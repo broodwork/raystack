@@ -33,6 +33,3 @@ class UserModel(Model):
     email = CharField(max_length=100)
     password_hash = CharField(max_length=255)
     group = ForeignKeyField(to="GroupModel", related_name="users")  # Связь с группой
-
-    def __str__(self):
-        return self.name

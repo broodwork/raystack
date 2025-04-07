@@ -44,7 +44,7 @@ class Cotlette(FastAPI):
         for template in self.settings.TEMPLATES:
             template_dirs = template.get("DIRS")
             template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
-        print('template_dirs', template_dirs)
+        # print('template_dirs', template_dirs)
 
         # Проверка и импорт установленных приложений
         logger.info(f"Loading apps and routers:")

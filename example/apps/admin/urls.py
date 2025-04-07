@@ -14,7 +14,8 @@ from fastapi.security import OAuth2PasswordBearer
 
 from starlette.authentication import requires
 
-from apps.users.models import User, UserModel
+from apps.users.models import UserModel
+from apps.groups.models import GroupModel
 
 
 router = APIRouter()
@@ -47,6 +48,20 @@ async def test(request: Request):
         "segment": "test",
         "config": request.app.settings,
         "users": users,
+    })
+
+
+@router.get("/groups", response_model=None)
+@requires("user_auth")
+async def test(request: Request):
+    groups = GroupModel.objects.all()
+
+    return render_template(request=request, template_name="admin/groups.html", context={
+        "url_for": url_for,
+        "parent": "/",
+        "segment": "test",
+        "config": request.app.settings,
+        "groups": groups,
     })
 
 
