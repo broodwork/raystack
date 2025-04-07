@@ -29,9 +29,6 @@ class GroupModel(Model):
     @property
     def users(self):
         """
-        Свойство для получения всех пользователей, связанных с этой группой.
+        Загружает всех пользователей, связанных с этой группой.
         """
         return UserModel.objects.filter(group=self.id)
-
-    def __str__(self):
-        return self.name

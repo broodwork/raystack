@@ -27,7 +27,6 @@ router = APIRouter()
 # Создание таблицы при запуске приложения
 @router.on_event("startup")
 def create_tables():
-    # print('GroupModel', GroupModel)
     GroupModel.create_table()
     if not GroupModel.objects.filter(name="Owners").first():  # FIXME
         GroupModel.objects.create(name="Owners")

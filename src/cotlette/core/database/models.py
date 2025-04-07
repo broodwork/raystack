@@ -59,12 +59,20 @@ class Model(metaclass=ModelMeta):
         Динамическая установка значений атрибутов.
         """
         self.__dict__[name] = value
+    
+    def __str__(self):
+        return "<%s object (%s)>" % (self.__class__.__name__, self.id)
 
-    def to_dict(self):
+    def to_dict(self, exclude_private=True):
         """
         Преобразование объекта модели в словарь.
+        :param exclude_private: Если True, скрытые (private) поля не будут добавляться в словарь.
         """
-        return {key: getattr(self, key) for key in self.__dict__ if not key.startswith("_")}
+        return {
+            key: getattr(self, key)
+            for key in self.__dict__
+            if (not key.startswith("_") or not exclude_private)
+        }
 
     @classmethod
     def create_table(cls):

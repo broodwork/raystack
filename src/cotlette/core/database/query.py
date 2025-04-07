@@ -73,7 +73,6 @@ class QuerySet:
 
         for field_name, value in kwargs.items():
             # Проверяем, существует ли поле в текущей модели
-            print('self.model_class._fields', self.model_class._fields)
             if field_name not in self.model_class._fields:
                 raise KeyError(f"Field '{field_name}' does not exist in model '{self.model_class.__name__}'")
 

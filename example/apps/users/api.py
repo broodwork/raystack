@@ -33,28 +33,6 @@ class TokenData(BaseModel):
     email: Union[str] = None
 
 
-# # Эндпоинт для аутентификации пользователя
-# @router.post("/login/", response_model=Token)
-# def login_for_access_token(user_login: UserLogin):
-    
-#     users = UserModel.objects.all()
-#     for user in users:
-#         print('111 user.__dict__', user.__dict__)
-
-#     # Ищем пользователя по email
-#     user = UserModel.objects.filter(email=user_login.email).first()
-
-#     if not user or not check_password(user_login.password, user.password_hash):
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Incorrect email or password",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     access_token = generate_jwt(data={"sub": user.email}, expires_delta=access_token_expires)
-#     return {"access_token": access_token, "token_type": "bearer"}
-
-
 # TODO
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer

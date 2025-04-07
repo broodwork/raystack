@@ -25,24 +25,22 @@ def asyncify(func):
 
 @asyncify
 def hash_password(password: str):
-    print('password', password)
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-# @asyncify
-# def check_password(password:str, hashed_pass):
-#     return bcrypt.checkpw(password.encode('utf-8'), hashed_pass)
-
 @asyncify
-def check_password(password: str, hashed_pass: str):
-    return bcrypt.checkpw(
-        password.encode('utf-8'),  # Преобразуем пароль в байты
-        hashed_pass.encode('utf-8')  # Преобразуем хэшированный пароль в байты
-    )
+def check_password(password:str, hashed_pass):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_pass)
+
+# @asyncify
+# def check_password(password: str, hashed_pass: str):
+#     return bcrypt.checkpw(
+#         password.encode('utf-8'),  # Преобразуем пароль в байты
+#         hashed_pass.encode('utf-8')  # Преобразуем хэшированный пароль в байты
+#     )
 
 # Функция для создания JWT-токена
 def generate_jwt(user_id: int):
     payload = {'user_id': user_id}
     # token = jwt.encode(payload, str(SECRET_KEY), algorithm=ALGORITHM).decode('utf-8')
     token = jwt.encode(payload, str(SECRET_KEY), algorithm=ALGORITHM)
-    print('token', token)
     return token

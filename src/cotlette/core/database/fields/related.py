@@ -56,6 +56,13 @@ class ForeignKeyField(RelatedField):
             except KeyError:
                 raise ValueError(f"Related model '{self.to}' is not registered in ModelMeta.")
         return self.to
+    
+    def create_related_instance(self, related_data):
+        """
+        Создает и возвращает экземпляр связанной модели.
+        """
+        related_model = self.get_related_model()
+        return related_model(**related_data)
 
     def validate(self, value):
         """
@@ -78,9 +85,9 @@ class ForeignKeyField(RelatedField):
             return getattr(instance, self.cache_name)
 
         related_model = self.get_related_model()
-        print('instance, owner:', instance, owner)
-        print('related_model', related_model)
-        related_id = getattr(instance, f"_{self.name}", None)  # Читаем значение из внутреннего атрибута
+        # setattr(instance, f"_{self.name}", instance.__dict__.get(self.name))
+        # related_id = getattr(instance, f"_{self.name}", None)
+        related_id = instance.__dict__.get(self.name)
         print(f"DEBUG: Related ID for field '{self.name}': {related_id}")  # Логирование значения related_id
 
         if related_id is None:
@@ -105,7 +112,6 @@ class ForeignKeyField(RelatedField):
 
         # Устанавливаем значение через внутренний атрибут, чтобы избежать рекурсии
         setattr(instance, f"_{self.name}", value)
-        print('SET self.name, value:', self.name, value)
 
         # Очищаем кэш при изменении значения
         if hasattr(instance, self.cache_name):
