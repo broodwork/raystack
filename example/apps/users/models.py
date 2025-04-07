@@ -13,6 +13,7 @@ class UserCreate(BaseModel):
     email: str
     password: str
     group_id: int  # ID группы, к которой принадлежит пользователь
+    organization: str = "N/A organization"
 
 # Pydantic-модель для представления пользователя
 class User(BaseModel):
@@ -21,6 +22,7 @@ class User(BaseModel):
     age: int
     email: str
     group: Optional[Group] = None
+    organization: str = "N/A organization"
 
     # class Config:
     #     from_attributes = True
@@ -33,3 +35,4 @@ class UserModel(Model):
     email = CharField(max_length=100)
     password_hash = CharField(max_length=255)
     group = ForeignKeyField(to="GroupModel", related_name="users")  # Связь с группой
+    organization = CharField(max_length=100)

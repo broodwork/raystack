@@ -17,6 +17,7 @@
             <table class="table align-items-center mb-0">
               <thead>
                 <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">ID</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Role</th>
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
@@ -27,6 +28,10 @@
               <tbody>
                 {% for user in users %}
                 <tr>
+                  <!-- ID -->
+                  <td>
+                    <p class="text-xs font-weight-bold mb-0">#{{ user.id }}</p>
+                  </td>
                   <!-- User Info -->
                   <td>
                     <div class="d-flex px-2 py-1">
@@ -42,7 +47,7 @@
                   <!-- Role -->
                   <td>
                     <p class="text-xs font-weight-bold mb-0">{{ user.group.name }}</p>
-                    <p class="text-xs text-secondary mb-0">Organization</p>
+                    <p class="text-xs text-secondary mb-0">{{ user.organization }}</p>
                   </td>
                   <!-- Status -->
                   <td class="align-middle text-center text-sm">
