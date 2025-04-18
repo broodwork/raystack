@@ -24,38 +24,19 @@ class Cotlette(FastAPI):
 
         self.settings = settings
         self.shortcuts = shortcuts
+
+        # Получить абсолютный путь к текущей диретории
+        self.cotlette_directory = os.path.dirname(os.path.abspath(__file__))
         
         # Подключение роутеров
         self.include_routers()
-        
-        # Получить абсолютный путь к текущей диретории
-        current_file_path = os.path.abspath(__file__)
-        current_directory = os.path.dirname(current_file_path)
+        self.include_templates()
+        self.include_static()
 
     def include_routers(self):
-
-        # # Подключаем роутеры к приложению
-        # from cotlette.urls import urls_router, api_router
-        # self.include_router(urls_router)
-        # self.include_router(api_router, prefix="/api", tags=["common"],)
-
-        # Подключаем шаблоны указанные пользователем в SETTINGS
-        for template in self.settings.TEMPLATES:
-            template_dirs = template.get("DIRS")
-            template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
-        print('template_dirs', template_dirs)
-
-        # Подключаем static указанные пользователем в SETTINGS
-        print('self.settings.STATIC_URL', self.settings.STATIC_URL)
-        if self.settings.STATIC_URL:
-            static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
-            print('static_dir', static_dir)
-            self.mount("/static", StaticFiles(directory=static_dir), name="static")
-
         # Проверка и импорт установленных приложений
         logger.info(f"Loading apps and routers:")
         for app_path in self.settings.INSTALLED_APPS:
-            # try:
             # Динамически импортируем модуль
             module = importlib.import_module(app_path)
             logger.info(f"✅'{app_path}'")
@@ -66,5 +47,20 @@ class Cotlette(FastAPI):
                 logger.info(f"✅'{app_path}.router'")
             else:
                 logger.warning(f"⚠️ '{app_path}.router'")
-            # except Exception as e:
-            #     logger.error(f"❌'{app_path}': {str(e)}")
+
+    def include_templates(self):
+        # Подключаем шаблоны указанные пользователем в SETTINGS
+        for template in self.settings.TEMPLATES:
+            template_dirs = template.get("DIRS")
+            template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
+
+    def include_static(self):
+
+        # Подключаем static фреймворка
+        static_dir = os.path.join(self.cotlette_directory, "static")
+        self.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+        # # Подключаем static указанные пользователем в SETTINGS
+        # if self.settings.STATIC_URL:
+        #     static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
+        #     self.mount("/static", StaticFiles(directory=static_dir), name="static")
