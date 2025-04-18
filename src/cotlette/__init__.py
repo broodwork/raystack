@@ -60,7 +60,7 @@ class Cotlette(FastAPI):
         static_dir = os.path.join(self.cotlette_directory, "static")
         self.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-        # # Подключаем static указанные пользователем в SETTINGS
-        # if self.settings.STATIC_URL:
-        #     static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
-        #     self.mount("/static", StaticFiles(directory=static_dir), name="static")
+        # Подключаем static указанные пользователем в SETTINGS
+        if self.settings.STATIC_URL:
+            static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
+            self.mount("/static", StaticFiles(directory=static_dir), name="static")
