@@ -31,8 +31,6 @@ class Cotlette(FastAPI):
         # Получить абсолютный путь к текущей диретории
         current_file_path = os.path.abspath(__file__)
         current_directory = os.path.dirname(current_file_path)
-        static_directory = os.path.join(current_directory, "static")
-        self.mount("/static", StaticFiles(directory=static_directory), name="static")
 
     def include_routers(self):
 
@@ -41,10 +39,18 @@ class Cotlette(FastAPI):
         # self.include_router(urls_router)
         # self.include_router(api_router, prefix="/api", tags=["common"],)
 
+        # Подключаем шаблоны указанные пользователем в SETTINGS
         for template in self.settings.TEMPLATES:
             template_dirs = template.get("DIRS")
             template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
-        # print('template_dirs', template_dirs)
+        print('template_dirs', template_dirs)
+
+        # Подключаем static указанные пользователем в SETTINGS
+        print('self.settings.STATIC_URL', self.settings.STATIC_URL)
+        if self.settings.STATIC_URL:
+            static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
+            print('static_dir', static_dir)
+            self.mount("/static", StaticFiles(directory=static_dir), name="static")
 
         # Проверка и импорт установленных приложений
         logger.info(f"Loading apps and routers:")

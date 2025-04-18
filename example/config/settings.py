@@ -38,3 +38,5 @@ TEMPLATES = [
 
 SECRET_KEY = b'$2b$12$SE0dQGdt3D260TqXQzuzbOcN2EqVqzFbn4nlNvfsgburDCYp2UvAS'
 ALGORITHM = "HS256"
+
+STATIC_URL = "static/"

@@ -78,10 +78,10 @@ class LazySettings(LazyObject):
 
         # Special case some settings which require further modification.
         # This is done here for performance reasons so the modified value is cached.
-        if name in {"MEDIA_URL", "STATIC_URL"} and val is not None:
-            val = self._add_script_prefix(val)
-        elif name == "SECRET_KEY" and not val:
-            raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+        # if name in {"MEDIA_URL", "STATIC_URL"} and val is not None:
+        #     val = self._add_script_prefix(val)
+        # elif name == "SECRET_KEY" and not val:
+        #     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
 
         self.__dict__[name] = val
         return val
@@ -117,20 +117,20 @@ class LazySettings(LazyObject):
             setattr(holder, name, value)
         self._wrapped = holder
 
-    @staticmethod
-    def _add_script_prefix(value):
-        """
-        Add SCRIPT_NAME prefix to relative paths.
+    # @staticmethod
+    # def _add_script_prefix(value):
+    #     """
+    #     Add SCRIPT_NAME prefix to relative paths.
 
-        Useful when the app is being served at a subpath and manually prefixing
-        subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.
-        """
-        # Don't apply prefix to absolute paths and URLs.
-        if value.startswith(("http://", "https://", "/")):
-            return value
-        from cotlette.urls import get_script_prefix
+    #     Useful when the app is being served at a subpath and manually prefixing
+    #     subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.
+    #     """
+    #     # Don't apply prefix to absolute paths and URLs.
+    #     if value.startswith(("http://", "https://", "/")):
+    #         return value
+    #     from cotlette.urls import get_script_prefix
 
-        return "%s%s" % (get_script_prefix(), value)
+    #     return "%s%s" % (get_script_prefix(), value)
 
     @property
     def configured(self):
