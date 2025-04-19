@@ -35,6 +35,7 @@ class ModelMeta(type):
 
 
 class Model(metaclass=ModelMeta):
+    table = None
 
     def __init__(self, **kwargs):
         for field, value in kwargs.items():
@@ -76,6 +77,19 @@ class Model(metaclass=ModelMeta):
 
     @classmethod
     def create_table(cls):
+        
+        # Определяем имя таблицы
+        if hasattr(cls, "table") and cls.table:
+            table_name = cls.table  # Используем явное имя таблицы
+        else:
+            # Генерируем имя таблицы по умолчанию
+            module_path = cls.__module__.split('.')
+            if len(module_path) >= 3 and module_path[1] == "apps":
+                app_name = module_path[2]  # Пример: 'users' или 'groups'
+            else:
+                raise ValueError(f"Invalid module path for model '{cls.__name__}': {cls.__module__}")
+            table_name = f"{app_name}_{cls.__name__.lower()}"
+        
         columns = []
         foreign_keys = []
 
@@ -92,14 +106,14 @@ class Model(metaclass=ModelMeta):
             if isinstance(field, ForeignKeyField):
                 related_model = field.get_related_model()
                 foreign_keys.append(
-                    f'FOREIGN KEY ("{field_name}") REFERENCES "{related_model.__name__}"("id")'
+                    f'FOREIGN KEY ("{field_name}") REFERENCES "{related_model.table or related_model.__name__}"("id")'
                 )
 
         # Объединяем колонки и внешние ключи в один список
         all_parts = columns + foreign_keys
 
         # Формируем финальный SQL-запрос
-        query = f'CREATE TABLE IF NOT EXISTS "{cls.__name__}" ({", ".join(all_parts)});'
+        query = f'CREATE TABLE IF NOT EXISTS "{table_name}" ({", ".join(all_parts)});'
 
         db.execute(query)  # Выполняем запрос на создание таблицы
         db.commit()        # Фиксируем изменения

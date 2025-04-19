@@ -25,6 +25,8 @@ class Group(BaseModel):
 #         return self.name
 
 class GroupModel(Model):
+    table = "groups_groupmodel"
+
     id = AutoField()  # Первичный ключ
     name = CharField(max_length=100, unique=True)  # Название группы (уникальное)
     description = CharField(max_length=100)

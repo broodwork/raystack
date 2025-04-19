@@ -119,7 +119,6 @@ def logout():
 # Создание таблицы при запуске приложения
 @router.on_event("startup")
 def create_tables():
-    # print('UserModel', UserModel)
     UserModel.create_table()
 
 

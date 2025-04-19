@@ -85,10 +85,7 @@ class ForeignKeyField(RelatedField):
             return getattr(instance, self.cache_name)
 
         related_model = self.get_related_model()
-        # setattr(instance, f"_{self.name}", instance.__dict__.get(self.name))
-        # related_id = getattr(instance, f"_{self.name}", None)
         related_id = instance.__dict__.get(self.name)
-        # print(f"DEBUG: Related ID for field '{self.name}': {related_id}")  # Логирование значения related_id
 
         if related_id is None:
             return None

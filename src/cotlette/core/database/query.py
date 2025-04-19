@@ -5,7 +5,7 @@ from cotlette.core.database.fields.related import ForeignKeyField
 class QuerySet:
     def __init__(self, model_class):
         self.model_class = model_class
-        self.query = f'SELECT * FROM "{model_class.__name__}"'
+        self.query = f'SELECT * FROM "{model_class.table or model_class.__name__}"'
         self.params = None
 
     def filter(self, **kwargs):
@@ -91,7 +91,7 @@ class QuerySet:
             values.append(value)
 
         # Формируем SQL-запрос
-        insert_query = f'INSERT INTO "{self.model_class.__name__}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
+        insert_query = f'INSERT INTO "{self.model_class.table or self.model_class.__name__}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
         cursor = db.execute(insert_query, values)
         db.commit()
 

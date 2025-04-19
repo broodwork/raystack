@@ -29,6 +29,8 @@ class User(BaseModel):
 
 # Модель базы данных
 class UserModel(Model):
+    table = "users_usermodel"
+
     id = AutoField()  # Первичный ключ
     name = CharField(max_length=50)
     age = IntegerField()
