@@ -3,71 +3,62 @@
 ![License](https://img.shields.io/pypi/l/cotlette)
 ![Downloads](https://img.shields.io/pypi/dm/cotlette)
 
-# **Cotlette 🚀**
+# Cotlette 🚀
 
-**Cotlette** is a modern web framework built on top of **FastAPI** , offering convenient tools for rapid web application development. Inspired by Django, it includes its own ORM, template rendering support, and built-in commands for project management, as well as an admin panel.
+**Cotlette** is a modern, Django-inspired web framework built on top of **FastAPI**. It combines the best of both worlds: the speed and async power of FastAPI with the convenience of Django-like project structure, ORM, templates, and management commands.
 
-## **Quick Start**
+---
 
-Create a new project and launch the development server in just a few steps:
+## Key Features
 
-Create a new project:
+- **FastAPI Under the Hood**: High-performance async web framework
+- **Django-like Project Structure**: Familiar and easy to organize
+- **Custom ORM**: Simple, Pythonic, and extensible
+- **Jinja2 Templates**: Powerful and flexible HTML rendering
+- **Admin Panel**: Built-in, customizable (inspired by Django admin)
+- **Management Commands**: CLI for project/app creation, server, shell, and more
+- **Asynchronous Support**: Full async views and endpoints
+- **Extensible**: Add your own apps, middleware, commands, and more
 
-```
+---
+
+## Quick Start
+
+### 1. Install Cotlette
+```bash
 pip install cotlette
+```
 
+### 2. Create a New Project
+```bash
 cotlette startproject myproject
 cd myproject
 ```
 
-Start the development server:
-
-```
+### 3. Run the Development Server
+```bash
 cotlette runserver
 ```
 
-Open your browser and navigate to [http://127.0.0.1:8000](http://127.0.0.1:8000/).
-
-![/](https://github.com/ForceFledgling/cotlette/blob/main/.docs/img/first_page.jpg)
-
-Login page:
-
-![/accounts/login](https://github.com/ForceFledgling/cotlette/blob/main/.docs/img/login_page.jpg)
-
-Admin page:
-
-![/admin](https://github.com/ForceFledgling/cotlette/blob/main/.docs/img/admin_page.jpg)
+Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000/)
 
 ---
 
-## **Prerequisites**
+## Screenshots
 
-*   Python 3.6 or higher
-*   pip (for installing dependencies)
+**Home Page:**
+![Home Page](.docs/img/first_page.jpg)
 
-## **Key Features**
+**Login Page:**
+![Login Page](.docs/img/login_page.jpg)
 
-*   **FastAPI Under the Hood** : Leverage the full power of FastAPI to create high-performance APIs.
-*   **Custom ORM** : A user-friendly interface for working with databases, similar to Django's ORM.
-*   **Template Rendering** : Built-in support for rendering HTML pages.
-*   **Development Commands**
-*   **Minimalist Design** : A simple and intuitive project structure that is easy to extend.
-*   **Asynchronous Support** : Full support for asynchronous operations to maximize performance.
+**Admin Panel:**
+![Admin Page](.docs/img/admin_page.jpg)
 
-## **Commands**
+---
 
-Cotlette provides a set of commands for convenient project management:
-
-*   **cotlette startproject \<project\_name>** : Creates a new project structure.
-*   **cotlette startapp \<app\_name>** : Creates a new application within the project.
-*   **cotlette runserver** : Starts the development server.
-*   **cotlette shell** : Launches an interactive console for working with the project.
-
-## **Usage Examples**
-
-### **Creating a Model**
-
-```
+## Example: Defining a Model
+```python
 from cotlette.db import Model, fields
 
 class Article(Model):
@@ -76,14 +67,11 @@ class Article(Model):
     published_at = fields.DateTimeField(auto_now_add=True)
 ```
 
-### **Creating a View**
-
-```
+## Example: Creating a View
+```python
 from fastapi import APIRouter
 from cotlette.shortcuts import render_template
-
 from .models import Article
-
 
 router = APIRouter()
 
@@ -93,15 +81,35 @@ async def home():
     return render_template("index.html", {"articles": articles})
 ```
 
-### **Working with the ORM**
+---
 
-```
-# Creating a record
-article = await Article.objects.create(title="Hello World", content="This is a test article.")
+## Management Commands
 
-# Fetching all records
-articles = await Article.objects.all()
+- `cotlette startproject <project_name>` — Create a new project
+- `cotlette startapp <app_name>` — Create a new app
+- `cotlette runserver` — Start the development server
+- `cotlette shell` — Interactive Python shell
 
-# Filtering records
-published_articles = await Article.objects.filter(published_at__isnull=False)
-```
+---
+
+## Documentation
+
+- [Technical Documentation](.docs/index.md)
+- [ORM Reference](.docs/orm.md)
+- [Template Reference](.docs/templates.md)
+- [Command Reference](.docs/commands.md)
+- [Middleware Reference](.docs/middleware.md)
+- [Extending Cotlette](.docs/extending.md)
+- [FAQ](.docs/faq.md)
+
+---
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## Contributing
+
+Pull requests and issues are welcome! See [GitHub](https://github.com/ForceFledgling/cotlette).
