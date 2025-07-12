@@ -85,10 +85,24 @@ async def home():
 
 ## Management Commands
 
-- `cotlette startproject <project_name>` — Create a new project
-- `cotlette startapp <app_name>` — Create a new app
-- `cotlette runserver` — Start the development server
-- `cotlette shell` — Interactive Python shell
+### Project Management
+- `cotlette startproject <project_name>` — Create a new Cotlette project directory structure
+- `cotlette startapp <app_name>` — Create a new Cotlette app directory structure
+
+### Development Server
+- `cotlette runserver [addrport]` — Start the development server
+  - Optional arguments: `--ipv6`, `--reload`
+  - Example: `cotlette runserver 0.0.0.0:8000`
+
+### Interactive Shell
+- `cotlette shell` — Interactive Python shell with auto-imports
+  - Options: `--no-startup`, `--no-imports`, `--interface`, `--command`
+  - Supports IPython, bpython, and standard Python
+
+### User Management
+- `cotlette createsuperuser` — Create a superuser account
+  - Options: `--username`, `--email`, `--noinput`
+  - Interactive mode for secure password input
 
 ---
 
