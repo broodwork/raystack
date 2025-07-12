@@ -13,14 +13,45 @@ from starlette.middleware.sessions import SessionMiddleware
 from cotlette.shortcuts import render_template
 
 
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    database_url: str
+    secret_key: str
+    debug: bool
+    youmoney_client_id: str | None = None  # Добавьте эти поля, если они нужны
+    youmoney_redirect_url: str | None = None
+    youmoney_client_secret: str | None = None
+    youmoney_access_token: str | None = None
+    youmoney_wallet_number: str | None = None
+
+    class Config:
+        env_file = ".env"   # Указывает путь к .env файлу
+        extra = 'ignore'    # Игнорировать лишние поля
+
+# Инициализация объекта
+settings = Settings(
+    database_url="postgresql://user:password@localhost/dbname",
+    secret_key="your-secret-key",
+    debug=True
+)
+
+
 app = Cotlette()
 
 
+from starlette.responses import JSONResponse, \
+    PlainTextResponse, \
+    RedirectResponse, \
+    StreamingResponse, \
+    FileResponse, \
+    HTMLResponse
+
 @app.exception_handler(403)
 async def not_found(request, exc):
-    context = {"request": request}
-    # return templates.TemplateResponse("403.html", context, status_code=404)
-    return render_template(request=request, template_name="401.html", context={})
+    return RedirectResponse("/accounts/login", status_code=303)
+    # return render_template(request=request, template_name="401.html", context={"request": request})
 
 # Класс для аутентификации
 class userAuthentication(AuthenticationBackend):
@@ -49,3 +80,20 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # Middleware для аутентификации
 app.add_middleware(AuthenticationMiddleware, backend=userAuthentication())
+
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
+
+# # Функция, которая будет выполняться периодически
+# def periodic_task():
+#     print(f"Периодическая задача выполнена: {datetime.now()}")
+
+# # Инициализация планировщика
+# scheduler = BackgroundScheduler()
+
+# # Добавление задачи для выполнения каждые 10 секунд
+# scheduler.add_job(periodic_task, 'interval', seconds=10)
+
+# # Запуск планировщика
+# scheduler.start()

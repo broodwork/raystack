@@ -10,7 +10,7 @@ class QuerySet:
         self.order_by_fields = []
 
     def filter(self, **kwargs):
-        # Создаем новый QuerySet для цепочки запросов
+        # Create new QuerySet for query chaining
         new_queryset = QuerySet(self.model_class)
         conditions = []
         params = []
@@ -24,27 +24,27 @@ class QuerySet:
             if isinstance(field, ForeignKeyField):
                 related_model = field.get_related_model()
                 if isinstance(value, related_model):
-                    value = value.id  # Извлекаем id, если передан объект модели
+                    value = value.id  # Extract id if model object is passed
                 elif not isinstance(value, int):
                     raise ValueError(f"Invalid value for foreign key '{field_name}': {value}")
 
             conditions.append(f'"{field_name}"=?')
             params.append(value)
 
-        # Формируем новый запрос с условиями
+        # Form new query with conditions
         new_queryset.query = f"{self.query} WHERE {' AND '.join(conditions)}"
         new_queryset.params = tuple(params)
         return new_queryset
     
     def all(self):
         """
-        Возвращает QuerySet со всем объектами.
-        :return: Новый QuerySet.
+        Returns QuerySet with all objects.
+        :return: New QuerySet.
         """
         return self
 
     def first(self):
-        # Добавляем LIMIT 1 к текущему запросу
+        # Add LIMIT 1 to current query
         query = f"{self.query} LIMIT 1"
         result = db.execute(query, self.params, fetch=True)
 
@@ -58,23 +58,23 @@ class QuerySet:
     
     def order_by(self, *fields):
         """
-        Добавляет сортировку к запросу.
-        :param fields: Поля для сортировки (например, 'id', '-age').
-        :return: Новый QuerySet с добавленной сортировкой.
+        Adds sorting to query.
+        :param fields: Fields for sorting (e.g., 'id', '-age').
+        :return: New QuerySet with added sorting.
         """
         new_queryset = QuerySet(self.model_class)
         new_queryset.query = self.query
         new_queryset.params = self.params
-        new_queryset.order_by_fields = list(fields)  # Сохраняем поля сортировки
+        new_queryset.order_by_fields = list(fields)  # Save sorting fields
 
-        # Добавляем ORDER BY к запросу
+        # Add ORDER BY to query
         order_conditions = []
         for field in fields:
             if field.startswith('-'):
-                # Сортировка по убыванию
+                # Descending sort
                 order_conditions.append(f'"{field[1:]}" DESC')
             else:
-                # Сортировка по возрастанию
+                # Ascending sort
                 order_conditions.append(f'"{field}" ASC')
 
         if order_conditions:
@@ -83,7 +83,7 @@ class QuerySet:
         return new_queryset
 
     def execute(self):
-        # Выполняем текущий запрос и возвращаем результат
+        # Execute current query and return result
         result = db.execute(self.query, self.params, fetch=True)
         return [
             self.model_class(**dict(zip(self.model_class._fields.keys(), row)))

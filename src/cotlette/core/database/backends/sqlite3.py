@@ -6,29 +6,29 @@ class Database:
         self.db_url = "db.sqlite3"
 
     def connect(self):
-        """Создает новое соединение с базой данных."""
+        """Creates new database connection."""
         return sqlite3.connect(self.db_url)
     
     def execute(self, query, params=None, fetch=False):
         """
-        Выполняет SQL-запрос и возвращает результат (если требуется).
-        :param query: SQL-запрос для выполнения.
-        :param params: Параметры для подстановки в запрос.
-        :param fetch: Если True, возвращает результаты запроса.
-        :return: Курсор или результаты запроса.
+        Executes SQL query and returns result (if required).
+        :param query: SQL query to execute.
+        :param params: Parameters to substitute in query.
+        :param fetch: If True, returns query results.
+        :return: Cursor or query results.
         """
         with self.connect() as conn:
             cursor = conn.cursor()
             cursor.execute(query, params or ())
             if fetch:
                 return cursor.fetchall()
-            return cursor  # Возвращаем курсор для доступа к атрибутам
+            return cursor  # Return cursor for accessing attributes
 
     def commit(self):
-        """Фиксирует изменения в базе данных."""
+        """Commits changes to database."""
         with self.connect() as conn:
             conn.commit()
 
 
-# Создаем экземпляр Database
+# Create Database instance
 db = Database()

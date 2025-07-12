@@ -24,7 +24,7 @@ class Apps:
         
         from cotlette.conf import settings
         
-        # Используется в командах runserver, startproject, startapp
+        # Used in runserver, startproject, startapp commands
         try:
             installed_apps = settings.INSTALLED_APPS
         except Exception:

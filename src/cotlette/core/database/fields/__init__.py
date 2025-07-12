@@ -3,25 +3,25 @@ class Field:
         self.column_type = column_type
         self.primary_key = primary_key
         self.default = default
-        self.unique = unique  # Добавляем поддержку параметра unique
+        self.unique = unique  # Add support for unique parameter
     
     def contribute_to_class(self, model_class, name):
         """
-        Метод, который связывает поле с моделью.
-        :param model_class: Класс модели, к которой добавляется поле.
-        :param name: Имя поля в модели.
+        Method that links field to model.
+        :param model_class: Model class to which field is added.
+        :param name: Field name in model.
         """
-        self.name = name  # Устанавливаем имя поля
+        self.name = name  # Set field name
         self.model_class = model_class
 
-        # Добавляем поле в список полей модели
+        # Add field to model fields list
         if not hasattr(model_class, '_meta'):
             model_class._meta = {}
         if 'fields' not in model_class._meta:
             model_class._meta['fields'] = []
         model_class._meta['fields'].append(self)
 
-        # Если поле является первичным ключом, добавляем его в _meta
+        # If field is primary key, add it to _meta
         if self.primary_key:
             if 'primary_key' in model_class._meta:
                 raise ValueError(f"Model '{model_class.__name__}' already has a primary key.")
@@ -31,7 +31,7 @@ class Field:
 class RelatedField(Field):
     def get_related_model(self):
         """
-        Возвращает связанную модель.
+        Returns related model.
         """
         from cotlette.core.database.models import ModelMeta
         if isinstance(self.to, str):
@@ -43,23 +43,23 @@ class RelatedField(Field):
 
     def contribute_to_class(self, model_class, name):
         """
-        Добавляет поле в метаданные модели и настраивает связь.
+        Adds field to model metadata and configures relationship.
         """
         super().contribute_to_class(model_class, name)
         self.name = name
-        self.cache_name = f"_{name}_cache"  # Устанавливаем cache_name здесь
+        self.cache_name = f"_{name}_cache"  # Set cache_name here
 
-        # Создаем атрибут для хранения значения внешнего ключа
+        # Create attribute for storing foreign key value
         setattr(model_class, f"_{name}", None)
 
-        # Добавляем поле в метаданные модели
+        # Add field to model metadata
         if not hasattr(model_class, '_meta'):
             model_class._meta = {}
         if 'foreign_keys' not in model_class._meta:
             model_class._meta['foreign_keys'] = []
         model_class._meta['foreign_keys'].append(self)
 
-        # Настраиваем обратную связь в связанной модели
+        # Configure reverse relationship in related model
         related_model = self.get_related_model()
         if self.related_name and hasattr(related_model, '_meta'):
             if 'reverse_relations' not in related_model._meta:

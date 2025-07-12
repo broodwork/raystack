@@ -1,13 +1,13 @@
 import pathlib
 
-# Базовая директория проекта
+# Base project directory
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
-# Настройки базы данных
+# Database settings
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к файлу базы данных
+        'NAME': BASE_DIR / 'db.sqlite3',  # Path to database file
     }
 }
 

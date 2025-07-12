@@ -25,23 +25,23 @@ class Cotlette(FastAPI):
         self.settings = settings
         self.shortcuts = shortcuts
 
-        # Получить абсолютный путь к текущей диретории
+        # Get absolute path to current directory
         self.cotlette_directory = os.path.dirname(os.path.abspath(__file__))
         
-        # Подключение роутеров
+        # Include routers
         self.include_routers()
         self.include_templates()
         self.include_static()
 
     def include_routers(self):
-        # Проверка и импорт установленных приложений
+        # Check and import installed applications
         logger.info(f"Loading apps and routers:")
         for app_path in self.settings.INSTALLED_APPS:
-            # Динамически импортируем модуль
+            # Dynamically import module
             module = importlib.import_module(app_path)
             logger.info(f"✅'{app_path}'")
 
-            # Если модуль содержит роутеры, подключаем их
+            # If module contains routers, include them
             if hasattr(module, "router"):
                 self.include_router(module.router)
                 logger.info(f"✅'{app_path}.router'")
@@ -49,18 +49,17 @@ class Cotlette(FastAPI):
                 logger.warning(f"⚠️ '{app_path}.router'")
 
     def include_templates(self):
-        # Подключаем шаблоны указанные пользователем в SETTINGS
+        # Include templates specified by user in SETTINGS
         for template in self.settings.TEMPLATES:
             template_dirs = template.get("DIRS")
             template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
 
     def include_static(self):
-
-        # Подключаем static фреймворка
+        # Include framework static files
         static_dir = os.path.join(self.cotlette_directory, "static")
         self.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-        # Подключаем static указанные пользователем в SETTINGS
+        # Include static files specified by user in SETTINGS
         if self.settings.STATIC_URL:
             static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
             self.mount("/static", StaticFiles(directory=static_dir), name="static")

@@ -3,33 +3,33 @@ from cotlette.core.exceptions import ValidationError
 
 class ForeignKeyField(RelatedField):
     """
-    Поле для создания внешнего ключа между моделями.
+    Field for creating foreign key relationships between models.
     """
 
     def __init__(self, to, on_delete=None, related_name=None, to_field=None, **kwargs):
         """
-        :param to: Связанная модель (класс или строка с именем модели).
-        :param on_delete: Функция, которая определяет поведение при удалении связанного объекта.
-        :param related_name: Имя обратной связи (опционально).
-        :param to_field: Поле в связанной модели, которое используется для связи (по умолчанию PK).
-        :param kwargs: Дополнительные параметры.
+        :param to: Related model (class or string with model name).
+        :param on_delete: Function that defines behavior when related object is deleted.
+        :param related_name: Name for reverse relationship (optional).
+        :param to_field: Field in related model used for relationship (defaults to PK).
+        :param kwargs: Additional parameters.
         """
         super().__init__("INTEGER", **kwargs)
-        self.to = to  # Связанная модель
-        self.on_delete = on_delete  # Поведение при удалении
-        self.related_name = related_name  # Имя для обратной связи
-        self.to_field = to_field  # Поле в связанной модели
-        self.cache_name = None  # Имя для кэширования связанного объекта
+        self.to = to  # Related model
+        self.on_delete = on_delete  # Behavior on delete
+        self.related_name = related_name  # Name for reverse relationship
+        self.to_field = to_field  # Field in related model
+        self.cache_name = None  # Name for caching related object
 
     def contribute_to_class(self, model_class, name):
         """
-        Добавляет поле в метаданные модели и настраивает связь.
+        Adds field to model metadata and configures relationship.
         """
         super().contribute_to_class(model_class, name)
         self.name = name
         self.cache_name = f"_{name}_cache"
 
-        # Создаем атрибут для хранения значения внешнего ключа
+        # Create attribute for storing foreign key value
         setattr(model_class, f"_{name}", None)
 
         if not hasattr(model_class, '_meta'):
@@ -46,8 +46,8 @@ class ForeignKeyField(RelatedField):
 
     def get_related_model(self):
         """
-        Возвращает связанную модель.
-        Если self.to — строка, то ищет модель в реестре.
+        Returns related model.
+        If self.to is a string, searches for model in registry.
         """
         from cotlette.core.database.models import ModelMeta
         if isinstance(self.to, str):
@@ -59,24 +59,24 @@ class ForeignKeyField(RelatedField):
     
     def create_related_instance(self, related_data):
         """
-        Создает и возвращает экземпляр связанной модели.
+        Creates and returns instance of related model.
         """
         related_model = self.get_related_model()
         return related_model(**related_data)
 
     def validate(self, value):
         """
-        Валидация значения внешнего ключа.
+        Validates foreign key value.
         """
         related_model = self.get_related_model()
         if value is None:
-            return  # Допустимо, если поле необязательное
+            return  # Allowed if field is optional
         if not isinstance(value, related_model):
             raise ValidationError(f"Value must be an instance of {related_model.__name__}.")
 
     def __get__(self, instance, owner):
         """
-        Дескриптор для получения связанного объекта.
+        Descriptor for getting related object.
         """
         if instance is None:
             return self
@@ -100,16 +100,16 @@ class ForeignKeyField(RelatedField):
 
     def __set__(self, instance, value):
         """
-        Дескриптор для установки значения внешнего ключа.
+        Descriptor for setting foreign key value.
         """
         if isinstance(value, self.get_related_model()):
-            value = value.id  # Если передан объект модели, берем его id
+            value = value.id  # If model object is passed, get its id
         elif not isinstance(value, int) and value is not None:
             raise ValueError(f"Invalid value for foreign key '{self.name}': {value}")
 
-        # Устанавливаем значение через внутренний атрибут, чтобы избежать рекурсии
+        # Set value through internal attribute to avoid recursion
         setattr(instance, f"_{self.name}", value)
 
-        # Очищаем кэш при изменении значения
+        # Clear cache when value changes
         if hasattr(instance, self.cache_name):
             delattr(instance, self.cache_name)

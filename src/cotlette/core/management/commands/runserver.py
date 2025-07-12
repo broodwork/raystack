@@ -8,9 +8,7 @@ import uvicorn
 
 from cotlette.conf import settings
 from cotlette.core.management.base import BaseCommand, CommandError
-# from cotlette.core.servers.basehttp import WSGIServer, get_internal_wsgi_application, run
-# from cotlette.db import connections
-# from cotlette.utils import autoreload
+
 from cotlette.utils.regex_helper import _lazy_re_compile
 from cotlette.utils.version import get_docs_version
 
@@ -93,13 +91,6 @@ class Command(BaseCommand):
             help="Tells Cotlette to NOT use the auto-reloader.",
         )
 
-    # def execute(self, *args, **options):
-    #     if options["no_color"]:
-    #         # We rely on the environment because it's currently the only
-    #         # way to reach WSGIRequestHandler. This seems an acceptable
-    #         # compromise considering `runserver` runs indefinitely.
-    #         os.environ["COTLETTE_COLORS"] = "nocolor"
-    #     super().execute(*args, **options)
 
     def get_check_kwargs(self, options):
         """Validation is called explicitly each time the server reloads."""
@@ -148,22 +139,22 @@ class Command(BaseCommand):
         # self.inner_run(None, **options)
 
         uvicorn.run(
-            # Путь до приложение
+            # Application path
             'core:app',
 
-            # Адрес и порт
-            host=self.addr or default_addr,
-            port=int(self.port) or default_port,
+            # Address and port
+            host=self.addr or self.default_addr,
+            port=int(self.port) or int(self.default_port),
             
-            # Авторелоад, при изменении py файлов
+            # Auto-reload on Python file changes
             reload=options["use_reloader"],
             
-            # Уровень логгирования
+            # Log level
             log_level="debug" if settings.DEBUG else "info",
             
-            # Логи HTTP-запросов включены
+            # HTTP request logs enabled
             access_log=True,
 
-            # Конфигурация логгера uvicorn
+            # Uvicorn logger configuration
             log_config=LOGGING_CONFIG,
         )

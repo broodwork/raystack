@@ -7,31 +7,31 @@ from cotlette.core.database.fields import AutoField
 
 
 class ModelMeta(type):
-    _registry = {}  # Словарь для хранения зарегистрированных моделей
+    _registry = {}  # Dictionary for storing registered models
 
     def __new__(cls, name, bases, attrs):
-        # Создаем новый класс
+        # Create new class
         new_class = super().__new__(cls, name, bases, attrs)
 
-        # Регистрируем модель в реестре, если это не базовый класс Model
+        # Register model in registry if it's not the base Model class
         if name != "Model":
             cls._registry[name] = new_class
 
-        # Собираем поля в словарь _fields
+        # Collect fields in _fields dictionary
         fields = {}
         for attr_name, attr_value in attrs.items():
-            if isinstance(attr_value, Field):  # Проверяем, является ли атрибут экземпляром Field
-                attr_value.contribute_to_class(new_class, attr_name)  # Вызываем contribute_to_class
+            if isinstance(attr_value, Field):  # Check if attribute is Field instance
+                attr_value.contribute_to_class(new_class, attr_name)  # Call contribute_to_class
                 fields[attr_name] = attr_value
 
-        # Присоединяем _fields к классу
+        # Attach _fields to class
         new_class._fields = fields
         return new_class
 
     @classmethod
     def get_model(cls, name):
         """
-        Возвращает модель по имени из реестра.
+        Returns model by name from registry.
         """
         return cls._registry.get(name)
 
@@ -50,8 +50,8 @@ class Model(metaclass=ModelMeta):
     
     def __getattr__(self, name):
         """
-        Динамический доступ к атрибутам объекта.
-        Если атрибут не существует, вызывается AttributeError.
+        Dynamic access to object attributes.
+        If attribute doesn't exist, AttributeError is raised.
         """
         if name in self.__dict__:
             return self.__dict__[name]
@@ -59,7 +59,7 @@ class Model(metaclass=ModelMeta):
 
     def __setattr__(self, name, value):
         """
-        Динамическая установка значений атрибутов.
+        Dynamic setting of attribute values.
         """
         self.__dict__[name] = value
     
@@ -68,8 +68,8 @@ class Model(metaclass=ModelMeta):
 
     def to_dict(self, exclude_private=True):
         """
-        Преобразование объекта модели в словарь.
-        :param exclude_private: Если True, скрытые (private) поля не будут добавляться в словарь.
+        Convert model object to dictionary.
+        :param exclude_private: If True, private fields won't be added to dictionary.
         """
         return {
             key: getattr(self, key)
@@ -87,19 +87,19 @@ class Model(metaclass=ModelMeta):
 
     @classmethod
     def create_table(cls):
-        # TODO сделать чтобы было вынесено в database.backends... в частности для SQLite3 и в будущем PostgreSQL
+        # TODO: Move to database.backends... specifically for SQLite3 and future PostgreSQL
 
         columns = []
         foreign_keys = []
 
         for field_name, field in cls._fields.items():
-            # Формируем определение столбца
+            # Form column definition
             column_def = f'"{field_name}" {field.column_type}'
             
-            # Добавляем автоинкремент для первичного ключа
-            if isinstance(field, AutoField):  # Проверяем, является ли поле автоинкрементным
-                column_def += " PRIMARY KEY AUTOINCREMENT"  # Для SQLite
-                # Если используется PostgreSQL, то сделать "SERIAL PRIMARY KEY"
+            # Add autoincrement for primary key
+            if isinstance(field, AutoField):  # Check if field is autoincrement
+                column_def += " PRIMARY KEY AUTOINCREMENT"  # For SQLite
+                # If PostgreSQL is used, make it "SERIAL PRIMARY KEY"
             elif field.primary_key:
                 column_def += " PRIMARY KEY"
             
@@ -107,52 +107,52 @@ class Model(metaclass=ModelMeta):
                 column_def += " UNIQUE"
             columns.append(column_def)
 
-            # Проверяем, является ли поле внешним ключом
+            # Check if field is foreign key
             if isinstance(field, ForeignKeyField):
                 related_model = field.get_related_model()
                 foreign_keys.append(
                     f'FOREIGN KEY ("{field_name}") REFERENCES "{related_model.table or related_model.__name__}"("id")'
                 )
 
-        # Объединяем колонки и внешние ключи в один список
+        # Combine columns and foreign keys into one list
         all_parts = columns + foreign_keys
 
-        # Формируем финальный SQL-запрос
+        # Form final SQL query
         query = f'CREATE TABLE IF NOT EXISTS "{cls.get_table_name()}" ({", ".join(all_parts)});'
 
-        db.execute(query)  # Выполняем запрос на создание таблицы
-        db.commit()        # Фиксируем изменения
+        db.execute(query)  # Execute table creation query
+        db.commit()        # Commit changes
 
     def save(self):
         """
-        Сохраняет текущий объект в базе данных.
-        Если объект уже существует (имеет id), выполняется UPDATE.
-        Если объект новый (id отсутствует или равен None), выполняется INSERT.
+        Saves current object to database.
+        If object already exists (has id), UPDATE is performed.
+        If object is new (id is missing or None), INSERT is performed.
         """
-        # Получаем значения полей объекта
+        # Get field values from object
         data = {field: getattr(self, field, None) for field in self._fields}
 
-        # Преобразуем значения в поддерживаемые SQLite типы
+        # Convert values to supported SQLite types
         def convert_value(value):
             if isinstance(value, (int, float, str, bytes, type(None))):
                 return value
             elif hasattr(value, '__str__'):
-                return str(value)  # Преобразуем объект в строку, если это возможно
+                return str(value)  # Convert object to string if possible
             else:
                 raise ValueError(f"Unsupported type for database: {type(value)}")
 
         data = {key: convert_value(value) for key, value in data.items()}
 
-        # Проверяем, существует ли объект в базе данных
+        # Check if object exists in database
         if hasattr(self, 'id') and self.id is not None:
-            # Обновляем существующую запись (UPDATE)
+            # Update existing record (UPDATE)
             fields = ', '.join([f"{key}=?" for key in data if key != 'id'])
             values = tuple(data[key] for key in data if key != 'id') + (self.id,)
             update_query = f"UPDATE {self.get_table_name()} SET {fields} WHERE id=?"
             db.execute(update_query, values)
             db.commit()
         else:
-            # Создаем новую запись (INSERT)
+            # Create new record (INSERT)
             fields = ', '.join([key for key in data if key != 'id'])
             placeholders = ', '.join(['?'] * len(data))
             values = tuple(data[key] for key in data if key != 'id')
@@ -161,5 +161,5 @@ class Model(metaclass=ModelMeta):
             db.execute(insert_query, values)
             db.commit()
 
-            # Получаем id созданной записи
+            # Get id of created record
             self.id = db.lastrowid

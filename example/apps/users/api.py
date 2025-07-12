@@ -18,89 +18,63 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter()
 
-# Pydantic-модель для входа пользователя
+# Pydantic model for user login
 class UserLogin(BaseModel):
     email: str
     password: str
 
-# Pydantic-модель для токена
+# Pydantic model for token
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-# Pydantic-модель для данных токена
+# Pydantic model for token data
 class TokenData(BaseModel):
     email: Union[str] = None
 
 
-# TODO
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from fastapi.responses import JSONResponse
-from datetime import timedelta, datetime
-from jose import JWTError, jwt
-
-# Настройки для JWT
+# JWT settings
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# # Эндпоинт для аутентификации пользователя
-# @router.post("/login/", response_model=Token)
-# def login_for_access_token(user_login: UserLogin):
-    
-#     # Ищем пользователя по email
-#     user = UserModel.objects.filter(email=user_login.email).first()
-
-#     if not user or not check_password(user_login.password, user.password_hash):
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Incorrect email or password",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     access_token = generate_jwt(
-#         data={"user_id": user.id}, expires_delta=access_token_expires
-#     )
-#     # Создаем cookie с токеном
-#     response = JSONResponse(content={"message": "Login successful"})
-#     # response.set_cookie(
-#     #     key="access_token",
-#     #     value=access_token,
-#     #     httponly=True,  # Защищает от доступа через JavaScript
-#     #     # secure=True,    # Требует HTTPS (уберите для тестирования на localhost)
-#     #     samesite="lax", # Защита от CSRF
-#     #     max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
-#     # )
-#     response.set_cookie('jwt', generate_jwt(results['id']), httponly=True)
-
-#     return response
-
+@router.on_event("startup")
+async def create_tables():
+    if not UserModel.objects.filter(email="pvenv@icloud.com").first():  # FIXME
+        test_user = await create_user(UserCreate(
+            name="vova",
+            age=26,
+            email="pvenv@icloud.com",
+            password="dotvej-Fawne4-migqaw",
+            group_id=1,
+            organization="N/A organization"
+        ))
+        print('test_user', test_user)
 
 @router.route("/login", methods=["POST"])
 async def login_user(request):
-    # Перенаправление на предыдущий путь после входа
+    # Redirect to previous path after login
     if 'history' in request.session and len(request.session['history']):
         previous = request.session['history'].pop()
     else:
-        previous = '/'
+        previous = '/admin'
 
-    # Получение данных формы
+    # Get form data
     form = await request.form()
     username = form["email"]
     password = form["password"]
 
-    # Поиск пользователя в базе данных
+    # Search for user in database
     user = UserModel.objects.filter(email=username).first()
     if not user:
         return RedirectResponse(previous, status_code=303)
 
     hashed_pass = user.password_hash
 
-    # Проверка пароля
+    # Check password
     valid_pass = await check_password(password, hashed_pass)
     if not valid_pass:
         return RedirectResponse(previous, status_code=303)
 
-    if previous.count('/api/users/login'):
+    if previous in ('/api/users/login', '/api/users/login/', "/"):
         previous = '/admin'
 
     response = RedirectResponse(previous, status_code=303)
@@ -116,19 +90,20 @@ def logout():
     return response
 
 
-# Создание таблицы при запуске приложения
-@router.on_event("startup")
-def create_tables():
-    UserModel.create_table()
-
-
 from apps.groups.models import GroupModel
 
-# Создание нового пользователя (POST)
+# Create new user (POST)
 @router.post("/", response_model=None)
 async def create_user(user: UserCreate):
     hashed_password = await hash_password(user.password)
     group = GroupModel.objects.filter(id=user.group_id).first()
+    
+    # Check if user doesn't exist
+    if UserModel.objects.filter(email=user.email).first():
+        return JSONResponse(
+            status_code=400,
+            content={"message": "User with this email already exists"}
+        )
 
     new_user = UserModel.objects.create(
         name=user.name,
@@ -138,6 +113,7 @@ async def create_user(user: UserCreate):
         group=group.id
     )
     return User(
+        id=new_user.id,
         name=new_user.name,
         age=new_user.age,
         email=new_user.email,
@@ -145,7 +121,7 @@ async def create_user(user: UserCreate):
     )
 
 
-# Получение всех пользователей (GET)
+# Get all users (GET)
 @router.get("/", response_model=list[User])
 def get_users():
     users = UserModel.objects.all()

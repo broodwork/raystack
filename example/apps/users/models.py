@@ -6,16 +6,16 @@ from cotlette.core.database.fields.related import ForeignKeyField
 
 from apps.groups.models import Group, GroupModel
 
-# Pydantic-модель для создания пользователя
+# Pydantic model for user creation
 class UserCreate(BaseModel):
     name: str
     age: int
     email: str
     password: str
-    group_id: int  # ID группы, к которой принадлежит пользователь
+    group_id: int  # ID of the group the user belongs to
     organization: str = "N/A organization"
 
-# Pydantic-модель для представления пользователя
+# Pydantic model for user representation
 class User(BaseModel):
     id: int
     name: str
@@ -24,17 +24,14 @@ class User(BaseModel):
     group: Optional[Group] = None
     organization: str = "N/A organization"
 
-    # class Config:
-    #     from_attributes = True
-
-# Модель базы данных
+# Database model
 class UserModel(Model):
     table = "users_usermodel"
 
-    id = AutoField()  # Первичный ключ
+    id = AutoField()  # Primary key
     name = CharField(max_length=50)
     age = IntegerField()
     email = CharField(max_length=100)
     password_hash = CharField(max_length=255)
-    group = ForeignKeyField(to="GroupModel", related_name="users")  # Связь с группой
+    group = ForeignKeyField(to="GroupModel", related_name="users")  # Relationship with group
     organization = CharField(max_length=100)
