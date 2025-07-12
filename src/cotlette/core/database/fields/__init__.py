@@ -77,4 +77,4 @@ class IntegerField(Field):
 
 class AutoField(Field):
     def __init__(self, **kwargs):
-        super().__init__("INTEGER", primary_key=True, **kwargs)
+        super().__init__("INTEGER", **kwargs)

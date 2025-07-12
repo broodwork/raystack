@@ -17,3 +17,11 @@ class Manager:
         :return: Созданный экземпляр модели.
         """
         return QuerySet(self.model_class).create(**kwargs)
+
+    def get(self, **kwargs):
+        """
+        Получает одну запись из базы данных по заданным параметрам.
+        :param kwargs: Параметры для фильтрации.
+        :return: Экземпляр модели или None.
+        """
+        return QuerySet(self.model_class).filter(**kwargs).first()

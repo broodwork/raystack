@@ -36,6 +36,27 @@ Launches an interactive Python shell with project context loaded.
 cotlette shell
 ```
 
+### `createsuperuser`
+Creates a superuser account with all permissions.
+
+```
+cotlette createsuperuser
+```
+
+Options:
+- `--username`: Specify username (optional)
+- `--email`: Specify email address (optional)
+- `--noinput`: Create without prompting for input
+
+Examples:
+```bash
+# Interactive creation
+cotlette createsuperuser
+
+# Non-interactive creation
+cotlette createsuperuser --username admin --email admin@example.com --noinput
+```
+
 ### `makemigrations` *(planned)*
 Generates migration files for model changes.
 
@@ -82,6 +103,7 @@ cotlette runserver --help
 - Use `startproject` and `startapp` to scaffold new code
 - Keep custom commands in `core/management/commands/`
 - Use the shell for quick database and model testing
+- Use `createsuperuser` to create admin accounts
 
 ---
 

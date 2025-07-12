@@ -5,8 +5,9 @@ from cotlette.core.database.fields.related import ForeignKeyField
 class QuerySet:
     def __init__(self, model_class):
         self.model_class = model_class
-        self.query = f'SELECT * FROM "{model_class.table or model_class.__name__}"'
+        self.query = f'SELECT * FROM "{model_class.get_table_name()}"'
         self.params = None
+        self.order_by_fields = []
 
     def filter(self, **kwargs):
         # Создаем новый QuerySet для цепочки запросов
@@ -34,16 +35,13 @@ class QuerySet:
         new_queryset.query = f"{self.query} WHERE {' AND '.join(conditions)}"
         new_queryset.params = tuple(params)
         return new_queryset
-
+    
     def all(self):
-        result = db.execute(self.query, self.params, fetch=True)
-        return [
-            self.model_class(**{
-                key: value for key, value in zip(self.model_class._fields.keys(), row)
-                if key in self.model_class._fields
-            })
-            for row in result
-        ]
+        """
+        Возвращает QuerySet со всем объектами.
+        :return: Новый QuerySet.
+        """
+        return self
 
     def first(self):
         # Добавляем LIMIT 1 к текущему запросу
@@ -57,6 +55,32 @@ class QuerySet:
                 if key in self.model_class._fields
             })
         return None
+    
+    def order_by(self, *fields):
+        """
+        Добавляет сортировку к запросу.
+        :param fields: Поля для сортировки (например, 'id', '-age').
+        :return: Новый QuerySet с добавленной сортировкой.
+        """
+        new_queryset = QuerySet(self.model_class)
+        new_queryset.query = self.query
+        new_queryset.params = self.params
+        new_queryset.order_by_fields = list(fields)  # Сохраняем поля сортировки
+
+        # Добавляем ORDER BY к запросу
+        order_conditions = []
+        for field in fields:
+            if field.startswith('-'):
+                # Сортировка по убыванию
+                order_conditions.append(f'"{field[1:]}" DESC')
+            else:
+                # Сортировка по возрастанию
+                order_conditions.append(f'"{field}" ASC')
+
+        if order_conditions:
+            new_queryset.query += f" ORDER BY {', '.join(order_conditions)}"
+
+        return new_queryset
 
     def execute(self):
         # Выполняем текущий запрос и возвращаем результат
@@ -91,11 +115,11 @@ class QuerySet:
             values.append(value)
 
         # Формируем SQL-запрос
-        insert_query = f'INSERT INTO "{self.model_class.table or self.model_class.__name__}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
+        insert_query = f'INSERT INTO "{self.model_class.get_table_name()}" ({", ".join(fields)}) VALUES ({", ".join(placeholders)})'
         cursor = db.execute(insert_query, values)
         db.commit()
 
-        if not hasattr(cursor, 'lastrowid') or cursor.lastrowid is None:
+        if cursor.lastrowid is None:
             raise RuntimeError("Failed to retrieve the ID of the newly created record.")
         return self.model_class.objects.get(id=cursor.lastrowid)
 
@@ -122,3 +146,31 @@ class QuerySet:
             instance.id = db.lastrowid
 
         return instance
+    
+    def __getitem__(self, key):
+        """
+        Обрабатывает срезы (например, [:10]).
+        """
+        if isinstance(key, slice):
+            # Если start не указан, используем 0
+            limit = key.stop - (key.start or 0)
+            offset = key.start or 0
+
+            new_queryset = QuerySet(self.model_class)
+            new_queryset.query = self.query
+            new_queryset.params = self.params
+
+            if limit is not None:
+                new_queryset.query += f" LIMIT {limit}"
+            if offset:
+                new_queryset.query += f" OFFSET {offset}"
+
+            return new_queryset.execute()
+
+        raise TypeError("QuerySet indices must be slices")
+    
+    def __iter__(self):
+        """
+        Делает QuerySet итерируемым, выполняя запрос при необходимости.
+        """
+        return iter(self.execute())
