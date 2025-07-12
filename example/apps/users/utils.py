@@ -25,10 +25,14 @@ def asyncify(func):
 
 @asyncify
 def hash_password(password: str):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    # Возвращаем строку для сохранения в базу данных
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 @asyncify
-def check_password(password:str, hashed_pass):
+def check_password(password: str, hashed_pass):
+    # Если hashed_pass - это строка (из базы данных), кодируем её в байты
+    if isinstance(hashed_pass, str):
+        hashed_pass = hashed_pass.encode('utf-8')
     return bcrypt.checkpw(password.encode('utf-8'), hashed_pass)
 
 # @asyncify
