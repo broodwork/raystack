@@ -8,10 +8,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
         # Синхронный режим (по умолчанию)
-        'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        # 'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
         # Асинхронный режим (раскомментируйте для использования)
-        # 'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
         # Другие примеры асинхронных URL:
         # PostgreSQL: 'postgresql+asyncpg://user:pass@localhost/dbname'

@@ -240,18 +240,22 @@ class QuerySet:
 
     # Методы для итераций (работают в sync и async контекстах)
     def iter(self):
-        """Возвращает итерируемый объект с результатами запроса."""
+        """Возвращает итерируемый объект с результатами запроса (lazy loading)."""
         if should_use_async():
             return self._iter_async()
         else:
-            return iter(self._execute_sync())
+            return self._iter_sync()
 
     def _iter_sync(self):
-        """Синхронная итерация по результатам."""
-        return iter(self._execute_sync())
+        """Синхронная итерация по результатам (lazy loading)."""
+        # Выполняем запрос и возвращаем итератор
+        result = self._execute_sync()
+        for item in result:
+            yield item
 
     async def _iter_async(self):
-        """Асинхронная итерация по результатам."""
+        """Асинхронная итерация по результатам (lazy loading)."""
+        # Выполняем запрос и возвращаем асинхронный итератор
         result = await self._execute_async()
         for item in result:
             yield item
@@ -352,3 +356,15 @@ class QuerySet:
         if hasattr(item, 'id'):
             return self.filter(id=item.id).exists()
         return False
+
+    def __iter__(self):
+        """Поддержка прямого итерирования по QuerySet (lazy loading)."""
+        return self.iter()
+
+    def __aiter__(self):
+        """Поддержка асинхронного итерирования по QuerySet (lazy loading)."""
+        return self._iter_async()
+
+    def __getitem__(self, key):
+        """Поддержка индексации QuerySet (lazy loading)."""
+        return self.get_item(key)
