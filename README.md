@@ -37,7 +37,7 @@ The mode is determined by the presence of async drivers in your database URL:
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///db.sqlite3',  # Sync mode
+        'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Sync mode
     }
 }
 
@@ -45,10 +45,23 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite+aiosqlite:///db.sqlite3',  # Async mode
+        'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Async mode
     }
 }
 ```
+
+### Supported Database Drivers
+
+**Synchronous Drivers:**
+- SQLite: `sqlite:///db.sqlite3`
+- PostgreSQL: `postgresql://user:pass@localhost/dbname`
+- MySQL: `mysql://user:pass@localhost/dbname`
+- Oracle: `oracle://user:pass@localhost/dbname`
+
+**Asynchronous Drivers:**
+- SQLite: `sqlite+aiosqlite:///db.sqlite3`
+- PostgreSQL: `postgresql+asyncpg://user:pass@localhost/dbname`
+- MySQL: `mysql+aiomysql://user:pass@localhost/dbname`
 
 ### Benefits
 
@@ -82,6 +95,67 @@ Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000/)
 
 ---
 
+## Example Projects
+
+Cotlette comes with two complete example projects demonstrating both synchronous and asynchronous modes:
+
+### Synchronous Example (`example/`)
+```bash
+cd example
+cotlette runserver
+```
+- Uses `sqlite:///db.sqlite3` (synchronous mode)
+- Direct iteration: `for user in users:`
+- Direct template passing: `"users": users`
+
+### Asynchronous Example (`example_async/`)
+```bash
+cd example_async
+cotlette runserver
+```
+- Uses `sqlite+aiosqlite:///db.sqlite3` (asynchronous mode)
+- Async iteration: `async for user in users:`
+- Template execution: `"users": await users.execute()`
+
+---
+
+## Project Configuration
+
+### Settings Structure
+```python
+# config/settings.py
+import pathlib
+
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Sync mode
+        # 'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Async mode
+    }
+}
+
+INSTALLED_APPS = [
+    'apps.home',
+    'apps.admin',
+    'apps.users',
+    'apps.accounts',
+    'apps.groups',
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
+        "DIRS": ["templates"],
+        "APP_DIRS": True
+    },
+]
+
+SECRET_KEY = b'your-secret-key'
+ALGORITHM = "HS256"
+```
+
 ## Screenshots
 
 **Home Page:**
@@ -98,12 +172,18 @@ Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000/)
 ## Example: Defining a Model
 ```python
 from cotlette.core.database import Model, CharField, IntegerField, AutoField
+from cotlette.core.database.fields.related import ForeignKeyField
 
-class Article(Model):
-    id = AutoField(primary_key=True)
-    title = CharField(max_length=200)
-    content = CharField(max_length=1000)
-    author_id = IntegerField()
+class UserModel(Model):
+    table = "users_usermodel"
+    
+    id = AutoField()  # Primary key
+    name = CharField(max_length=50)
+    age = IntegerField()
+    email = CharField(max_length=100)
+    password_hash = CharField(max_length=255)
+    group = ForeignKeyField(to="GroupModel", related_name="users")
+    organization = CharField(max_length=100)
 ```
 
 ---
@@ -117,24 +197,27 @@ Cotlette ORM automatically detects the mode based on your database URL configura
 # Create
 article = Article.objects.create(title="Hello", content="World", author_id=1)
 
-# Get
-article = Article.objects.get(id=1)
+# Get single object
+user = UserModel.objects.get(id=1)
+user = UserModel.objects.get(email="john@example.com")
 
 # Filter
-articles = Article.objects.filter(author_id=1).execute()
+users = UserModel.objects.filter(age__gte=25).execute()
+users = UserModel.objects.filter(group_id=1).execute()
 
 # Update
-article.title = "Updated Title"
-article.save()
+user.name = "Jane Doe"
+user.save()
 
 # Delete
-article.delete()
+user.delete()
 
 # Count
-count = Article.objects.count()
+count = UserModel.objects.count()
+active_users = UserModel.objects.filter(age__gte=18).count()
 
 # Exists
-exists = Article.objects.exists()
+exists = UserModel.objects.filter(email="john@example.com").exists()
 ```
 
 ### In Async Mode
@@ -146,23 +229,23 @@ async def async_view():
     article = await Article.objects.create(title="Hello", content="World", author_id=1)
     
     # Get
-    article = await Article.objects.get(id=1)
+    user = await UserModel.objects.get(id=1)
     
     # Filter
-    articles = await Article.objects.filter(author_id=1).execute()
+    users = await UserModel.objects.filter(age__gte=25).execute()
     
     # Update
-    article.title = "Updated Title"
-    await article.save()
+    user.name = "Jane Doe"
+    await user.save()
     
     # Delete
-    await article.delete()
+    await user.delete()
     
     # Count
-    count = await Article.objects.count()
+    count = await UserModel.objects.count()
     
     # Exists
-    exists = await Article.objects.exists()
+    exists = await UserModel.objects.filter(email="john@example.com").exists()
 ```
 
 ---
@@ -171,33 +254,123 @@ async def async_view():
 
 ### Synchronous View (with sync database URL)
 ```python
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from cotlette.shortcuts import render_template
-from .models import Article
+from starlette.authentication import requires
+from .models import UserModel
 
 router = APIRouter()
 
-@router.get("/sync")
-def home():
-    articles = Article.objects.all().execute()
-    return render_template("index.html", {"articles": articles})
+@router.get("/users", response_model=None)
+@requires("user_auth")
+async def users_view(request: Request):
+    users = UserModel.objects.all()  # Direct iteration works in sync mode
+    
+    return render_template(request=request, template_name="admin/users.html", context={
+        "users": users,  # Can be passed directly to template
+        "config": request.app.settings,
+    })
 ```
 
 ### Asynchronous View (with async database URL)
 ```python
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from cotlette.shortcuts import render_template
-from .models import Article
+from starlette.authentication import requires
+from .models import UserModel
 
 router = APIRouter()
 
-@router.get("/async")
-async def home():
-    articles = await Article.objects.all().execute()
-    return render_template("index.html", {"articles": articles})
+@router.get("/users", response_model=None)
+@requires("user_auth")
+async def users_view(request: Request):
+    users = UserModel.objects.all()
+    
+    # Option 1: Async iteration for lazy loading
+    async for user in users:
+        print("user", user)
+    
+    # Option 2: Execute for template context
+    return render_template(request=request, template_name="admin/users.html", context={
+        "users": await users.execute(),  # Must execute for template
+        "config": request.app.settings,
+    })
 ```
 
 **Note**: The same ORM methods work in both contexts! Cotlette automatically detects the mode based on database URL configuration.
+
+---
+
+## Lazy Loading and Iteration
+
+Cotlette supports lazy loading and iteration over QuerySet objects in both synchronous and asynchronous modes.
+
+### Synchronous Mode
+
+```python
+# Method 1: Execute to get list
+users = UserModel.objects.all().execute()
+for user in users:
+    print(user.name)
+
+# Method 2: Direct iteration (lazy loading)
+users = UserModel.objects.all()
+for user in users:
+    print(user.name)
+
+# Method 3: Indexing
+first_user = UserModel.objects.all().get_item(0)
+first_two = UserModel.objects.all().get_item(slice(0, 2))
+```
+
+### Asynchronous Mode
+
+```python
+# Method 1: Execute to get list
+users = await UserModel.objects.all().execute()
+for user in users:
+    print(user.name)
+
+# Method 2: Async iteration (lazy loading)
+users = UserModel.objects.all()
+async for user in users:
+    print(user.name)
+
+# Method 3: Indexing
+first_user = await UserModel.objects.all().get_item(0)
+first_two = await UserModel.objects.all().get_item(slice(0, 2))
+```
+
+### Template Usage
+
+**Synchronous Mode:**
+```python
+@router.get("/users")
+async def users_view(request: Request):
+    users = UserModel.objects.all()
+    return render_template(request=request, template_name="users.html", context={
+        "users": users,  # Can be passed directly
+    })
+```
+
+**Asynchronous Mode:**
+```python
+@router.get("/users")
+async def users_view(request: Request):
+    users = UserModel.objects.all()
+    return render_template(request=request, template_name="users.html", context={
+        "users": await users.execute(),  # Must execute for template
+    })
+```
+
+### Important Notes
+
+- In **synchronous mode**: Use regular `for` loops for iteration
+- In **asynchronous mode**: Use `async for` loops for iteration
+- The `execute()` method always returns a list that can be iterated normally
+- Direct iteration provides lazy loading - data is fetched only when needed
+- Indexing and slicing work in both modes with appropriate await calls
+- For Jinja2 templates in async mode, use `await queryset.execute()` to get a regular list
 
 ---
 
