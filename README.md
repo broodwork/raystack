@@ -24,6 +24,42 @@
 
 ---
 
+## 🎯 URL-Based Async/Sync Mode Detection
+
+Cotlette uses **URL-based mode detection** to determine whether to use synchronous or asynchronous database operations. This approach provides explicit control and predictable behavior across all frameworks.
+
+### How It Works
+
+The mode is determined by the presence of async drivers in your database URL:
+
+```python
+# Synchronous mode (default)
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'sqlite:///db.sqlite3',  # Sync mode
+    }
+}
+
+# Asynchronous mode  
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'sqlite+aiosqlite:///db.sqlite3',  # Async mode
+    }
+}
+```
+
+### Benefits
+
+- ✅ **Explicit Control**: You choose the mode explicitly in settings
+- ✅ **Predictable Behavior**: No dependency on execution context
+- ✅ **Framework Agnostic**: Works with FastAPI, Django, Flask, or any framework
+- ✅ **Easy Switching**: Simply change the URL to switch modes
+- ✅ **Clear Intent**: URL clearly shows sync or async database drivers
+
+---
+
 ## Quick Start
 
 ### 1. Install Cotlette
@@ -74,7 +110,7 @@ class Article(Model):
 
 ## Universal ORM Usage
 
-Cotlette ORM automatically detects whether you're in a synchronous or asynchronous context and works accordingly. No need for separate sync/async methods!
+Cotlette ORM automatically detects the mode based on your database URL configuration and works accordingly. No need for separate sync/async methods!
 
 ### Basic CRUD Operations
 ```python
@@ -101,8 +137,8 @@ count = Article.objects.count()
 exists = Article.objects.exists()
 ```
 
-### In Async Context
-When used in async functions, the same methods automatically work asynchronously:
+### In Async Mode
+When using async database URLs, the same methods automatically work asynchronously:
 
 ```python
 async def async_view():
@@ -133,7 +169,7 @@ async def async_view():
 
 ## Example: Creating Views
 
-### Synchronous View
+### Synchronous View (with sync database URL)
 ```python
 from fastapi import APIRouter
 from cotlette.shortcuts import render_template
@@ -147,7 +183,7 @@ def home():
     return render_template("index.html", {"articles": articles})
 ```
 
-### Asynchronous View
+### Asynchronous View (with async database URL)
 ```python
 from fastapi import APIRouter
 from cotlette.shortcuts import render_template
@@ -161,7 +197,7 @@ async def home():
     return render_template("index.html", {"articles": articles})
 ```
 
-**Note**: The same ORM methods work in both contexts! Cotlette automatically detects the execution context.
+**Note**: The same ORM methods work in both contexts! Cotlette automatically detects the mode based on database URL configuration.
 
 ---
 
@@ -169,24 +205,24 @@ async def home():
 
 ### Query Chaining
 ```python
-# Complex queries with chaining
+# Complex queries with chaining (sync mode)
 articles = Article.objects.filter(author_id=1).order_by('-id').execute()
 
-# In async context
+# In async mode
 articles = await Article.objects.filter(author_id=1).order_by('-id').execute()
 ```
 
 ### Iteration and Lazy Loading
 ```python
-# Iterate over QuerySet results
+# Iterate over QuerySet results (sync mode)
 for article in Article.objects.all().iter():
     print(article.title)
 
-# Get specific items by index or slice
+# Get specific items by index or slice (sync mode)
 first_article = Article.objects.all().get_item(0)
 recent_articles = Article.objects.all().get_item(slice(0, 10))
 
-# In async context
+# In async mode
 async for article in Article.objects.all().iter():
     print(article.title)
 
@@ -196,7 +232,7 @@ recent_articles = await Article.objects.all().get_item(slice(0, 10))
 
 ### Bulk Operations
 ```python
-# Create multiple objects
+# Create multiple objects (sync mode)
 articles = [
     Article(title="Article 1", content="Content 1", author_id=1),
     Article(title="Article 2", content="Content 2", author_id=1),
@@ -205,70 +241,110 @@ articles = [
 for article in articles:
     article.save()
 
-# In async context
+# In async mode
 for article in articles:
     await article.save()
 ```
 
 ### Database Support
-Cotlette supports multiple databases through SQLAlchemy:
+Cotlette supports multiple databases through SQLAlchemy with both sync and async drivers:
 
 ```python
-# SQLite (default)
+# SQLite (sync and async)
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///db.sqlite3',
+        'URL': 'sqlite:///db.sqlite3',  # Sync mode
+        # 'URL': 'sqlite+aiosqlite:///db.sqlite3',  # Async mode
     }
 }
 
-# PostgreSQL
+# PostgreSQL (sync and async)
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'postgresql://user:pass@localhost/dbname',
+        'URL': 'postgresql://user:pass@localhost/dbname',  # Sync mode
+        # 'URL': 'postgresql+asyncpg://user:pass@localhost/dbname',  # Async mode
     }
 }
 
-# MySQL
+# MySQL (sync and async)
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'mysql://user:pass@localhost/dbname',
+        'URL': 'mysql://user:pass@localhost/dbname',  # Sync mode
+        # 'URL': 'mysql+aiomysql://user:pass@localhost/dbname',  # Async mode
     }
 }
 ```
 
-### Async Database Connections
-For optimal performance in async applications, Cotlette automatically converts database URLs to async variants:
+### Async/Sync Mode Configuration
+Cotlette determines the database mode (sync/async) based on the URL configuration in settings:
 
 ```python
-# SQLite with async support (automatic conversion)
+# Synchronous mode (default)
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///db.sqlite3',  # Automatically becomes sqlite+aiosqlite://
+        'URL': 'sqlite:///db.sqlite3',  # Sync mode
     }
 }
 
-# PostgreSQL with async support (automatic conversion)
+# Asynchronous mode
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'postgresql://user:pass@localhost/dbname',  # Automatically becomes postgresql+asyncpg://
+        'URL': 'sqlite+aiosqlite:///db.sqlite3',  # Async mode
     }
 }
 
-# MySQL with async support (automatic conversion)
+# PostgreSQL examples
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'mysql://user:pass@localhost/dbname',  # Automatically becomes mysql+aiomysql://
+        'URL': 'postgresql://user:pass@localhost/dbname',  # Sync mode
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'postgresql+asyncpg://user:pass@localhost/dbname',  # Async mode
+    }
+}
+
+# MySQL examples
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'mysql://user:pass@localhost/dbname',  # Sync mode
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'mysql+aiomysql://user:pass@localhost/dbname',  # Async mode
     }
 }
 ```
 
-**Note**: Cotlette automatically detects when you're in an async context and uses the appropriate async database driver. No additional configuration needed!
+**Note**: The mode is determined by the presence of async drivers in the URL. No automatic conversion - you explicitly choose sync or async mode in your settings!
+
+### Benefits of URL-based Mode Detection
+
+- **Explicit Control**: You choose the mode explicitly in settings, not based on execution context
+- **Predictable Behavior**: No dependency on whether you're in an async function or not
+- **Framework Agnostic**: Works consistently with FastAPI, Django, Flask, or any other framework
+- **Easy Switching**: Simply change the URL to switch between sync and async modes
+- **Clear Intent**: The URL clearly shows whether you're using sync or async database drivers
+
+### Supported Async Drivers
+
+- **SQLite**: `sqlite+aiosqlite://` (requires `aiosqlite` package)
+- **PostgreSQL**: `postgresql+asyncpg://` (requires `asyncpg` package)  
+- **MySQL**: `mysql+aiomysql://` (requires `aiomysql` package)
+- **MySQL**: `mysql+asyncmy://` (requires `asyncmy` package)
 
 ---
 
