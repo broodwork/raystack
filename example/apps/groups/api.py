@@ -26,10 +26,10 @@ router = APIRouter()
 
 # Создание таблицы при запуске приложения
 @router.on_event("startup")
-def create_tables():
-    GroupModel.create_table()
-    if not GroupModel.objects.filter(name="Owners").first():  # FIXME
-        GroupModel.objects.create(name="Owners")
+async def create_tables():
+    await GroupModel.create_table()
+    if not await GroupModel.objects.filter(name="Owners").first():  # FIXME
+        await GroupModel.objects.create(name="Owners")
 
 # # Pydantic-модель для входа пользователя
 # class UserLogin(BaseModel):

@@ -5,6 +5,8 @@ from cotlette.core.database.fields.related import ForeignKeyField
 
 from cotlette.core.database.fields import AutoField
 
+import asyncio
+
 
 class ModelMeta(type):
     _registry = {}  # Dictionary for storing registered models
@@ -113,11 +115,13 @@ class Model(metaclass=ModelMeta):
         db.create_table(cls.get_table_name(), columns)
 
     def save(self):
-        """
-        Saves current object to database using SQLAlchemy.
-        If object already exists (has id), UPDATE is performed.
-        If object is new (id is missing or None), INSERT is performed.
-        """
+        if asyncio.get_event_loop().is_running():
+            return self._save_async()
+        else:
+            return self._save_sync()
+
+    def _save_sync(self):
+        # старая sync-реализация save
         # Get field values from object
         data = {field: getattr(self, field, None) for field in self._fields}
 
@@ -163,23 +167,8 @@ class Model(metaclass=ModelMeta):
             # Get id of created record
             self.id = db.lastrowid()
     
-    # Асинхронные методы
-    @classmethod
-    async def create_async(cls, **kwargs):
-        """
-        Асинхронно создает и сохраняет новую запись.
-        
-        :param kwargs: Значения полей
-        :return: Созданная модель
-        """
-        instance = cls(**kwargs)
-        await instance.save_async()
-        return instance
-    
-    async def save_async(self):
-        """
-        Асинхронно сохраняет модель в базу данных.
-        """
+    async def _save_async(self):
+        # async-реализация save
         # Get field values from object
         data = {field: getattr(self, field, None) for field in self._fields}
 
@@ -226,7 +215,26 @@ class Model(metaclass=ModelMeta):
             self.id = await db.lastrowid_async()
     
     @classmethod
-    async def get_async(cls, **kwargs):
+    def create(cls, **kwargs):
+        if asyncio.get_event_loop().is_running():
+            return cls._create_async(**kwargs)
+        else:
+            return cls._create_sync(**kwargs)
+
+    @classmethod
+    def _create_sync(cls, **kwargs):
+        instance = cls(**kwargs)
+        instance.save()
+        return instance
+
+    @classmethod
+    async def _create_async(cls, **kwargs):
+        instance = cls(**kwargs)
+        await instance._save_async()
+        return instance
+    
+    @classmethod
+    async def get(cls, **kwargs):
         """
         Асинхронно получает одну запись по условиям.
         
@@ -244,7 +252,7 @@ class Model(metaclass=ModelMeta):
         return None
     
     @classmethod
-    async def filter_async(cls, **kwargs):
+    async def filter(cls, **kwargs):
         """
         Асинхронно фильтрует записи по условиям.
         
@@ -261,7 +269,7 @@ class Model(metaclass=ModelMeta):
         return [cls(**dict(row)) for row in result]
     
     @classmethod
-    async def all_async(cls):
+    async def all(cls):
         """
         Асинхронно получает все записи.
         
@@ -273,7 +281,7 @@ class Model(metaclass=ModelMeta):
         result = await db.execute_async(query, fetch=True)
         return [cls(**dict(row)) for row in result]
     
-    async def delete_async(self):
+    async def delete(self):
         """
         Асинхронно удаляет запись из базы данных.
         """
@@ -283,7 +291,7 @@ class Model(metaclass=ModelMeta):
             await db.execute_async(query)
     
     @classmethod
-    async def create_table_async(cls):
+    async def create_table(cls):
         """
         Асинхронно создает таблицу в базе данных используя SQLAlchemy.
         """

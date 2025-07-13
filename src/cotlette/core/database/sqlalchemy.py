@@ -245,6 +245,9 @@ class SQLAlchemyBackend:
         :param fetch: Если True, возвращает результаты запроса
         :return: Результаты запроса или cursor
         """
+        if not self._async_initialized:
+            await self.initialize_async()
+            
         async with self.get_async_session() as session:
             # Оборачиваем SQL запрос в text() для SQLAlchemy
             sql_text = text(query)
@@ -264,6 +267,9 @@ class SQLAlchemyBackend:
         :param columns: Список колонок с их определениями
         :return: Созданная таблица
         """
+        if not self._async_initialized:
+            await self.initialize_async()
+            
         if table_name in self._tables:
             return self._tables[table_name]
         
@@ -326,6 +332,9 @@ class SQLAlchemyBackend:
     
     async def lastrowid_async(self):
         """Асинхронно возвращает ID последней вставленной записи."""
+        if not self._async_initialized:
+            await self.initialize_async()
+            
         async with self.get_async_session() as session:
             # Для разных баз данных нужны разные подходы
             if self.database_url.startswith('sqlite://'):

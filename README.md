@@ -70,7 +70,53 @@ class Article(Model):
     author_id = IntegerField()
 ```
 
+---
+
+## Sync vs Async ORM Usage
+
+### Synchronous Example
+```python
+# Create
+article = Article.objects.create(title="Hello", content="World", author_id=1)
+
+# Get
+article = Article.objects.get(id=1)
+
+# Filter
+articles = Article.objects.filter(author_id=1)
+
+# Update
+article.title = "Updated Title"
+article.save()
+
+# Delete
+article.delete()
+```
+
+### Asynchronous Example
+```python
+# Create
+article = await Article.objects.create_async(title="Hello", content="World", author_id=1)
+
+# Get
+article = await Article.objects.get_async(id=1)
+
+# Filter
+articles = await Article.objects.filter_async(author_id=1)
+
+# Update
+article.title = "Updated Title"
+await article.save_async()
+
+# Delete
+await article.delete_async()
+```
+
+---
+
 ## Example: Creating a View
+
+### Synchronous View
 ```python
 from fastapi import APIRouter
 from cotlette.shortcuts import render_template
@@ -78,9 +124,23 @@ from .models import Article
 
 router = APIRouter()
 
-@router.get("/")
-async def home():
+@router.get("/sync")
+def home():
     articles = Article.objects.all().execute()
+    return render_template("index.html", {"articles": articles})
+```
+
+### Asynchronous View
+```python
+from fastapi import APIRouter
+from cotlette.shortcuts import render_template
+from .models import Article
+
+router = APIRouter()
+
+@router.get("/async")
+async def home():
+    articles = await Article.objects.all_async().execute_async()
     return render_template("index.html", {"articles": articles})
 ```
 

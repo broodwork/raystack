@@ -38,7 +38,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 @router.on_event("startup")
 async def create_tables():
-    if not UserModel.objects.filter(email="pvenv@icloud.com").first():  # FIXME
+    await UserModel.create_table()
+    if not await UserModel.objects.filter(email="pvenv@icloud.com").first():  # FIXME
         test_user = await create_user(UserCreate(
             name="vova",
             age=26,
@@ -63,7 +64,7 @@ async def login_user(request):
     password = form["password"]
 
     # Search for user in database
-    user = UserModel.objects.filter(email=username).first()
+    user = await UserModel.objects.filter(email=username).first()
     if not user:
         return RedirectResponse(previous, status_code=303)
 
@@ -96,16 +97,16 @@ from apps.groups.models import GroupModel
 @router.post("/", response_model=None)
 async def create_user(user: UserCreate):
     hashed_password = await hash_password(user.password)
-    group = GroupModel.objects.filter(id=user.group_id).first()
+    group = await GroupModel.objects.filter(id=user.group_id).first()
     
     # Check if user doesn't exist
-    if UserModel.objects.filter(email=user.email).first():
+    if await UserModel.objects.filter(email=user.email).first():
         return JSONResponse(
             status_code=400,
             content={"message": "User with this email already exists"}
         )
 
-    new_user = UserModel.objects.create(
+    new_user = await UserModel.objects.create(
         name=user.name,
         age=user.age,
         email=user.email,

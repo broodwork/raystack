@@ -47,7 +47,7 @@ async def test(request: Request):
         "parent": "/",
         "segment": "test",
         "config": request.app.settings,
-        "users": users,
+        "users": await users.execute(),
     })
 
 
