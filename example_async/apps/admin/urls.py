@@ -40,8 +40,9 @@ def url_for(endpoint, **kwargs):
 @router.get("/users", response_model=None)
 @requires("user_auth")
 async def users_view(request: Request):
-    users = await UserModel.objects.all().execute()  # type: ignore
-    for user in users:
+    users = UserModel.objects.all()  # type: ignore
+    
+    async for user in users:
         print("user", user)
 
     return render_template(request=request, template_name="admin/users.html", context={
@@ -49,7 +50,7 @@ async def users_view(request: Request):
         "parent": "/",
         "segment": "test",
         "config": request.app.settings,
-        "users": users,
+        "users": await users.execute(),
     })
 
 
