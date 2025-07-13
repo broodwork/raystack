@@ -1,6 +1,6 @@
 from cotlette.core.database.fields import CharField, IntegerField, Field
 from cotlette.core.database.manager import Manager
-from cotlette.core.database.backends.sqlite3 import db
+from cotlette.core.database.sqlalchemy import db
 from cotlette.core.database.fields.related import ForeignKeyField
 
 from cotlette.core.database.fields import AutoField
@@ -87,52 +87,41 @@ class Model(metaclass=ModelMeta):
 
     @classmethod
     def create_table(cls):
-        # TODO: Move to database.backends... specifically for SQLite3 and future PostgreSQL
-
+        """
+        Создает таблицу в базе данных используя SQLAlchemy.
+        """
         columns = []
-        foreign_keys = []
-
+        
         for field_name, field in cls._fields.items():
-            # Form column definition
-            column_def = f'"{field_name}" {field.column_type}'
+            column_def = {
+                'name': field_name,
+                'type': field.column_type,
+                'primary_key': field.primary_key,
+                'nullable': not field.primary_key,
+                'unique': field.unique
+            }
             
-            # Add autoincrement for primary key
-            if isinstance(field, AutoField):  # Check if field is autoincrement
-                column_def += " PRIMARY KEY AUTOINCREMENT"  # For SQLite
-                # If PostgreSQL is used, make it "SERIAL PRIMARY KEY"
-            elif field.primary_key:
-                column_def += " PRIMARY KEY"
-            
-            if field.unique:
-                column_def += " UNIQUE"
-            columns.append(column_def)
-
-            # Check if field is foreign key
+            # Обработка внешних ключей
             if isinstance(field, ForeignKeyField):
                 related_model = field.get_related_model()
-                foreign_keys.append(
-                    f'FOREIGN KEY ("{field_name}") REFERENCES "{related_model.table or related_model.__name__}"("id")'
-                )
+                table_name = related_model.get_table_name()
+                column_def['foreign_key'] = f"{table_name}.id"
+            
+            columns.append(column_def)
 
-        # Combine columns and foreign keys into one list
-        all_parts = columns + foreign_keys
-
-        # Form final SQL query
-        query = f'CREATE TABLE IF NOT EXISTS "{cls.get_table_name()}" ({", ".join(all_parts)});'
-
-        db.execute(query)  # Execute table creation query
-        db.commit()        # Commit changes
+        # Создаем таблицу через SQLAlchemy бэкенд
+        db.create_table(cls.get_table_name(), columns)
 
     def save(self):
         """
-        Saves current object to database.
+        Saves current object to database using SQLAlchemy.
         If object already exists (has id), UPDATE is performed.
         If object is new (id is missing or None), INSERT is performed.
         """
         # Get field values from object
         data = {field: getattr(self, field, None) for field in self._fields}
 
-        # Convert values to supported SQLite types
+        # Convert values to supported types
         def convert_value(value):
             if isinstance(value, (int, float, str, bytes, type(None))):
                 return value
@@ -146,20 +135,176 @@ class Model(metaclass=ModelMeta):
         # Check if object exists in database
         if hasattr(self, 'id') and self.id is not None:
             # Update existing record (UPDATE)
-            fields = ', '.join([f"{key}=?" for key in data if key != 'id'])
-            values = tuple(data[key] for key in data if key != 'id') + (self.id,)
-            update_query = f"UPDATE {self.get_table_name()} SET {fields} WHERE id=?"
-            db.execute(update_query, values)
-            db.commit()
+            set_clauses = []
+            for key, value in data.items():
+                if key != 'id':
+                    if isinstance(value, str):
+                        set_clauses.append(f'"{key}"=\'{value}\'')
+                    else:
+                        set_clauses.append(f'"{key}"={value}')
+            
+            update_query = f"UPDATE {self.get_table_name()} SET {', '.join(set_clauses)} WHERE id={self.id}"
+            db.execute(update_query)
         else:
             # Create new record (INSERT)
-            fields = ', '.join([key for key in data if key != 'id'])
-            placeholders = ', '.join(['?'] * len(data))
-            values = tuple(data[key] for key in data if key != 'id')
+            fields = []
+            values = []
+            for key, value in data.items():
+                if key != 'id':
+                    fields.append(f'"{key}"')
+                    if isinstance(value, str):
+                        values.append(f"'{value}'")
+                    else:
+                        values.append(str(value))
 
-            insert_query = f"INSERT INTO {self.get_table_name()} ({fields}) VALUES ({placeholders})"
-            db.execute(insert_query, values)
-            db.commit()
+            insert_query = f"INSERT INTO {self.get_table_name()} ({', '.join(fields)}) VALUES ({', '.join(values)})"
+            db.execute(insert_query)
 
             # Get id of created record
-            self.id = db.lastrowid
+            self.id = db.lastrowid()
+    
+    # Асинхронные методы
+    @classmethod
+    async def create_async(cls, **kwargs):
+        """
+        Асинхронно создает и сохраняет новую запись.
+        
+        :param kwargs: Значения полей
+        :return: Созданная модель
+        """
+        instance = cls(**kwargs)
+        await instance.save_async()
+        return instance
+    
+    async def save_async(self):
+        """
+        Асинхронно сохраняет модель в базу данных.
+        """
+        # Get field values from object
+        data = {field: getattr(self, field, None) for field in self._fields}
+
+        # Convert values to supported types
+        def convert_value(value):
+            if isinstance(value, (int, float, str, bytes, type(None))):
+                return value
+            elif hasattr(value, '__str__'):
+                return str(value)  # Convert object to string if possible
+            else:
+                raise ValueError(f"Unsupported type for database: {type(value)}")
+
+        data = {key: convert_value(value) for key, value in data.items()}
+
+        # Check if object exists in database
+        if hasattr(self, 'id') and self.id is not None:
+            # Update existing record (UPDATE)
+            set_clauses = []
+            for key, value in data.items():
+                if key != 'id':
+                    if isinstance(value, str):
+                        set_clauses.append(f'"{key}"=\'{value}\'')
+                    else:
+                        set_clauses.append(f'"{key}"={value}')
+            
+            update_query = f"UPDATE {self.get_table_name()} SET {', '.join(set_clauses)} WHERE id={self.id}"
+            await db.execute_async(update_query)
+        else:
+            # Create new record (INSERT)
+            fields = []
+            values = []
+            for key, value in data.items():
+                if key != 'id':
+                    fields.append(f'"{key}"')
+                    if isinstance(value, str):
+                        values.append(f"'{value}'")
+                    else:
+                        values.append(str(value))
+
+            insert_query = f"INSERT INTO {self.get_table_name()} ({', '.join(fields)}) VALUES ({', '.join(values)})"
+            await db.execute_async(insert_query)
+
+            # Get id of created record
+            self.id = await db.lastrowid_async()
+    
+    @classmethod
+    async def get_async(cls, **kwargs):
+        """
+        Асинхронно получает одну запись по условиям.
+        
+        :param kwargs: Условия поиска
+        :return: Найденная модель или None
+        """
+        table_name = cls.get_table_name()
+        conditions = ' AND '.join([f"{k} = '{v}'" for k, v in kwargs.items()])
+        query = f"SELECT * FROM {table_name} WHERE {conditions} LIMIT 1"
+        
+        result = await db.execute_async(query, fetch=True)
+        if result:
+            row = result[0]
+            return cls(**dict(row))
+        return None
+    
+    @classmethod
+    async def filter_async(cls, **kwargs):
+        """
+        Асинхронно фильтрует записи по условиям.
+        
+        :param kwargs: Условия фильтрации
+        :return: Список найденных моделей
+        """
+        table_name = cls.get_table_name()
+        conditions = ' AND '.join([f"{k} = '{v}'" for k, v in kwargs.items()])
+        query = f"SELECT * FROM {table_name}"
+        if conditions:
+            query += f" WHERE {conditions}"
+        
+        result = await db.execute_async(query, fetch=True)
+        return [cls(**dict(row)) for row in result]
+    
+    @classmethod
+    async def all_async(cls):
+        """
+        Асинхронно получает все записи.
+        
+        :return: Список всех моделей
+        """
+        table_name = cls.get_table_name()
+        query = f"SELECT * FROM {table_name}"
+        
+        result = await db.execute_async(query, fetch=True)
+        return [cls(**dict(row)) for row in result]
+    
+    async def delete_async(self):
+        """
+        Асинхронно удаляет запись из базы данных.
+        """
+        if hasattr(self, 'id') and self.id is not None:
+            table_name = self.get_table_name()
+            query = f"DELETE FROM {table_name} WHERE id = {self.id}"
+            await db.execute_async(query)
+    
+    @classmethod
+    async def create_table_async(cls):
+        """
+        Асинхронно создает таблицу в базе данных используя SQLAlchemy.
+        """
+        columns = []
+        
+        for field_name, field in cls._fields.items():
+            column_def = {
+                'name': field_name,
+                'type': field.column_type,
+                'primary_key': field.primary_key,
+                'nullable': not field.primary_key,
+                'unique': field.unique
+            }
+            
+            # Обработка внешних ключей
+            if isinstance(field, ForeignKeyField):
+                related_model = field.get_related_model()
+                table_name = related_model.get_table_name()
+                column_def['foreign_key'] = f"{table_name}.id"
+            
+            columns.append(column_def)
+
+        # Создаем таблицу через асинхронный SQLAlchemy бэкенд
+        await db.create_table_async(cls.get_table_name(), columns)

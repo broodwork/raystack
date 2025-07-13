@@ -6,8 +6,8 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 # Database settings
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Path to database file
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # SQLAlchemy URL
     }
 }
 

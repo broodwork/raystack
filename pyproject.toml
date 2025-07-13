@@ -16,6 +16,9 @@ dependencies = [
     "pyjwt",
     "itsdangerous",
     "python-multipart",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "click>=8.0.0",
 ]
 
 authors = [

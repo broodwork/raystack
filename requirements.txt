@@ -1,0 +1,13 @@
+# Основные зависимости для Cotlette
+sqlalchemy>=2.0.0
+alembic>=1.12.0
+
+# Драйверы для различных баз данных
+# SQLite (встроен в Python)
+# psycopg2-binary>=2.9.0  # Для PostgreSQL
+# pymysql>=1.0.0  # Для MySQL
+# cx_oracle>=8.3.0  # Для Oracle
+
+# Дополнительные зависимости
+click>=8.0.0
+jinja2>=3.0.0 
