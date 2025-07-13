@@ -18,7 +18,7 @@
 - **Jinja2 Templates**: Powerful and flexible HTML rendering
 - **Admin Panel**: Built-in, customizable (inspired by Django admin)
 - **Management Commands**: CLI for project/app creation, server, shell, migrations, and more
-- **Asynchronous Support**: Full async views and endpoints
+- **Asynchronous Support**: Full async views and endpoints with automatic context detection
 - **Multi-Database Support**: SQLite, PostgreSQL, MySQL, Oracle, and more
 - **Extensible**: Add your own apps, middleware, commands, and more
 
@@ -72,9 +72,11 @@ class Article(Model):
 
 ---
 
-## Sync vs Async ORM Usage
+## Universal ORM Usage
 
-### Synchronous Example
+Cotlette ORM automatically detects whether you're in a synchronous or asynchronous context and works accordingly. No need for separate sync/async methods!
+
+### Basic CRUD Operations
 ```python
 # Create
 article = Article.objects.create(title="Hello", content="World", author_id=1)
@@ -83,7 +85,7 @@ article = Article.objects.create(title="Hello", content="World", author_id=1)
 article = Article.objects.get(id=1)
 
 # Filter
-articles = Article.objects.filter(author_id=1)
+articles = Article.objects.filter(author_id=1).execute()
 
 # Update
 article.title = "Updated Title"
@@ -91,30 +93,45 @@ article.save()
 
 # Delete
 article.delete()
+
+# Count
+count = Article.objects.count()
+
+# Exists
+exists = Article.objects.exists()
 ```
 
-### Asynchronous Example
+### In Async Context
+When used in async functions, the same methods automatically work asynchronously:
+
 ```python
-# Create
-article = await Article.objects.create_async(title="Hello", content="World", author_id=1)
-
-# Get
-article = await Article.objects.get_async(id=1)
-
-# Filter
-articles = await Article.objects.filter_async(author_id=1)
-
-# Update
-article.title = "Updated Title"
-await article.save_async()
-
-# Delete
-await article.delete_async()
+async def async_view():
+    # Create
+    article = await Article.objects.create(title="Hello", content="World", author_id=1)
+    
+    # Get
+    article = await Article.objects.get(id=1)
+    
+    # Filter
+    articles = await Article.objects.filter(author_id=1).execute()
+    
+    # Update
+    article.title = "Updated Title"
+    await article.save()
+    
+    # Delete
+    await article.delete()
+    
+    # Count
+    count = await Article.objects.count()
+    
+    # Exists
+    exists = await Article.objects.exists()
 ```
 
 ---
 
-## Example: Creating a View
+## Example: Creating Views
 
 ### Synchronous View
 ```python
@@ -140,8 +157,68 @@ router = APIRouter()
 
 @router.get("/async")
 async def home():
-    articles = await Article.objects.all_async().execute_async()
+    articles = await Article.objects.all().execute()
     return render_template("index.html", {"articles": articles})
+```
+
+**Note**: The same ORM methods work in both contexts! Cotlette automatically detects the execution context.
+
+---
+
+## Advanced ORM Features
+
+### Query Chaining
+```python
+# Complex queries with chaining
+articles = Article.objects.filter(author_id=1).order_by('-id').execute()
+
+# In async context
+articles = await Article.objects.filter(author_id=1).order_by('-id').execute()
+```
+
+### Bulk Operations
+```python
+# Create multiple objects
+articles = [
+    Article(title="Article 1", content="Content 1", author_id=1),
+    Article(title="Article 2", content="Content 2", author_id=1),
+]
+
+for article in articles:
+    article.save()
+
+# In async context
+for article in articles:
+    await article.save()
+```
+
+### Database Support
+Cotlette supports multiple databases through SQLAlchemy:
+
+```python
+# SQLite (default)
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'sqlite:///db.sqlite3',
+    }
+}
+
+# PostgreSQL
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'postgresql://user:pass@localhost/dbname',
+    }
+}
+
+# MySQL
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'mysql://user:pass@localhost/dbname',
+    }
+}
 ```
 
 ---
