@@ -1,5 +1,5 @@
 import asyncio
-from cotlette.core.database.query import QuerySet, is_async_context
+from cotlette.core.database.query import QuerySet, should_use_async
 
 class Manager:
     def __init__(self, model_class):
@@ -13,7 +13,7 @@ class Manager:
 
     def create(self, **kwargs):
         # create обычно сразу создает объект, поэтому реализуем sync+async
-        if is_async_context():
+        if should_use_async():
             return QuerySet(self.model_class)._create_async(**kwargs)
         else:
             return QuerySet(self.model_class)._create_sync(**kwargs)

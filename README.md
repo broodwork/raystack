@@ -176,6 +176,24 @@ articles = Article.objects.filter(author_id=1).order_by('-id').execute()
 articles = await Article.objects.filter(author_id=1).order_by('-id').execute()
 ```
 
+### Iteration and Lazy Loading
+```python
+# Iterate over QuerySet results
+for article in Article.objects.all().iter():
+    print(article.title)
+
+# Get specific items by index or slice
+first_article = Article.objects.all().get_item(0)
+recent_articles = Article.objects.all().get_item(slice(0, 10))
+
+# In async context
+async for article in Article.objects.all().iter():
+    print(article.title)
+
+first_article = await Article.objects.all().get_item(0)
+recent_articles = await Article.objects.all().get_item(slice(0, 10))
+```
+
 ### Bulk Operations
 ```python
 # Create multiple objects
@@ -220,6 +238,37 @@ DATABASES = {
     }
 }
 ```
+
+### Async Database Connections
+For optimal performance in async applications, Cotlette automatically converts database URLs to async variants:
+
+```python
+# SQLite with async support (automatic conversion)
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'sqlite:///db.sqlite3',  # Automatically becomes sqlite+aiosqlite://
+    }
+}
+
+# PostgreSQL with async support (automatic conversion)
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'postgresql://user:pass@localhost/dbname',  # Automatically becomes postgresql+asyncpg://
+    }
+}
+
+# MySQL with async support (automatic conversion)
+DATABASES = {
+    'default': {
+        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'URL': 'mysql://user:pass@localhost/dbname',  # Automatically becomes mysql+aiomysql://
+    }
+}
+```
+
+**Note**: Cotlette automatically detects when you're in an async context and uses the appropriate async database driver. No additional configuration needed!
 
 ---
 

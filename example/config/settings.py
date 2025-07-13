@@ -7,8 +7,15 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 DATABASES = {
     'default': {
         'ENGINE': 'cotlette.core.database.sqlalchemy',
-        # 'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # SQLAlchemy URL
-        'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # SQLAlchemy URL
+        # Синхронный режим (по умолчанию)
+        # 'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        
+        # Асинхронный режим (раскомментируйте для использования)
+        'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        
+        # Другие примеры асинхронных URL:
+        # PostgreSQL: 'postgresql+asyncpg://user:pass@localhost/dbname'
+        # MySQL: 'mysql+aiomysql://user:pass@localhost/dbname'
     }
 }
 

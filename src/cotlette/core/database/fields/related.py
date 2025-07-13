@@ -91,7 +91,7 @@ class ForeignKeyField(RelatedField):
             return None
 
         try:
-            related_object = related_model.objects.filter(id=related_id).first()
+            related_object = related_model.objects.filter(id=related_id).first()  # type: ignore
         except Exception as e:
             raise ValueError(f"Failed to load related object for field '{self.name}': {e}")
 

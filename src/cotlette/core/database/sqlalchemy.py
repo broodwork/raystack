@@ -38,6 +38,14 @@ class SQLAlchemyBackend:
         self._initialized = False
         self._async_initialized = False
         
+    def is_async_url(self) -> bool:
+        """
+        Определяет, является ли URL асинхронным по наличию async драйвера.
+        """
+        return any(driver in self.database_url for driver in [
+            '+aiosqlite://', '+asyncpg://', '+aiomysql://', '+asyncmy://'
+        ])
+        
     def initialize(self):
         """Инициализация подключения к базе данных."""
         if self._initialized:
@@ -349,5 +357,17 @@ class SQLAlchemyBackend:
             else:
                 return None
 
+def get_database_url_from_settings():
+    """
+    Получает URL базы данных из настроек.
+    """
+    try:
+        # Пытаемся импортировать настройки
+        import config.settings
+        return config.settings.DATABASES['default']['URL']
+    except (ImportError, KeyError, AttributeError):
+        # Если не удалось получить из настроек, возвращаем значение по умолчанию
+        return "sqlite:///db.sqlite3"
+
 # Глобальный экземпляр бэкенда
-db = SQLAlchemyBackend() 
+db = SQLAlchemyBackend(get_database_url_from_settings()) 

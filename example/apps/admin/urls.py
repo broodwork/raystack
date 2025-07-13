@@ -39,22 +39,24 @@ def url_for(endpoint, **kwargs):
 
 @router.get("/users", response_model=None)
 @requires("user_auth")
-async def test(request: Request):
-    users = UserModel.objects.all()
+async def users_view(request: Request):
+    users = await UserModel.objects.all().execute()  # type: ignore
+    for user in users:
+        print("user", user)
 
     return render_template(request=request, template_name="admin/users.html", context={
         "url_for": url_for,
         "parent": "/",
         "segment": "test",
         "config": request.app.settings,
-        "users": await users.execute(),
+        "users": users,
     })
 
 
 @router.get("/groups", response_model=None)
 @requires("user_auth")
-async def test(request: Request):
-    groups = GroupModel.objects.all()
+async def groups_view(request: Request):
+    groups = await GroupModel.objects.all().execute()  # type: ignore
 
     return render_template(request=request, template_name="admin/groups.html", context={
         "url_for": url_for,
@@ -67,7 +69,7 @@ async def test(request: Request):
 
 @router.get("/", response_model=None)
 @requires("user_auth")
-async def test(request: Request):    
+async def index_view(request: Request):    
     return render_template(request=request, template_name="pages/index.html", context={
         "url_for": url_for,
         "parent": "home1",
@@ -77,7 +79,7 @@ async def test(request: Request):
 
 @router.get("/tables", response_model=None)
 @requires("user_auth")
-async def test(request: Request):    
+async def tables_view(request: Request):    
     return render_template(request=request, template_name="pages/tables.html", context={
         "url_for": url_for,
         "parent": "/",
@@ -87,7 +89,7 @@ async def test(request: Request):
 
 @router.get("/billing", response_model=None)
 @requires("user_auth")
-async def test(request: Request):    
+async def billing_view(request: Request):    
     return render_template(request=request, template_name="pages/billing.html", context={
         "url_for": url_for,
         "parent": "/",
@@ -97,7 +99,7 @@ async def test(request: Request):
 
 @router.get("/profile", response_model=None)
 @requires("user_auth")
-async def test(request: Request):    
+async def profile_view(request: Request):    
     return render_template(request=request, template_name="pages/profile.html", context={
         "url_for": url_for,
         "parent": "/",

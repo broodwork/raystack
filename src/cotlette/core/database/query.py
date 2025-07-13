@@ -10,6 +10,13 @@ def is_async_context():
     except RuntimeError:
         return False
 
+def should_use_async():
+    """
+    Определяет, нужно ли использовать асинхронный режим.
+    Теперь определяется по URL в настройках, а не по контексту выполнения.
+    """
+    return db.is_async_url()
+
 class QuerySet:
     def __init__(self, model_class):
         self.model_class = model_class
@@ -66,37 +73,37 @@ class QuerySet:
         return new_queryset
 
     def execute(self):
-        if is_async_context():
+        if should_use_async():
             return self._execute_async()
         else:
             return self._execute_sync()
 
     def first(self):
-        if is_async_context():
+        if should_use_async():
             return self._first_async()
         else:
             return self._first_sync()
 
     def count(self):
-        if is_async_context():
+        if should_use_async():
             return self._count_async()
         else:
             return self._count_sync()
 
     def exists(self):
-        if is_async_context():
+        if should_use_async():
             return self._exists_async()
         else:
             return self._exists_sync()
 
     def delete(self):
-        if is_async_context():
+        if should_use_async():
             return self._delete_async()
         else:
             return self._delete_sync()
 
     def create(self, **kwargs):
-        if is_async_context():
+        if should_use_async():
             return self._create_async(**kwargs)
         else:
             return self._create_sync(**kwargs)
@@ -220,4 +227,128 @@ class QuerySet:
         last_id = await db.lastrowid_async()
         if last_id is None:
             raise RuntimeError("Failed to retrieve the ID of the newly created record.")
-        return self.model_class.objects.get(id=last_id)
+        return await self.model_class.objects.get(id=last_id)
+
+    # Поддержка итераций и lazy загрузки
+    def __repr__(self):
+        """Строковое представление QuerySet."""
+        return f"<QuerySet: {self.model_class.__name__}>"
+
+    def __str__(self):
+        """Строковое представление QuerySet."""
+        return f"<QuerySet: {self.model_class.__name__}>"
+
+    # Методы для итераций (работают в sync и async контекстах)
+    def iter(self):
+        """Возвращает итерируемый объект с результатами запроса."""
+        if should_use_async():
+            return self._iter_async()
+        else:
+            return iter(self._execute_sync())
+
+    def _iter_sync(self):
+        """Синхронная итерация по результатам."""
+        return iter(self._execute_sync())
+
+    async def _iter_async(self):
+        """Асинхронная итерация по результатам."""
+        result = await self._execute_async()
+        for item in result:
+            yield item
+
+    def get_item(self, key):
+        """Получает элемент по индексу или срезу."""
+        if should_use_async():
+            return self._get_item_async(key)
+        else:
+            return self._get_item_sync(key)
+
+    def _get_item_sync(self, key):
+        """Синхронное получение элемента."""
+        if isinstance(key, slice):
+            # Срез - добавляем LIMIT и OFFSET
+            start = key.start or 0
+            stop = key.stop
+            limit = stop - start if stop is not None else None
+            
+            new_queryset = QuerySet(self.model_class)
+            new_queryset.query = self.query
+            new_queryset.params = self.params
+            
+            if limit is not None:
+                new_queryset.query += f" LIMIT {limit}"
+            if start > 0:
+                new_queryset.query += f" OFFSET {start}"
+            
+            return new_queryset._execute_sync()
+        elif isinstance(key, int):
+            # Индекс - получаем конкретную запись
+            if key < 0:
+                raise IndexError("Negative indexing is not supported")
+            
+            new_queryset = QuerySet(self.model_class)
+            new_queryset.query = self.query
+            new_queryset.params = self.params
+            new_queryset.query += f" LIMIT 1 OFFSET {key}"
+            
+            result = new_queryset._execute_sync()
+            if result:
+                return result[0]
+            else:
+                raise IndexError("Index out of range")
+        else:
+            raise TypeError("QuerySet indices must be integers or slices")
+
+    async def _get_item_async(self, key):
+        """Асинхронное получение элемента."""
+        if isinstance(key, slice):
+            # Срез - добавляем LIMIT и OFFSET
+            start = key.start or 0
+            stop = key.stop
+            limit = stop - start if stop is not None else None
+            
+            new_queryset = QuerySet(self.model_class)
+            new_queryset.query = self.query
+            new_queryset.params = self.params
+            
+            if limit is not None:
+                new_queryset.query += f" LIMIT {limit}"
+            if start > 0:
+                new_queryset.query += f" OFFSET {start}"
+            
+            return await new_queryset._execute_async()
+        elif isinstance(key, int):
+            # Индекс - получаем конкретную запись
+            if key < 0:
+                raise IndexError("Negative indexing is not supported")
+            
+            new_queryset = QuerySet(self.model_class)
+            new_queryset.query = self.query
+            new_queryset.params = self.params
+            new_queryset.query += f" LIMIT 1 OFFSET {key}"
+            
+            result = await new_queryset._execute_async()
+            if result:
+                return result[0]
+            else:
+                raise IndexError("Index out of range")
+        else:
+            raise TypeError("QuerySet indices must be integers or slices")
+
+    def __len__(self):
+        """Возвращает количество записей в QuerySet."""
+        return self.count()
+
+    def __bool__(self):
+        """Проверяет, существуют ли записи в QuerySet."""
+        return self.exists()
+
+    def __contains__(self, item):
+        """Проверяет, содержится ли объект в QuerySet."""
+        if not isinstance(item, self.model_class):
+            return False
+        
+        # Простая проверка по ID
+        if hasattr(item, 'id'):
+            return self.filter(id=item.id).exists()
+        return False
