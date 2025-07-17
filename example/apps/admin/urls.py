@@ -56,7 +56,7 @@ async def users_view(request: Request):
 @router.get("/groups", response_model=None)
 @requires("user_auth")
 async def groups_view(request: Request):
-    groups = await GroupModel.objects.all().execute()  # type: ignore
+    groups = GroupModel.objects.all().execute()  # type: ignore
 
     return render_template(request=request, template_name="admin/groups.html", context={
         "url_for": url_for,
@@ -104,5 +104,166 @@ async def profile_view(request: Request):
         "url_for": url_for,
         "parent": "/",
         "segment": "test",
+        "config": request.app.settings,
+    })
+
+@router.get("/users/edit/{user_id}", response_model=None)
+@requires("user_auth")
+async def user_edit_view(request: Request, user_id: int):
+    user = UserModel.objects.filter(id=user_id).first()
+    groups = GroupModel.objects.all()
+    return render_template(request=request, template_name="admin/user_edit.html", context={
+        "user": user,
+        "groups": groups,
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+@router.post("/users/edit/{user_id}", response_model=None)
+@requires("user_auth")
+async def user_edit_post(request: Request, user_id: int):
+    form = await request.form()
+    user = UserModel.objects.filter(id=user_id).first()
+    if user:
+        user.name = form.get("name")
+        user.age = int(form.get("age"))
+        user.email = form.get("email")
+        user.organization = form.get("organization")
+        group_id = int(form.get("group_id"))
+        user.group = group_id
+        user.save()
+    return render_template(request=request, template_name="admin/user_edit.html", context={
+        "user": user,
+        "groups": GroupModel.objects.all(),
+        "url_for": url_for,
+        "config": request.app.settings,
+        "success": True
+    })
+
+@router.get("/groups/edit/{group_id}", response_model=None)
+@requires("user_auth")
+async def group_edit_view(request: Request, group_id: int):
+    group = GroupModel.objects.filter(id=group_id).first()
+    return render_template(request=request, template_name="admin/group_edit.html", context={
+        "group": group,
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+@router.post("/groups/edit/{group_id}", response_model=None)
+@requires("user_auth")
+async def group_edit_post(request: Request, group_id: int):
+    form = await request.form()
+    group = GroupModel.objects.filter(id=group_id).first()
+    if group:
+        group.name = form.get("name")
+        group.description = form.get("description")
+        group.save()
+    return render_template(request=request, template_name="admin/group_edit.html", context={
+        "group": group,
+        "url_for": url_for,
+        "config": request.app.settings,
+        "success": True
+    })
+
+# --- User Create ---
+@router.get("/users/create", response_model=None)
+@requires("user_auth")
+async def user_create_view(request: Request):
+    groups = GroupModel.objects.all()
+    return render_template(request=request, template_name="admin/user_create.html", context={
+        "groups": groups,
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+@router.post("/users/create", response_model=None)
+@requires("user_auth")
+async def user_create_post(request: Request):
+    form = await request.form()
+    user = UserModel(
+        name=form.get("name"),
+        age=int(form.get("age")),
+        email=form.get("email"),
+        password_hash="",  # Set password later or generate
+        group=int(form.get("group_id")),
+        organization=form.get("organization")
+    )
+    user.save()
+    return render_template(request=request, template_name="admin/user_create.html", context={
+        "groups": GroupModel.objects.all(),
+        "url_for": url_for,
+        "config": request.app.settings,
+        "success": True
+    })
+
+# --- User Delete ---
+@router.get("/users/delete/{user_id}", response_model=None)
+@requires("user_auth")
+async def user_delete_confirm(request: Request, user_id: int):
+    user = UserModel.objects.filter(id=user_id).first()
+    return render_template(request=request, template_name="admin/user_delete.html", context={
+        "user": user,
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+@router.post("/users/delete/{user_id}", response_model=None)
+@requires("user_auth")
+async def user_delete_post(request: Request, user_id: int):
+    user = UserModel.objects.filter(id=user_id).first()
+    if user:
+        user.delete()
+    # Redirect to users list after deletion
+    return render_template(request=request, template_name="admin/user_delete.html", context={
+        "deleted": True,
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+# --- Group Create ---
+@router.get("/groups/create", response_model=None)
+@requires("user_auth")
+async def group_create_view(request: Request):
+    return render_template(request=request, template_name="admin/group_create.html", context={
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+@router.post("/groups/create", response_model=None)
+@requires("user_auth")
+async def group_create_post(request: Request):
+    form = await request.form()
+    group = GroupModel(
+        name=form.get("name"),
+        description=form.get("description")
+    )
+    group.save()
+    return render_template(request=request, template_name="admin/group_create.html", context={
+        "url_for": url_for,
+        "config": request.app.settings,
+        "success": True
+    })
+
+# --- Group Delete ---
+@router.get("/groups/delete/{group_id}", response_model=None)
+@requires("user_auth")
+async def group_delete_confirm(request: Request, group_id: int):
+    group = GroupModel.objects.filter(id=group_id).first()
+    return render_template(request=request, template_name="admin/group_delete.html", context={
+        "group": group,
+        "url_for": url_for,
+        "config": request.app.settings,
+    })
+
+@router.post("/groups/delete/{group_id}", response_model=None)
+@requires("user_auth")
+async def group_delete_post(request: Request, group_id: int):
+    group = GroupModel.objects.filter(id=group_id).first()
+    if group:
+        group.delete()
+    return render_template(request=request, template_name="admin/group_delete.html", context={
+        "deleted": True,
+        "url_for": url_for,
         "config": request.app.settings,
     })

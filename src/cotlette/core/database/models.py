@@ -115,57 +115,61 @@ class Model(metaclass=ModelMeta):
         db.create_table(cls.get_table_name(), columns)
 
     def save(self):
-        if asyncio.get_event_loop().is_running():
+        from cotlette.core.database.query import should_use_async
+        if should_use_async():
             return self._save_async()
         else:
             return self._save_sync()
 
     def _save_sync(self):
-        # старая sync-реализация save
-        # Get field values from object
-        data = {field: getattr(self, field, None) for field in self._fields}
+        print(f"[DEBUG] _save_sync called for {self.__class__.__name__}")
+        data = {}
+        for field, field_obj in self._fields.items():
+            if isinstance(field_obj, AutoField):
+                continue  # id вообще не добавляем в data
+            value = getattr(self, field, None)
+            if isinstance(field_obj, ForeignKeyField):
+                if hasattr(value, 'id'):
+                    value = value.id
+            data[field] = value
+        print(f"[DEBUG] Data to save: {data}")
 
-        # Convert values to supported types
         def convert_value(value):
             if isinstance(value, (int, float, str, bytes, type(None))):
                 return value
             elif hasattr(value, '__str__'):
-                return str(value)  # Convert object to string if possible
+                return str(value)
             else:
                 raise ValueError(f"Unsupported type for database: {type(value)}")
 
         data = {key: convert_value(value) for key, value in data.items()}
+        print(f"[DEBUG] Converted data: {data}")
 
-        # Check if object exists in database
-        if hasattr(self, 'id') and self.id is not None:
-            # Update existing record (UPDATE)
+        id_value = self.__dict__.get('id', None)
+        if id_value not in (None, 0, ''):
             set_clauses = []
             for key, value in data.items():
-                if key != 'id':
-                    if isinstance(value, str):
-                        set_clauses.append(f'"{key}"=\'{value}\'')
-                    else:
-                        set_clauses.append(f'"{key}"={value}')
-            
-            update_query = f"UPDATE {self.get_table_name()} SET {', '.join(set_clauses)} WHERE id={self.id}"
+                if isinstance(value, str):
+                    set_clauses.append(f'"{key}"=\'{value}\'')
+                else:
+                    set_clauses.append(f'"{key}"={value}')
+            update_query = f"UPDATE {self.get_table_name()} SET {', '.join(set_clauses)} WHERE id={id_value}"
+            print(f"[DEBUG] Executing update: {update_query}")
             db.execute(update_query)
         else:
-            # Create new record (INSERT)
             fields = []
             values = []
             for key, value in data.items():
-                if key != 'id':
-                    fields.append(f'"{key}"')
-                    if isinstance(value, str):
-                        values.append(f"'{value}'")
-                    else:
-                        values.append(str(value))
-
+                fields.append(f'"{key}"')
+                if isinstance(value, str):
+                    values.append(f"'{value}'")
+                else:
+                    values.append(str(value))
             insert_query = f"INSERT INTO {self.get_table_name()} ({', '.join(fields)}) VALUES ({', '.join(values)})"
+            print(f"[DEBUG] Executing insert: {insert_query}")
             db.execute(insert_query)
-
-            # Get id of created record
             self.id = db.lastrowid()
+            print(f"[DEBUG] New id set: {self.id}")
     
     async def _save_async(self):
         # async-реализация save
