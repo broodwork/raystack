@@ -285,7 +285,26 @@ class Model(metaclass=ModelMeta):
         result = await db.execute_async(query, fetch=True)
         return [cls(**dict(row)) for row in result]
     
-    async def delete(self):
+    def delete(self):
+        """
+        Удаляет запись из базы данных.
+        """
+        from cotlette.core.database.query import should_use_async
+        if should_use_async():
+            return self._delete_async()
+        else:
+            return self._delete_sync()
+
+    def _delete_sync(self):
+        """
+        Синхронно удаляет запись из базы данных.
+        """
+        if hasattr(self, 'id') and self.id is not None:
+            table_name = self.get_table_name()
+            query = f"DELETE FROM {table_name} WHERE id = {self.id}"
+            db.execute(query)
+
+    async def _delete_async(self):
         """
         Асинхронно удаляет запись из базы данных.
         """
@@ -294,29 +313,4 @@ class Model(metaclass=ModelMeta):
             query = f"DELETE FROM {table_name} WHERE id = {self.id}"
             await db.execute_async(query)
     
-    @classmethod
-    async def create_table(cls):
-        """
-        Асинхронно создает таблицу в базе данных используя SQLAlchemy.
-        """
-        columns = []
-        
-        for field_name, field in cls._fields.items():
-            column_def = {
-                'name': field_name,
-                'type': field.column_type,
-                'primary_key': field.primary_key,
-                'nullable': not field.primary_key,
-                'unique': field.unique
-            }
-            
-            # Обработка внешних ключей
-            if isinstance(field, ForeignKeyField):
-                related_model = field.get_related_model()
-                table_name = related_model.get_table_name()
-                column_def['foreign_key'] = f"{table_name}.id"
-            
-            columns.append(column_def)
 
-        # Создаем таблицу через асинхронный SQLAlchemy бэкенд
-        await db.create_table_async(cls.get_table_name(), columns)

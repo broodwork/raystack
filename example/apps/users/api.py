@@ -14,6 +14,8 @@ from starlette.responses import JSONResponse, \
     FileResponse, \
     HTMLResponse
 
+from cotlette.core.database.sqlalchemy import db
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter()
@@ -38,7 +40,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 @router.on_event("startup")
 async def create_tables():
-    await UserModel.create_table()
+    db.initialize()
+    UserModel.create_table()
     existing_user = UserModel.objects.filter(email="pvenv@icloud.com").first()  # type: ignore
     if not existing_user:
         test_user = await create_user(UserCreate(

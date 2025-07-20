@@ -40,7 +40,7 @@ def url_for(endpoint, **kwargs):
 @router.get("/users", response_model=None)
 @requires("user_auth")
 async def users_view(request: Request):
-    users = UserModel.objects.all()  # type: ignore
+    users = UserModel.objects.all().execute_all()  # type: ignore
     # for user in users:
     #     print("user", user)
 

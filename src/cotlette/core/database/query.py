@@ -56,6 +56,20 @@ class QuerySet:
         # Всегда возвращает QuerySet
         return self
 
+    def execute_all(self):
+        """Выполняет запрос и возвращает все результаты."""
+        if should_use_async():
+            return self._execute_async()
+        else:
+            return self._execute_sync()
+
+    async def aexecute_all(self):
+        """Асинхронная версия execute_all() для использования в async контексте."""
+        if should_use_async():
+            return await self._execute_async()
+        else:
+            return self._execute_sync()
+
     def order_by(self, *fields):
         # Всегда возвращает QuerySet
         new_queryset = QuerySet(self.model_class)
@@ -81,6 +95,13 @@ class QuerySet:
     def first(self):
         if should_use_async():
             return self._first_async()
+        else:
+            return self._first_sync()
+
+    async def afirst(self):
+        """Асинхронная версия first() для использования в async контексте."""
+        if should_use_async():
+            return await self._first_async()
         else:
             return self._first_sync()
 
