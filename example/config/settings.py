@@ -24,13 +24,9 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    # 'cotlette.apps.admin',
-    # 'cotlette.apps.users',
+    'cotlette.contrib.admin',
+    'cotlette.contrib.auth',
     'apps.home',
-    'apps.admin',
-    'apps.users',
-    'apps.accounts',
-    'apps.groups',
 ]
 
 TEMPLATES = [

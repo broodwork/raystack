@@ -1,10 +1,10 @@
-{% extends 'layouts/base-fullscreen.html' %}
+{% extends 'admin/layouts/base-fullscreen.html' %}
 
 {% block title %} Login {% endblock %}
 
 {% block content %}
 
-  {% include 'includes/navigation-fullscreen.html' %}
+  {% include 'admin/includes/navigation-fullscreen.html' %}
 
   <main class="main-content mt-0">
     <section>
@@ -40,7 +40,7 @@
             </div>
             <div class="col-md-6">
               <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
-                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image:url('{{ url_for('static', filename = 'assets/img/curved-images/curved6.jpg' )}}')"></div>
+                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image:url('{{ url_for('admin_static', filename = 'assets/img/curved-images/curved6.jpg' )}}')"></div>
               </div>
             </div>
           </div>
@@ -49,7 +49,7 @@
     </section>
   </main>
 
-  {% include 'includes/footer-fullscreen.html' %}
+  {% include 'admin/includes/footer-fullscreen.html' %}
 
   <!-- JavaScript для отправки запроса -->
 
@@ -57,7 +57,7 @@
       document.addEventListener('DOMContentLoaded', async function () {
           try {
               // Отправляем POST-запрос на разлогирование
-              const response = await fetch('/users/logout/', {
+              const response = await fetch('/auth/accounts/logout/', {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',
@@ -95,7 +95,7 @@
             formData.append('email', email);
             formData.append('password', password);
 
-            const response = await fetch('/users/login/', {
+            const response = await fetch('/auth/accounts/login/', {
                 method: 'POST',
                 body: formData, // Отправляем данные в формате FormData
             });
