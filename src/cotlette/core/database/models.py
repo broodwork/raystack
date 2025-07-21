@@ -111,8 +111,8 @@ class Model(metaclass=ModelMeta):
             
             columns.append(column_def)
 
-        # Создаем таблицу через SQLAlchemy бэкенд
-        db.create_table(cls.get_table_name(), columns)
+        # # Создаем таблицу через SQLAlchemy бэкенд
+        # db.create_table(cls.get_table_name(), columns)
 
     def save(self):
         from cotlette.core.database.query import should_use_async

@@ -74,4 +74,4 @@ async def create_tables():
 # @router.get("/", response_model=list[User])
 # def get_users():
 #     users = UserModel.objects.all()
-#     return [User(name=user.name, age=user.age, email=user.email) for user in users]
+#     return [User(name=user.name, age=user.age, email=user.email) for user in users] 

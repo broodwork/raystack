@@ -524,11 +524,11 @@ AUTH_USER_MODEL = "auth.User"
 
 AUTHENTICATION_BACKENDS = ["cotlette.contrib.auth.backends.ModelBackend"]
 
-LOGIN_URL = "/accounts/login/"
+LOGIN_URL = "/auth/accounts/login/"
 
 LOGIN_REDIRECT_URL = "/accounts/profile/"
 
-LOGOUT_REDIRECT_URL = None
+LOGOUT_REDIRECT_URL = "/auth/accounts/login/"
 
 # The number of seconds a password reset link is valid for (default: 3 days).
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3

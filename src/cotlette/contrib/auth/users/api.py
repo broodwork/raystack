@@ -39,22 +39,6 @@ class TokenData(BaseModel):
 # JWT settings
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-@router.on_event("startup")
-async def create_tables():
-    db.initialize()
-    UserModel.create_table()
-    existing_user = UserModel.objects.filter(email="pvenv@icloud.com").first()  # type: ignore
-    if not existing_user:
-        test_user = await create_user(UserCreate(
-            name="vova",
-            age=26,
-            email="pvenv@icloud.com",
-            password="dotvej-Fawne4-migqaw",
-            group_id=1,
-            organization="N/A organization"
-        ))
-        print('test_user', test_user)
-
 @router.route("/login", methods=["POST"])
 async def login_user(request):
     # Redirect to previous path after login
@@ -130,4 +114,4 @@ async def create_user(user: UserCreate):
 @router.get("/", response_model=list[User])
 async def get_users():
     users = await UserModel.objects.all().execute()  # type: ignore
-    return [User(name=user.name, age=user.age, email=user.email) for user in users]
+    return [User(name=user.name, age=user.age, email=user.email) for user in users] 

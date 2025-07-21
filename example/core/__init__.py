@@ -50,7 +50,7 @@ from starlette.responses import JSONResponse, \
 
 @app.exception_handler(403)
 async def not_found(request, exc):
-    return RedirectResponse("/accounts/login", status_code=303)
+    return RedirectResponse("/auth/accounts/login", status_code=303)
     # return render_template(request=request, template_name="401.html", context={"request": request})
 
 # Класс для аутентификации
