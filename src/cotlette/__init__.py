@@ -49,15 +49,24 @@ class Cotlette(FastAPI):
                 logger.warning(f"⚠️ '{app_path}.router'")
 
     def include_templates(self):
-        # Include templates specified by user in SETTINGS
+        # Connect internal Cotlette templates (e.g., admin templates)
+        internal_template_dirs = [
+            os.path.join(self.cotlette_directory, "contrib", "templates")
+        ]
         for template in self.settings.TEMPLATES:
-            template_dirs = template.get("DIRS")
+            # Add internal templates to user template directories
+            template_dirs = template.get("DIRS", [])
+            # Convert relative paths to absolute
             template_dirs = [os.path.join(self.settings.BASE_DIR, path) for path in template_dirs]
-
+            # Add internal templates if not already present
+            for internal_dir in internal_template_dirs:
+                if internal_dir not in template_dirs:
+                    template_dirs.append(internal_dir)
+            template["DIRS"] = template_dirs
     def include_static(self):
         # Include framework static files
-        static_dir = os.path.join(self.cotlette_directory, "static")
-        self.mount("/static", StaticFiles(directory=static_dir), name="static")
+        internal_static_dir = os.path.join(self.cotlette_directory, "contrib", "static")
+        self.mount("/admin_static", StaticFiles(directory=internal_static_dir), name="admin_static")
 
         # Include static files specified by user in SETTINGS
         if self.settings.STATIC_URL:
