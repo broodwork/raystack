@@ -123,7 +123,10 @@ class Command(BaseCommand):
                 
                 # Выполняем запрос напрямую через базу данных
                 from cotlette.core.database.sqlalchemy import db
-                await db.execute_async(insert_query)
+                try:
+                    await db.execute_async(insert_query)
+                except Exception as e:
+                    raise CommandError(f"Error creating superuser: {e}")
                 
                 self.stdout.write(f"Superuser '{username}' created successfully.")
             except Exception as e:

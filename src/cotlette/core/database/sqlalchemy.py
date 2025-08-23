@@ -260,10 +260,16 @@ class SQLAlchemyBackend:
             
             # Выполняем запрос без параметров
             result = await session.execute(sql_text)
+            
+            # Делаем commit для сохранения изменений
+            await session.commit()
                 
             if fetch:
                 return result.fetchall()
             return result
+        except Exception:
+            await session.rollback()
+            raise
         finally:
             await session.close()
     

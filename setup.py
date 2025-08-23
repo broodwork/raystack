@@ -24,13 +24,14 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     python_requires=">=3.6",
+    # data_files=[("", ["suppress_warnings.pth"])],  # Удалено, так как больше не нужно
     install_requires=[
         "uvicorn<0.20.0",
         "fastapi<0.100.0",
         "asgiref<4.0.0",
         "jinja2<3.2.0",
         "bcrypt<4.1.0",
-        "python-jose<3.4.0",
+        # "python-jose<3.4.0",  # Заменено на PyJWT
         "pyjwt<2.8.0",
         "itsdangerous<2.2.0",
         "python-multipart<0.1.0",

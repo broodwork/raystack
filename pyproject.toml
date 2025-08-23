@@ -12,7 +12,7 @@ dependencies = [
     "asgiref<4.0.0",
     "jinja2<3.2.0",
     "bcrypt<4.1.0",
-    "python-jose<3.4.0",
+            # "python-jose<3.4.0",  # Заменено на PyJWT
     "pyjwt<2.8.0",
     "itsdangerous<2.2.0",
     "python-multipart<0.1.0",
