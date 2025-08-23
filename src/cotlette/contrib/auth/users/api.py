@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
@@ -111,7 +111,7 @@ async def create_user(user: UserCreate):
 
 
 # Get all users (GET)
-@router.get("/", response_model=list[User])
+@router.get("/", response_model=List[User])
 async def get_users():
     users = await UserModel.objects.all().execute()  # type: ignore
     return [User(name=user.name, age=user.age, email=user.email) for user in users] 

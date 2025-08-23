@@ -2,8 +2,12 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+# asynccontextmanager для Python 3.6 совместимости
+try:
+    from contextlib import asynccontextmanager
+except ImportError:
+    from contextlib import contextmanager as asynccontextmanager
 import os
 from typing import Optional, Dict, Any, List
 from contextlib import contextmanager
@@ -215,11 +219,13 @@ class SQLAlchemyBackend:
             # Для других баз данных используем тот же URL
             self.async_engine = create_async_engine(self.database_url)
         
-        # Создаем фабрику асинхронных сессий
-        self.AsyncSessionLocal = async_sessionmaker(
+        # Создаем фабрику асинхронных сессий (совместимость с SQLAlchemy 1.4)
+        from sqlalchemy.orm import sessionmaker
+        self.AsyncSessionLocal = sessionmaker(
             autocommit=False, 
             autoflush=False, 
-            bind=self.async_engine
+            bind=self.async_engine,
+            class_=AsyncSession
         )
         
         # Создаем таблицы
