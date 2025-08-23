@@ -177,7 +177,7 @@ class Apps:
             raise LookupError(message)
 
     # This method is performance-critical at least for Cotlette's test suite.
-    @functools.cache
+    @functools.lru_cache(maxsize=None)
     def get_models(self, include_auto_created=False, include_swapped=False):
         """
         Return a list of all installed models.
@@ -273,7 +273,10 @@ class Apps:
         candidates = []
         for app_config in self.app_configs.values():
             if object_name.startswith(app_config.name):
-                subpath = object_name.removeprefix(app_config.name)
+                if object_name.startswith(app_config.name):
+                    subpath = object_name[len(app_config.name):]
+                else:
+                    subpath = object_name
                 if subpath == "" or subpath[0] == ".":
                     candidates.append(app_config)
         if candidates:
@@ -292,7 +295,7 @@ class Apps:
             raise LookupError("Model '%s.%s' not registered." % (app_label, model_name))
         return model
 
-    @functools.cache
+    @functools.lru_cache(maxsize=None)
     def get_swappable_settings_name(self, to_string):
         """
         For a given model string (e.g. "auth.User"), return the name of the

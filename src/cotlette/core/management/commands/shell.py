@@ -216,14 +216,12 @@ class Command(BaseCommand):
             return namespace
 
         top_level = auto_imports.pop(None, [])
-        import_string = "\n".join(
-            [f"  import {obj}" for obj, _ in top_level]
-            + [
-                f"  from {module} import {objects}"
-                for module, imported_objects in auto_imports.items()
-                if (objects := ", ".join(i[0] for i in imported_objects))
-            ]
-        )
+        import_parts = [f"  import {obj}" for obj, _ in top_level]
+        for module, imported_objects in auto_imports.items():
+            objects = ", ".join(i[0] for i in imported_objects)
+            if objects:
+                import_parts.append(f"  from {module} import {objects}")
+        import_string = "\n".join(import_parts)
 
         try:
             import isort

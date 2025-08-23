@@ -6,6 +6,7 @@ from cotlette.conf import settings
 from cotlette.template import TemplateDoesNotExist, TemplateSyntaxError
 from cotlette.utils.functional import cached_property
 from cotlette.utils.module_loading import import_string
+from cotlette.forms.renderers import register_jinja2_form_filters
 
 from .base import BaseEngine
 
@@ -28,6 +29,7 @@ class Jinja2(BaseEngine):
             options["loader"] = jinja2.FileSystemLoader(self.template_dirs)
 
         self.env = environment_cls(**options)
+        register_jinja2_form_filters(self.env)
 
     def get_template(self, template_name):
         try:

@@ -467,7 +467,7 @@ def check_for_language(lang_code):
     )
 
 
-@functools.lru_cache
+@functools.lru_cache(maxsize=None)
 def get_languages():
     """
     Cache of settings.LANGUAGES in a dictionary for easy lookups by key.
@@ -496,9 +496,10 @@ def get_supported_language_variant(lang_code, strict=False):
         # Truncate the language code to a maximum length to avoid potential
         # denial of service attacks.
         if len(lang_code) > LANGUAGE_CODE_MAX_LENGTH:
+            index = lang_code.rfind("-", 0, LANGUAGE_CODE_MAX_LENGTH)
             if (
                 not strict
-                and (index := lang_code.rfind("-", 0, LANGUAGE_CODE_MAX_LENGTH)) > 0
+                and index > 0
             ):
                 # There is a generic variant under the maximum length accepted length.
                 lang_code = lang_code[:index]
@@ -512,7 +513,10 @@ def get_supported_language_variant(lang_code, strict=False):
         except KeyError:
             pass
         i = None
-        while (i := lang_code.rfind("-", 0, i)) > -1:
+        while True:
+            i = lang_code.rfind("-", 0, i)
+            if i <= -1:
+                break
             possible_lang_codes.append(lang_code[:i])
         generic_lang_code = possible_lang_codes[-1]
         supported_lang_codes = get_languages()
@@ -592,7 +596,7 @@ def get_language_from_request(request, check_path=False):
         return settings.LANGUAGE_CODE
 
 
-@functools.lru_cache(maxsize=1000)
+@functools.lru_cache(maxsize=None)(maxsize=1000)
 def _parse_accept_lang_header(lang_string):
     """
     Parse the lang_string, which is the body of an HTTP Accept-Language
@@ -633,7 +637,8 @@ def parse_accept_lang_header(lang_string):
     # If there is at least one comma in the value, parse up to the last comma
     # before the max length, skipping any truncated parts at the end of the
     # header value.
-    if (index := lang_string.rfind(",", 0, LANGUAGE_CODE_MAX_LENGTH)) > 0:
+    index = lang_string.rfind(",", 0, LANGUAGE_CODE_MAX_LENGTH)
+    if index > 0:
         return _parse_accept_lang_header(lang_string[:index])
 
     # Don't attempt to parse if there is only one language-range value which is

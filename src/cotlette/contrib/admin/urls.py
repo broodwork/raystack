@@ -16,6 +16,7 @@ from starlette.authentication import requires
 
 from cotlette.contrib.auth.users.models import UserModel
 from cotlette.contrib.auth.groups.models import GroupModel
+from cotlette.contrib.auth.groups.forms import GroupCreateForm
 
 
 router = APIRouter()
@@ -225,7 +226,9 @@ async def user_delete_post(request: Request, user_id: int):
 @router.get("/groups/create", response_model=None)
 @requires("user_auth")
 async def group_create_view(request: Request):
+    form = GroupCreateForm()
     return render_template(request=request, template_name="admin/group_create.html", context={
+        "form": form,
         "url_for": url_for,
         "config": request.app.settings,
     })
@@ -233,16 +236,25 @@ async def group_create_view(request: Request):
 @router.post("/groups/create", response_model=None)
 @requires("user_auth")
 async def group_create_post(request: Request):
-    form = await request.form()
-    group = GroupModel(
-        name=form.get("name"),
-        description=form.get("description")
-    )
-    group.save()
+    data = await request.form()
+    form = GroupCreateForm(data)
+    if form.is_valid():
+        group = GroupModel(
+            name=form.cleaned_data["name"],
+            description=form.cleaned_data["description"]
+        )
+        group.save()
+        return render_template(request=request, template_name="admin/group_create.html", context={
+            "form": GroupCreateForm(),
+            "url_for": url_for,
+            "config": request.app.settings,
+            "success": True
+        })
     return render_template(request=request, template_name="admin/group_create.html", context={
+        "form": form,
         "url_for": url_for,
         "config": request.app.settings,
-        "success": True
+        "errors": "Пожалуйста, исправьте ошибки в форме."
     })
 
 # --- Group Delete ---

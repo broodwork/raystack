@@ -108,7 +108,7 @@ def normalize_path_patterns(patterns):
     for pattern in patterns:
         for dir_suffix in dir_suffixes:
             if pattern.endswith(dir_suffix):
-                norm_patterns.append(pattern.removesuffix(dir_suffix))
+                norm_patterns.append(pattern[:-len(dir_suffix)])
                 break
         else:
             norm_patterns.append(pattern)
@@ -134,7 +134,10 @@ def find_formatters():
     return {"black_path": shutil.which("black")}
 
 
-def run_formatters(written_files, black_path=(sentinel := object()), stderr=sys.stderr):
+def run_formatters(written_files, black_path=None, stderr=sys.stderr):
+    sentinel = object()
+    if black_path is None:
+        black_path = sentinel
     """
     Run the black formatter on the specified files.
     """
@@ -144,8 +147,9 @@ def run_formatters(written_files, black_path=(sentinel := object()), stderr=sys.
     if black_path:
         try:
             subprocess.run(
-                [black_path, "--fast", "--", *written_files],
-                capture_output=True,
+                [black_path, "--fast", "--"] + written_files,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             )
         except OSError:
             stderr.write("Formatters failed to launch:")

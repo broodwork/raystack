@@ -49,7 +49,7 @@ def load_command_class(app_name, name):
     return module.Command()
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_commands():
     """
     Return a dictionary mapping command names to their callback applications.

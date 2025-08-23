@@ -7,9 +7,11 @@ from importlib.util import find_spec as importlib_find
 
 def cached_import(module_path, class_name):
     # Check whether module is loaded and fully initialized.
+    module = sys.modules.get(module_path)
+    spec = getattr(module, "__spec__", None) if module else None
     if not (
-        (module := sys.modules.get(module_path))
-        and (spec := getattr(module, "__spec__", None))
+        module
+        and spec
         and getattr(spec, "_initializing", False) is False
     ):
         module = import_module(module_path)

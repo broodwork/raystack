@@ -103,7 +103,7 @@ def make_style(config_string=""):
     return style
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def no_style():
     """
     Return a Style object with no color scheme.

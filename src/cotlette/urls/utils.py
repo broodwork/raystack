@@ -5,7 +5,7 @@ from cotlette.core.exceptions import ViewDoesNotExist
 from cotlette.utils.module_loading import module_has_submodule
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_callable(lookup_view):
     """
     Return a callable corresponding to lookup_view.

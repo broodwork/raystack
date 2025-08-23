@@ -63,6 +63,6 @@ def register_converter(converter, type_name):
     _route_to_regex.cache_clear()
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_converters():
     return {**DEFAULT_CONVERTERS, **REGISTERED_CONVERTERS}

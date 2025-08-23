@@ -311,7 +311,8 @@ class Urlizer:
         local_cache = {}
         urlized_words = []
         for word in words:
-            if (urlized_word := local_cache.get(word)) is None:
+            urlized_word = local_cache.get(word)
+            if urlized_word is None:
                 urlized_word = self.handle_word(
                     word,
                     safe_input=safe_input,

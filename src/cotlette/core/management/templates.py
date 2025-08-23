@@ -119,7 +119,8 @@ class TemplateCommand(BaseCommand):
         excluded_directories = [".git", "__pycache__"]
         for file in options["files"]:
             extra_files.extend(map(lambda x: x.strip(), file.split(",")))
-        if exclude := options.get("exclude"):
+        exclude = options.get("exclude")
+        if exclude:
             for directory in exclude:
                 excluded_directories.append(directory.strip())
         if self.verbosity >= 2:
@@ -181,7 +182,7 @@ class TemplateCommand(BaseCommand):
                 )
                 for old_suffix, new_suffix in self.rewrite_template_suffixes:
                     if new_path.endswith(old_suffix):
-                        new_path = new_path.removesuffix(old_suffix) + new_suffix
+                        new_path = new_path[:-len(old_suffix)] + new_suffix
                         break  # Only rewrite once
 
                 if os.path.exists(new_path):
@@ -240,7 +241,8 @@ class TemplateCommand(BaseCommand):
         if template is None:
             return os.path.join(cotlette.__path__[0], "conf", subdir)
         else:
-            template = template.removeprefix("file://")
+            if template.startswith("file://"):
+                template = template[7:]
             expanded_template = os.path.expanduser(template)
             expanded_template = os.path.normpath(expanded_template)
             if os.path.isdir(expanded_template):
