@@ -234,21 +234,12 @@ class SQLAlchemyBackend:
         
         self._async_initialized = True
     
-    @asynccontextmanager
     async def get_async_session(self) -> AsyncSession:
-        """Асинхронный контекстный менеджер для получения сессии базы данных."""
+        """Получает асинхронную сессию базы данных."""
         if not self._async_initialized:
             await self.initialize_async()
             
-        session = self.AsyncSessionLocal()
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
+        return self.AsyncSessionLocal()
     
     async def execute_async(self, query: str, params: tuple = None, fetch: bool = False):
         """
@@ -262,7 +253,8 @@ class SQLAlchemyBackend:
         if not self._async_initialized:
             await self.initialize_async()
             
-        async with self.get_async_session() as session:
+        session = await self.get_async_session()
+        try:
             # Оборачиваем SQL запрос в text() для SQLAlchemy
             sql_text = text(query)
             
@@ -272,6 +264,8 @@ class SQLAlchemyBackend:
             if fetch:
                 return result.fetchall()
             return result
+        finally:
+            await session.close()
     
     async def create_table_async(self, table_name: str, columns: List[Dict[str, Any]]) -> Table:
         """
@@ -349,19 +343,25 @@ class SQLAlchemyBackend:
         if not self._async_initialized:
             await self.initialize_async()
             
-        async with self.get_async_session() as session:
+        session = await self.get_async_session()
+        try:
             # Для разных баз данных нужны разные подходы
             if self.database_url.startswith('sqlite://'):
                 result = await session.execute(text("SELECT last_insert_rowid()"))
-                return result.scalar()
+                row = result.fetchone()
+                return row[0] if row else None
             elif self.database_url.startswith('postgresql://'):
                 result = await session.execute(text("SELECT lastval()"))
-                return result.scalar()
+                row = result.fetchone()
+                return row[0] if row else None
             elif self.database_url.startswith('mysql://'):
                 result = await session.execute(text("SELECT LAST_INSERT_ID()"))
-                return result.scalar()
+                row = result.fetchone()
+                return row[0] if row else None
             else:
                 return None
+        finally:
+            await session.close()
 
 def get_database_url_from_settings():
     """

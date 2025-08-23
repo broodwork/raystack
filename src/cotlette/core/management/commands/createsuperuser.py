@@ -67,36 +67,71 @@ class Command(BaseCommand):
             email = self._get_email(email)
             password = self._get_password()
 
-        # Check if user already exists
-        existing_user = UserModel.objects.filter(email=email).first()
-        if existing_user:
-            raise CommandError(f"User with email '{email}' already exists.")
+        # Run async operations
+        import asyncio
+        
+        async def create_superuser_async():
+            # Check if user already exists
+            existing_user = await UserModel.objects.filter(email=email).first()
+            if existing_user:
+                raise CommandError(f"User with email '{email}' already exists.")
 
-        # Hash the password
-        try:
-            import bcrypt
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        except ImportError:
-            # Fallback to simple hash if bcrypt is not available
-            import hashlib
-            hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            # Hash the password
+            try:
+                import bcrypt
+                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            except ImportError:
+                # Fallback to simple hash if bcrypt is not available
+                import hashlib
+                hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
-        # Create the superuser
-        try:
-            superuser = UserModel.objects.create(
-                name=username,
-                email=email,
-                password_hash=hashed_password,
-                # Add any other required fields with default values
-                age=0,  # Default age
-                organization="Admin",  # Default organization
-                group=1,  # Default group ID (you might need to adjust this)
-            )
-            self.stdout.write(
-                f"Superuser '{username}' created successfully."
-            )
-        except Exception as e:
-            raise CommandError(f"Error creating superuser: {e}")
+            # Get or create group
+            from cotlette.core.database.models import ModelMeta
+            GroupModel = ModelMeta.get_model("GroupModel")
+            if GroupModel:
+                group = await GroupModel.objects.filter(id=1).first()
+                if not group:
+                    group = await GroupModel.objects.create(
+                        name="Admin",
+                        description="Administrator group"
+                    )
+                group_id = group.id
+            else:
+                group_id = 1
+
+            # Create the superuser using ORM
+            try:
+                # Создаем пользователя без ожидания возврата объекта
+                fields = []
+                values = []
+                for field_name, value in [
+                    ('name', username),
+                    ('email', email),
+                    ('password_hash', hashed_password),
+                    ('age', 0),
+                    ('organization', 'Admin'),
+                    ('group', group_id)
+                ]:
+                    if field_name in UserModel._fields:
+                        fields.append(f'"{field_name}"')
+                        if isinstance(value, str):
+                            values.append(f"'{value}'")
+                        else:
+                            values.append(str(value))
+                
+                insert_query = f'INSERT INTO "{UserModel.get_table_name()}" ({", ".join(fields)}) VALUES ({", ".join(values)})'
+                
+                # Выполняем запрос напрямую через базу данных
+                from cotlette.core.database.sqlalchemy import db
+                await db.execute_async(insert_query)
+                
+                self.stdout.write(f"Superuser '{username}' created successfully.")
+            except Exception as e:
+                raise CommandError(f"Error creating superuser: {e}")
+
+        # Run the async function
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(create_superuser_async())
 
     def _get_username(self, username=None):
         """Get username from user input."""

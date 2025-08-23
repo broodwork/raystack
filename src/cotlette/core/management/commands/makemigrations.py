@@ -1,6 +1,6 @@
 from cotlette.core.management.base import BaseCommand
 from cotlette.core.database.migrations import migration_manager
-from cotlette.core.database.models_sqlalchemy import ModelMeta
+from cotlette.core.database.models import ModelMeta
 import sys
 
 

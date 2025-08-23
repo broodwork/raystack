@@ -68,7 +68,14 @@ class Cotlette(FastAPI):
         internal_static_dir = os.path.join(self.cotlette_directory, "contrib", "static")
         self.mount("/admin_static", StaticFiles(directory=internal_static_dir), name="admin_static")
 
-        # Include static files specified by user in SETTINGS
-        if self.settings.STATIC_URL:
+        # Include static files from STATICFILES_DIRS
+        if hasattr(self.settings, 'STATICFILES_DIRS') and self.settings.STATICFILES_DIRS:
+            for static_dir in self.settings.STATICFILES_DIRS:
+                if os.path.exists(static_dir):
+                    self.mount("/static", StaticFiles(directory=static_dir), name="static")
+                    break  # Mount only the first existing directory
+        # Fallback to default static directory
+        elif self.settings.STATIC_URL:
             static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
-            self.mount("/static", StaticFiles(directory=static_dir), name="static")
+            if os.path.exists(static_dir):
+                self.mount("/static", StaticFiles(directory=static_dir), name="static")
