@@ -34,6 +34,15 @@ class Command(BaseCommand):
         email = options.get("email")
         noinput = options.get("noinput")
 
+        # Импортируем все модели для регистрации в ModelMeta
+        self._import_all_models()
+        
+        # Проверяем регистрацию моделей
+        from cotlette.core.database.models import ModelMeta
+        self.stdout.write(f'Зарегистрировано моделей: {len(ModelMeta._registry)}')
+        for model_name, model in ModelMeta._registry.items():
+            self.stdout.write(f'  - {model_name}: {model.objects}')
+
         # Try to get the User model
         try:
             from cotlette.contrib.auth.users.models import UserModel
@@ -46,6 +55,14 @@ class Command(BaseCommand):
             raise CommandError(
                 "Could not import User model. Make sure your apps are properly configured."
             )
+
+        # Try to get the Group model
+        try:
+            from cotlette.contrib.auth.groups.models import GroupModel
+            if not GroupModel:
+                GroupModel = None
+        except ImportError:
+            GroupModel = None
 
         # Create the superuser
         if noinput:
@@ -66,9 +83,9 @@ class Command(BaseCommand):
         # Run async operations
         import asyncio
         
-        async def create_superuser_async():
+        def create_superuser_sync():
             # Check if user already exists
-            existing_user = await UserModel.objects.filter(email=email).first()
+            existing_user = UserModel.objects.filter(email=email).first()
             if existing_user:
                 raise CommandError(f"User with email '{email}' already exists.")
 
@@ -82,15 +99,21 @@ class Command(BaseCommand):
                 hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
             # Get or create group
-            from cotlette.contrib.auth.groups.models import GroupModel
             if GroupModel:
-                group = await GroupModel.objects.filter(id=1).first()
+                group = GroupModel.objects.filter(id=1).first()
                 if not group:
-                    group = await GroupModel.objects.create(
-                        name="Admin",
-                        description="Administrator group"
-                    )
-                group_id = group.id
+                    # Создаем группу через ORM
+                    try:
+                        group = GroupModel.objects.create(
+                            name="Admin",
+                            description="Administrator group"
+                        )
+                        group_id = group.id if group else 1
+                    except Exception as e:
+                        # Группа уже существует или другая ошибка
+                        group_id = 1
+                else:
+                    group_id = group.id
             else:
                 group_id = 1
 
@@ -119,7 +142,7 @@ class Command(BaseCommand):
                 # Выполняем запрос напрямую через базу данных
                 from cotlette.core.database.sqlalchemy import db
                 try:
-                    await db.execute_async(insert_query)
+                    db.execute(insert_query)
                 except Exception as e:
                     raise CommandError(f"Error creating superuser: {e}")
                 
@@ -127,9 +150,40 @@ class Command(BaseCommand):
             except Exception as e:
                 raise CommandError(f"Error creating superuser: {e}")
 
-        # Run the async function
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(create_superuser_async())
+        # Run the sync function
+        # Временно переопределяем should_use_async для использования синхронных операций
+        import cotlette.core.database.query
+        original_should_use_async = cotlette.core.database.query.should_use_async
+        
+        def force_sync():
+            return False
+        
+        cotlette.core.database.query.should_use_async = force_sync
+        
+        try:
+            create_superuser_sync()
+        finally:
+            # Восстанавливаем оригинальную функцию
+            cotlette.core.database.query.should_use_async = original_should_use_async
+    
+    def _import_all_models(self):
+        """Импортирует все модели для регистрации в ModelMeta"""
+        try:
+            # Импортируем модели из contrib
+            import cotlette.contrib.auth.users.models
+            import cotlette.contrib.auth.groups.models
+            import cotlette.contrib.admin.models
+            
+            # Импортируем модели из приложений проекта
+            try:
+                import apps.home.models
+            except ImportError:
+                pass
+                
+        except ImportError as e:
+            self.stdout.write(
+                self.style.WARNING(f'Предупреждение: не удалось импортировать некоторые модели: {e}')
+            )
 
     def _get_username(self, username=None):
         """Get username from user input."""
