@@ -6,7 +6,8 @@ from fastapi import APIRouter, Request
 from cotlette.shortcuts import render_template
 
 from fastapi import Depends, HTTPException, status
-from jose import jwt, JWTError
+import jwt
+from jwt import PyJWTError as JWTError
 
 from config.settings import SECRET_KEY, ALGORITHM
 

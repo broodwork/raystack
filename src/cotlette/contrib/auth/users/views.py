@@ -1,16 +1,18 @@
-from cotlette.shortcuts import render
+import os
+from fastapi import APIRouter, Request, Depends, HTTPException, status
+from fastapi.responses import HTMLResponse, RedirectResponse
+from cotlette.shortcuts import render_template
+from cotlette.contrib.auth.users.forms import UserCreateForm, UserUpdateForm
+from cotlette.contrib.auth.users.models import UserModel
+from cotlette.contrib.auth.groups.models import GroupModel
+import jwt
+from jwt import PyJWTError as JWTError
+from datetime import timedelta
+from .utils import hash_password, generate_jwt, check_password
 
-# Create your views here.
-
-# --- API ROUTES (moved from api.py) ---
 from typing import Union, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from jose import jwt, JWTError
-from datetime import timedelta
-from .models import UserModel, UserCreate, User
-from .utils import hash_password, generate_jwt, check_password
 
 from starlette.responses import JSONResponse, \
     PlainTextResponse, \
@@ -20,7 +22,6 @@ from starlette.responses import JSONResponse, \
     HTMLResponse
 
 from cotlette.core.database.sqlalchemy import db
-from cotlette.contrib.auth.groups.models import GroupModel
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

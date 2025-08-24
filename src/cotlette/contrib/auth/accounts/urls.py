@@ -1,9 +1,37 @@
 import os
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends, HTTPException, status
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 # from cotlette.conf import settings
 from cotlette.shortcuts import render_template
+from cotlette.contrib.auth.users.forms import UserCreateForm, UserUpdateForm
+from cotlette.contrib.auth.users.models import UserModel
+from cotlette.contrib.auth.groups.models import GroupModel
+from cotlette.contrib.auth.accounts.forms import LoginForm
+from cotlette.contrib.auth.accounts.utils import hash_password, generate_jwt, check_password
+from cotlette.contrib.auth.accounts.utils import get_current_user, get_current_active_user
+from cotlette.contrib.auth.accounts.utils import get_current_active_superuser
+from cotlette.contrib.auth.accounts.utils import get_current_user_from_token
+from cotlette.contrib.auth.accounts.utils import get_current_active_user_from_token
+from cotlette.contrib.auth.accounts.utils import get_current_active_superuser_from_token
+from cotlette.contrib.auth.accounts.utils import get_current_user_from_cookie
+from cotlette.contrib.auth.accounts.utils import get_current_active_user_from_cookie
+from cotlette.contrib.auth.accounts.utils import get_current_active_superuser_from_cookie
+from cotlette.contrib.auth.accounts.utils import get_current_user_from_header
+from cotlette.contrib.auth.accounts.utils import get_current_active_user_from_header
+from cotlette.contrib.auth.accounts.utils import get_current_active_superuser_from_header
+from cotlette.contrib.auth.accounts.utils import get_current_user_from_query
+from cotlette.contrib.auth.accounts.utils import get_current_active_user_from_query
+from cotlette.contrib.auth.accounts.utils import get_current_active_superuser_from_query
+from cotlette.contrib.auth.accounts.utils import get_current_user_from_body
+from cotlette.contrib.auth.accounts.utils import get_current_active_user_from_body
+from cotlette.contrib.auth.accounts.utils import get_current_active_superuser_from_body
+import jwt
+from jwt import PyJWTError as JWTError
+
+from fastapi.security import OAuth2PasswordBearer
+
 
 router = APIRouter()
 
@@ -21,14 +49,6 @@ def url_for(endpoint, **kwargs):
         path += f"/{value}"
     
     return path
-
-
-from fastapi import Depends, HTTPException, status
-from jose import jwt, JWTError
-
-from config.settings import SECRET_KEY, ALGORITHM
-
-from fastapi.security import OAuth2PasswordBearer
 
 
 @router.get("/login", response_model=None)

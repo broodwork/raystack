@@ -1,15 +1,13 @@
-from cotlette.shortcuts import render
-
-# Create your views here.
-
-# --- API ROUTES (moved from api.py) ---
-from typing import Union
-
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
-from jose import jwt, JWTError
+import os
+from fastapi import APIRouter, Request, Depends, HTTPException, status
+from fastapi.responses import HTMLResponse, RedirectResponse
+from cotlette.shortcuts import render_template
+from cotlette.contrib.auth.groups.forms import GroupCreateForm, GroupUpdateForm
+from cotlette.contrib.auth.groups.models import GroupModel
+from cotlette.contrib.auth.users.models import UserModel
+import jwt
+from jwt import PyJWTError as JWTError
 from datetime import timedelta, datetime
-from .models import GroupModel
 # from .utils import hash_password, generate_jwt, check_password
 
 from starlette.responses import JSONResponse, \

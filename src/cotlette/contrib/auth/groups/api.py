@@ -2,7 +2,8 @@ from typing import Union
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from jose import jwt, JWTError
+import jwt
+from jwt import PyJWTError as JWTError
 from datetime import timedelta
 from .models import GroupModel
 # from .utils import hash_password, generate_jwt, check_password
@@ -15,22 +16,19 @@ from starlette.responses import JSONResponse, \
     HTMLResponse
 
 
-from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.responses import JSONResponse
-from datetime import timedelta, datetime
-from jose import JWTError, jwt
+from datetime import datetime
 
 
 router = APIRouter()
 
 # Создание таблицы при запуске приложения
-@router.on_event("startup")
-async def create_tables():
-    GroupModel.create_table()
-    owners_group = GroupModel.objects.filter(name="Owners").first()  # type: ignore
-    if not owners_group:
-        GroupModel.objects.create(name="Owners")
+# @router.on_event("startup")
+# async def create_tables():
+#     GroupModel.create_table()
+#     owners_group = GroupModel.objects.filter(name="Owners").first()  # type: ignore
+#     if not owners_group:
+#         GroupModel.objects.create(name="Owners")
 
 # # Pydantic-модель для входа пользователя
 # class UserLogin(BaseModel):

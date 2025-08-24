@@ -2,7 +2,8 @@ from typing import Union, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from jose import jwt, JWTError
+import jwt
+from jwt import PyJWTError as JWTError
 from datetime import timedelta
 from .models import UserModel, UserCreate, User
 from .utils import hash_password, generate_jwt, check_password
