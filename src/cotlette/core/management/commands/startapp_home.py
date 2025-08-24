@@ -37,3 +37,4 @@ class Command(TemplateCommand):
         options["is_home_app"] = True
 
         super().handle("app", app_name, target, **options)
+

@@ -8,3 +8,9 @@ class AppConfig(AppConfig):
     def ready(self):
         # Импорт сигналов и других компонентов при инициализации
         pass
+    
+    @property
+    def router(self):
+        """Возвращает роутер приложения"""
+        from .urls import router
+        return router

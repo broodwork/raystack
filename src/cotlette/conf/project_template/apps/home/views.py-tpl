@@ -1,4 +1,4 @@
-from cotlette.shortcuts import render
+from cotlette.shortcuts import render_template
 from .models import HomePage
 
 async def home_view(request):
@@ -17,7 +17,7 @@ async def home_view(request):
             'home_page': None
         }
     
-    return render(request, 'home/home.html', context)
+    return render_template(request, 'home/home.html', context)
 
 
 async def about_view(request):
@@ -26,4 +26,4 @@ async def about_view(request):
         'title': 'О нас',
         'content': 'Информация о вашем проекте.'
     }
-    return render(request, 'home/about.html', context)
+    return render_template(request, 'home/about.html', context)

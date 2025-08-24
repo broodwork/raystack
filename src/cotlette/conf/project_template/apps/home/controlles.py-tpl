@@ -1,4 +1,4 @@
-from cotlette.shortcuts import render
+from cotlette.shortcuts import render_template
 from .models import HomePage
 
 class HomeController:
@@ -20,7 +20,7 @@ class HomeController:
                 'home_page': None
             }
         
-        return render(request, 'home/home.html', context)
+        return render_template(request, 'home/home.html', context)
     
     async def about(self, request):
         """Страница 'О нас'"""
@@ -28,7 +28,7 @@ class HomeController:
             'title': 'О нас',
             'content': 'Информация о вашем проекте.'
         }
-        return render(request, 'home/about.html', context)
+        return render_template(request, 'home/about.html', context)
     
     async def contact(self, request):
         """Страница контактов"""
@@ -36,4 +36,4 @@ class HomeController:
             'title': 'Контакты',
             'content': 'Свяжитесь с нами.'
         }
-        return render(request, 'home/contact.html', context)
+        return render_template(request, 'home/contact.html', context)

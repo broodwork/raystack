@@ -1,9 +1,15 @@
-from cotlette.core.database.fields import CharField, IntegerField, Field
+from cotlette.core.database.fields import (
+    CharField, IntegerField, Field, TextField, BooleanField, DateTimeField,
+    AutoField, BigAutoField, BigIntegerField, SmallIntegerField, 
+    PositiveIntegerField, PositiveSmallIntegerField, FloatField, DecimalField,
+    DateField, TimeField, EmailField, URLField, SlugField, FileField, 
+    ImageField, FilePathField, GenericIPAddressField, UUIDField, JSONField,
+    BinaryField, ForeignKey, OneToOneField, ManyToManyField, ComputedField,
+    IndexField, NullBooleanField
+)
 from cotlette.core.database.manager import Manager
 from cotlette.core.database.sqlalchemy import db
 from cotlette.core.database.fields.related import ForeignKeyField
-
-from cotlette.core.database.fields import AutoField
 
 import asyncio
 
@@ -86,6 +92,54 @@ class Model(metaclass=ModelMeta):
             if hasattr(cls, "table") and cls.table 
             else "_".join(cls.__module__.split('.')[1:-1] + [cls.__name__.lower()])
         )
+
+    @classmethod
+    def get_table(cls):
+        """
+        Создает и возвращает SQLAlchemy таблицу для модели.
+        """
+        from sqlalchemy import Table, Column, MetaData, Integer, String, Boolean, DateTime, Text, Float
+        from cotlette.core.database.sqlalchemy import Base
+        
+        # Создаем таблицу
+        columns = []
+        
+        for field_name, field in cls._fields.items():
+            # Конвертируем типы полей в SQLAlchemy типы
+            if field.column_type == int:
+                column_type = Integer
+            elif field.column_type == str:
+                column_type = String(255)  # По умолчанию VARCHAR(255)
+            elif field.column_type == bool:
+                column_type = Boolean
+            elif field.column_type == float:
+                column_type = Float
+            else:
+                column_type = String(255)  # По умолчанию
+            
+            primary_key = field.primary_key
+            nullable = not field.primary_key
+            unique = field.unique
+            
+            # Создаем колонку
+            column = Column(
+                field_name, 
+                column_type, 
+                primary_key=primary_key,
+                nullable=nullable,
+                unique=unique
+            )
+            
+            columns.append(column)
+        
+        # Создаем таблицу
+        table = Table(
+            cls.get_table_name(),
+            Base.metadata,
+            *columns
+        )
+        
+        return table
 
     @classmethod
     def create_table(cls):

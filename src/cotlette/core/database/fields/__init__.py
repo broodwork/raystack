@@ -1,9 +1,18 @@
 class Field:
-    def __init__(self, column_type, primary_key=False, default=None, unique=False):
+    def __init__(self, column_type, primary_key=False, default=None, unique=False, null=False, blank=False, verbose_name=None, help_text=None, choices=None, db_index=False, editable=True, auto_now=False, auto_now_add=False):
         self.column_type = column_type
         self.primary_key = primary_key
         self.default = default
-        self.unique = unique  # Add support for unique parameter
+        self.unique = unique
+        self.null = null
+        self.blank = blank
+        self.verbose_name = verbose_name
+        self.help_text = help_text
+        self.choices = choices
+        self.db_index = db_index
+        self.editable = editable
+        self.auto_now = auto_now
+        self.auto_now_add = auto_now_add
     
     def contribute_to_class(self, model_class, name):
         """
@@ -29,6 +38,12 @@ class Field:
 
 
 class RelatedField(Field):
+    def __init__(self, to, related_name=None, on_delete=None, **kwargs):
+        super().__init__("INTEGER", **kwargs)
+        self.to = to
+        self.related_name = related_name
+        self.on_delete = on_delete or "CASCADE"
+    
     def get_related_model(self):
         """
         Returns related model.
@@ -67,14 +82,155 @@ class RelatedField(Field):
             related_model._meta['reverse_relations'][self.related_name] = model_class
 
 
+# Базовые поля
 class CharField(Field):
     def __init__(self, max_length, **kwargs):
         super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.max_length = max_length
+
+class TextField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("TEXT", **kwargs)
 
 class IntegerField(Field):
     def __init__(self, **kwargs):
         super().__init__("INTEGER", **kwargs)
 
-class AutoField(Field):
+class BigIntegerField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("BIGINT", **kwargs)
+
+class SmallIntegerField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("SMALLINT", **kwargs)
+
+class PositiveIntegerField(Field):
     def __init__(self, **kwargs):
         super().__init__("INTEGER", **kwargs)
+
+class PositiveSmallIntegerField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("SMALLINT", **kwargs)
+
+class AutoField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("INTEGER", primary_key=True, **kwargs)
+
+class BigAutoField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("BIGINT", primary_key=True, **kwargs)
+
+class BooleanField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("BOOLEAN", **kwargs)
+
+class NullBooleanField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("BOOLEAN", null=True, **kwargs)
+
+class FloatField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("REAL", **kwargs)
+
+class DecimalField(Field):
+    def __init__(self, max_digits, decimal_places, **kwargs):
+        super().__init__(f"DECIMAL({max_digits},{decimal_places})", **kwargs)
+        self.max_digits = max_digits
+        self.decimal_places = decimal_places
+
+class DateField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("DATE", **kwargs)
+
+class DateTimeField(Field):
+    def __init__(self, auto_now=False, auto_now_add=False, **kwargs):
+        super().__init__("DATETIME", **kwargs)
+        self.auto_now = auto_now
+        self.auto_now_add = auto_now_add
+
+class TimeField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("TIME", **kwargs)
+
+class EmailField(Field):
+    def __init__(self, max_length=254, **kwargs):
+        super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.max_length = max_length
+
+class URLField(Field):
+    def __init__(self, max_length=200, **kwargs):
+        super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.max_length = max_length
+
+class SlugField(Field):
+    def __init__(self, max_length=50, **kwargs):
+        super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.max_length = max_length
+
+class FileField(Field):
+    def __init__(self, upload_to=None, max_length=100, **kwargs):
+        super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.upload_to = upload_to
+        self.max_length = max_length
+
+class ImageField(Field):
+    def __init__(self, upload_to=None, height_field=None, width_field=None, max_length=100, **kwargs):
+        super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.upload_to = upload_to
+        self.height_field = height_field
+        self.width_field = width_field
+        self.max_length = max_length
+
+class FilePathField(Field):
+    def __init__(self, path=None, match=None, recursive=False, max_length=100, **kwargs):
+        super().__init__(f"VARCHAR({max_length})", **kwargs)
+        self.path = path
+        self.match = match
+        self.recursive = recursive
+        self.max_length = max_length
+
+class GenericIPAddressField(Field):
+    def __init__(self, protocol='both', unpack_ipv4=False, **kwargs):
+        super().__init__("VARCHAR(39)", **kwargs)
+        self.protocol = protocol
+        self.unpack_ipv4 = unpack_ipv4
+
+class UUIDField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("VARCHAR(32)", **kwargs)
+
+# Специальные поля
+class JSONField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("TEXT", **kwargs)
+
+class BinaryField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("BLOB", **kwargs)
+
+# Поля для отношений
+class ForeignKey(RelatedField):
+    def __init__(self, to, on_delete=None, **kwargs):
+        super().__init__(to, on_delete=on_delete, **kwargs)
+
+class OneToOneField(RelatedField):
+    def __init__(self, to, on_delete=None, **kwargs):
+        super().__init__(to, on_delete=on_delete, **kwargs)
+
+class ManyToManyField(RelatedField):
+    def __init__(self, to, through=None, through_fields=None, **kwargs):
+        super().__init__(to, **kwargs)
+        self.through = through
+        self.through_fields = through_fields
+
+# Поля для вычислений
+class ComputedField(Field):
+    def __init__(self, compute=None, **kwargs):
+        super().__init__("COMPUTED", **kwargs)
+        self.compute = compute
+
+# Поля для индексов
+class IndexField(Field):
+    def __init__(self, **kwargs):
+        super().__init__("INDEX", **kwargs)
+        self.db_index = True

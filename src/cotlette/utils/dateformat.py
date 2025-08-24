@@ -105,7 +105,7 @@ class TimeFormat(Formatter):
         """
         hour = self.data.hour % 12 or 12
         minute = self.data.minute
-        return "%d:%02d" % (hour, minute) if minute else hour
+        return "{}:{:02d}".format(hour, minute) if minute else hour
 
     def g(self):
         "Hour, 12-hour format without leading zeros; i.e. '1' to '12'"
@@ -117,15 +117,15 @@ class TimeFormat(Formatter):
 
     def h(self):
         "Hour, 12-hour format; i.e. '01' to '12'"
-        return "%02d" % (self.data.hour % 12 or 12)
+        return "{:02d}".format(self.data.hour % 12 or 12)
 
     def H(self):
         "Hour, 24-hour format; i.e. '00' to '23'"
-        return "%02d" % self.data.hour
+        return "{:02d}".format(self.data.hour)
 
     def i(self):
         "Minutes; i.e. '00' to '59'"
-        return "%02d" % self.data.minute
+        return "{:02d}".format(self.data.minute)
 
     def O(self):  # NOQA: E743, E741
         """
@@ -140,7 +140,7 @@ class TimeFormat(Formatter):
         seconds = offset.days * 86400 + offset.seconds
         sign = "-" if seconds < 0 else "+"
         seconds = abs(seconds)
-        return "%s%02d%02d" % (sign, seconds // 3600, (seconds // 60) % 60)
+        return "{}{:02d}{:02d}".format(sign, seconds // 3600, (seconds // 60) % 60)
 
     def P(self):
         """
@@ -208,7 +208,7 @@ class DateFormat(TimeFormat):
 
     def d(self):
         "Day of the month, 2 digits with leading zeros; i.e. '01' to '31'"
-        return "%02d" % self.data.day
+        return "{:02d}".format(self.data.day)
 
     def D(self):
         "Day of the week, textual, 3 letters; e.g. 'Fri'"
@@ -242,7 +242,7 @@ class DateFormat(TimeFormat):
 
     def m(self):
         "Month; i.e. '01' to '12'"
-        return "%02d" % self.data.month
+        return "{:02d}".format(self.data.month)
 
     def M(self):
         "Month, textual, 3 letters; e.g. 'Jan'"
@@ -308,11 +308,11 @@ class DateFormat(TimeFormat):
 
     def y(self):
         """Year, 2 digits with leading zeros; e.g. '99'."""
-        return "%02d" % (self.data.year % 100)
+        return "{:02d}".format(self.data.year % 100)
 
     def Y(self):
         """Year, 4 digits with leading zeros; e.g. '1999'."""
-        return "%04d" % self.data.year
+        return "{:04d}".format(self.data.year)
 
     def z(self):
         """Day of the year, i.e. 1 to 366."""

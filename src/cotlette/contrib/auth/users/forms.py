@@ -37,3 +37,4 @@ class UserUpdateForm(BaseModel):
     age: Optional[int] = None
     email: Optional[str] = None
     password: Optional[str] = None
+

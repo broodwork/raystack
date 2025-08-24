@@ -183,3 +183,4 @@ async def get_current_active_superuser_from_body(request):
     if user:
         return await get_current_active_superuser(user)
     return None
+

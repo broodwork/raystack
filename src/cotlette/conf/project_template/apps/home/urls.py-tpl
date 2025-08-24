@@ -24,3 +24,4 @@ async def private_page(request: Request):
         'message': 'Эта страница доступна только авторизованным пользователям!'
     }
     return render_template(request=request, template_name="home/private.html", context=context)
+

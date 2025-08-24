@@ -35,7 +35,7 @@ def get_fixed_timezone(offset):
     if isinstance(offset, timedelta):
         offset = offset.total_seconds() // 60
     sign = "-" if offset < 0 else "+"
-    hhmm = "%02d%02d" % divmod(abs(offset), 60)
+    hhmm = "{:02d}{:02d}".format(divmod(abs(offset), 60)[0], divmod(abs(offset), 60)[1])
     name = sign + hhmm
     return timezone(timedelta(minutes=offset), name)
 

@@ -36,16 +36,12 @@ class Command(BaseCommand):
 
         # Try to get the User model
         try:
-            from cotlette.core.database.models import ModelMeta
-            UserModel = ModelMeta.get_model("UserModel")
+            from cotlette.contrib.auth.users.models import UserModel
             if not UserModel:
-                # Try alternative model names
-                UserModel = ModelMeta.get_model("User")
-                if not UserModel:
-                    raise CommandError(
-                        "Could not find User model. Make sure you have a User model "
-                        "defined in your apps (e.g., apps.users.models.UserModel)."
-                    )
+                raise CommandError(
+                    "Could not find User model. Make sure you have a User model "
+                    "defined in your apps (e.g., cotlette.contrib.auth.users.models.UserModel)."
+                )
         except ImportError:
             raise CommandError(
                 "Could not import User model. Make sure your apps are properly configured."
@@ -86,8 +82,7 @@ class Command(BaseCommand):
                 hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
             # Get or create group
-            from cotlette.core.database.models import ModelMeta
-            GroupModel = ModelMeta.get_model("GroupModel")
+            from cotlette.contrib.auth.groups.models import GroupModel
             if GroupModel:
                 group = await GroupModel.objects.filter(id=1).first()
                 if not group:

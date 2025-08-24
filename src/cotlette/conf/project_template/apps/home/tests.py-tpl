@@ -50,3 +50,4 @@ class HomeModelTestCase(TestCase):
             content='Тестовое содержание'
         )
         self.assertEqual(str(home_page), 'Тестовая страница')
+

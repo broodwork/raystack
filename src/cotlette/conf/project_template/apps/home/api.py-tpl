@@ -51,3 +51,4 @@ async def update_home_page(request: Request):
             "status": "error",
             "message": str(e)
         }
+
