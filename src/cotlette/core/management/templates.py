@@ -41,6 +41,15 @@ class TemplateCommand(BaseCommand):
     rewrite_template_suffixes = (
         # Allow shipping invalid .py files without byte-compilation.
         (".py-tpl", ".py"),
+        # HTML templates
+        (".html-tpl", ".html"),
+        # Markdown files
+        (".md-tpl", ".md"),
+        # Configuration files
+        (".ini-tpl", ".ini"),
+        (".txt-tpl", ".txt"),
+        # All other template files
+        ("-tpl", ""),
     )
 
     def add_arguments(self, parser):
@@ -56,8 +65,8 @@ class TemplateCommand(BaseCommand):
             "-e",
             dest="extensions",
             action="append",
-            default=["py"],
-            help='The file extension(s) to render (default: "py"). '
+            default=["py", "html", "md", "ini", "txt"],
+            help='The file extension(s) to render (default: "py,html,md,ini,txt"). '
             "Separate multiple extensions with commas, or use "
             "-e multiple times.",
         )
