@@ -1,17 +1,17 @@
-# Cotlette ORM Documentation
+# Raystack ORM Documentation
 
 ## Overview
 
-Cotlette includes a lightweight, Django-inspired ORM for working with relational databases (currently SQLite, PostgreSQL in roadmap). It provides a familiar API for defining models, querying data, and managing relationships.
+Raystack includes a lightweight, Django-inspired ORM for working with relational databases (currently SQLite, PostgreSQL in roadmap). It provides a familiar API for defining models, querying data, and managing relationships.
 
 ---
 
 ## Defining Models
 
-Models are Python classes that inherit from `cotlette.db.Model` and use field types from `cotlette.db.fields`:
+Models are Python classes that inherit from `raystack.db.Model` and use field types from `raystack.db.fields`:
 
 ```python
-from cotlette.db import Model, fields
+from raystack.db import Model, fields
 
 class Article(Model):
     title = fields.CharField(max_length=200)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Setup script for cotlette."""
+"""Setup script for raystack."""
 
 from setuptools import setup, find_packages
 import os
@@ -13,14 +13,14 @@ def read_readme():
     return "FastAPI sizzles, Django dazzles. The best of both worlds in one framework."
 
 setup(
-    name="cotlette",
+    name="raystack",
     version="0.0.0",
     description="FastAPI sizzles, Django dazzles. The best of both worlds in one framework.",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
     author="Vladimir Penzin",
     author_email="pvenv@icloud.com",
-    url="https://github.com/ForceFledgling/cotlette",
+    url="https://github.com/ForceFledgling/raystack",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     python_requires=">=3.6",
@@ -41,7 +41,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cotlette=cotlette.core.management:execute_from_command_line",
+            "raystack=raystack.core.management:execute_from_command_line",
         ],
     },
     classifiers=[

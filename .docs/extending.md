@@ -1,8 +1,8 @@
-# Extending Cotlette
+# Extending Raystack
 
 ## Overview
 
-Cotlette is designed to be extensible. You can add your own apps, commands, middleware, and even swap out core components. This guide covers the main extension points.
+Raystack is designed to be extensible. You can add your own apps, commands, middleware, and even swap out core components. This guide covers the main extension points.
 
 ---
 
@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 Add Python modules to `core/management/commands/`:
 ```python
 # core/management/commands/hello.py
-from cotlette.core.management.base import BaseCommand
+from raystack.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = "Prints Hello, World!"
@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
 Write your own middleware and add it to the app:
 ```python
-from cotlette.core.middlewares import BaseMiddleware
+from raystack.core.middlewares import BaseMiddleware
 
 class MyMiddleware(BaseMiddleware):
     async def __call__(self, request, call_next):
@@ -92,4 +92,4 @@ You can override or extend core components (ORM, template engine, etc.) by subcl
 
 ## More
 
-See the [Cotlette source code](../src/cotlette/) for more extension examples. 
+See the [Raystack source code](../src/raystack/) for more extension examples. 

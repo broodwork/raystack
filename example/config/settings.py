@@ -6,7 +6,7 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 # Database settings
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'ENGINE': 'raystack.core.database.sqlalchemy',
         # Синхронный режим (по умолчанию)
         'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
@@ -24,14 +24,14 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    'cotlette.contrib.admin',
-    'cotlette.contrib.auth',
+    'raystack.contrib.admin',
+    'raystack.contrib.auth',
     'apps.home',
 ]
 
 TEMPLATES = [
     {
-        "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
+        "BACKEND": "raystack.template.backends.jinja2.Jinja2",
         "DIRS": [
             "templates",
             "jinja2"

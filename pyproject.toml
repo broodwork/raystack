@@ -3,7 +3,7 @@ requires = ["setuptools>=40.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cotlette"
+name = "raystack"
 version = "0.0.0"
 requires-python = ">= 3.6"
 dependencies = [
@@ -48,13 +48,13 @@ classifiers = [
 ]
 
 [project.scripts]
-cotlette = "cotlette.core.management:execute_from_command_line"
+raystack = "raystack.core.management:execute_from_command_line"
 
 [project.urls]
-Homepage = "https://github.com/ForceFledgling/cotlette"
-Documentation = "https://github.com/ForceFledgling/cotlette"
-Source = "https://github.com/ForceFledgling/cotlette"
-Tracker = "https://github.com/ForceFledgling/cotlette/issues"
+Homepage = "https://github.com/ForceFledgling/raystack"
+Documentation = "https://github.com/ForceFledgling/raystack"
+Source = "https://github.com/ForceFledgling/raystack"
+Tracker = "https://github.com/ForceFledgling/raystack/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

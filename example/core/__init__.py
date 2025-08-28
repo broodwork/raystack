@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from cotlette import Cotlette
+from raystack import Raystack
 from fastapi.responses import JSONResponse, HTMLResponse
 from jose import JWTError, jwt
 from config.settings import SECRET_KEY, ALGORITHM
@@ -10,7 +10,7 @@ from starlette.authentication import (
 )
 from starlette.middleware.sessions import SessionMiddleware
 
-from cotlette.shortcuts import render_template
+from raystack.shortcuts import render_template
 
 
 from pydantic_settings import BaseSettings
@@ -38,7 +38,7 @@ settings = Settings(
 )
 
 
-app = Cotlette()
+app = Raystack()
 
 
 from starlette.responses import JSONResponse, \

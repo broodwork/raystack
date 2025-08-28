@@ -1,113 +1,113 @@
-# Шаблоны проектов Cotlette
+# Raystack Project Templates
 
-Этот документ описывает, как использовать шаблоны для создания новых проектов и приложений в фреймворке Cotlette.
+This document describes how to use templates to create new projects and applications within the Raystack framework.
 
-## Создание нового проекта
+## Creating a New Project
 
-### Базовый проект с приложением home
+### Basic Project with Home App
 
 ```bash
 python manage.py startproject myproject
 ```
 
-Эта команда создаст новый проект со следующей структурой:
+This command will create a new project with the following structure:
 
 ```
 myproject/
 ├── apps/
-│   └── home/               # Приложение home с базовой функциональностью
+│   └── home/               # Home application with basic functionality
 │       ├── __init__.py
 │       ├── apps.py
-│       ├── models.py       # Модель HomePage
-│       ├── views.py        # Представления для главной страницы
-│       ├── urls.py         # URL маршруты
-│       ├── admin.py        # Админка для HomePage
+│       ├── models.py       # HomePage model
+│       ├── views.py        # Views for the main page
+│       ├── urls.py         # URL routes
+│       ├── admin.py        # Admin for HomePage
 │       ├── api.py          # API endpoints
-│       ├── controlles.py   # Контроллеры
-│       └── tests.py        # Тесты
+│       ├── controlles.py   # Controllers
+│       └── tests.py        # Tests
 ├── config/
-│   ├── settings.py         # Настройки с поддержкой асинхронных БД
-│   └── urls.py             # Главные URL с подключением home
+│   ├── settings.py         # Settings with async DB support
+│   └── urls.py             # Main URLs with home app included
 ├── core/
-│   └── __init__.py         # Инициализация с middleware
+│   └── __init__.py         # Initialization with middleware
 ├── templates/
-│   ├── base.html           # Базовый шаблон с навигацией
-│   └── home/               # Шаблоны приложения home
-│       ├── home.html       # Главная страница
-│       ├── about.html      # Страница "О нас"
-│       └── private.html    # Приватная страница
-├── static/                  # Статические файлы
-├── migrations/              # Миграции Alembic
-├── requirements.txt         # Зависимости
-├── alembic.ini             # Конфигурация Alembic
-└── README.md                # Документация проекта
+│   ├── base.html           # Base template with navigation
+│   └── home/               # Home app templates
+│       ├── home.html       # Main page
+│       ├── about.html      # About Us page
+│       └── private.html    # Private page
+├── static/                  # Static files
+├── migrations/              # Alembic migrations
+├── requirements.txt         # Dependencies
+├── alembic.ini             # Alembic configuration
+└── README.md                # Project documentation
 ```
 
-### Проект без приложения home
+### Project without Home App
 
 ```bash
 python manage.py startproject myproject --no-home
 ```
 
-### Проект с явным указанием приложения home
+### Project with Explicit Home App
 
 ```bash
 python manage.py startproject myproject --with-home
 ```
 
-## Создание нового приложения
+## Creating a New Application
 
-### Обычное приложение
+### Regular Application
 
 ```bash
 python manage.py startapp myapp
 ```
 
-### Приложение home с расширенной функциональностью
+### Home Application with Extended Functionality
 
 ```bash
 python manage.py startapp_home myapp
 ```
 
-Эта команда создаст приложение со всеми необходимыми компонентами:
+This command will create an application with all necessary components:
 
-- **Модели** - базовая структура для моделей
-- **Представления** - примеры представлений
-- **URL маршруты** - базовые маршруты
-- **Админка** - конфигурация для админ-панели
+- **Models** - basic model structure
+- **Views** - example views
+- **URL routes** - basic routes
+- **Admin** - admin panel configuration
 - **API** - REST API endpoints
-- **Контроллеры** - классы контроллеров
-- **Тесты** - базовые тесты
-- **Шаблоны** - HTML шаблоны (если включены)
+- **Controllers** - controller classes
+- **Tests** - basic tests
+- **Templates** - HTML templates (if enabled)
 
-### Опции для startapp_home
+### Options for startapp_home
 
 ```bash
-# Создать приложение без шаблонов
+# Create app without templates
 python manage.py startapp_home myapp --no-templates
 
-# Создать приложение без админки
+# Create app without admin
 python manage.py startapp_home myapp --no-admin
 
-# Создать приложение без API
+# Create app without API
 python manage.py startapp_home myapp --no-api
 ```
 
-## Особенности шаблонов
+## Template Features
 
-### Поддержка асинхронных баз данных
+### Asynchronous Database Support
 
-Шаблоны поддерживают как синхронные, так и асинхронные базы данных:
+Templates support both synchronous and asynchronous databases:
 
 ```python
 # config/settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        # Синхронный режим
+        'ENGINE': 'raystack.core.database.sqlalchemy',
+        # Synchronous mode
         'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Асинхронный режим
+        # Asynchronous mode
         # 'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         # 'URL': 'postgresql+asyncpg://user:pass@localhost/dbname',
         # 'URL': 'mysql+aiomysql://user:pass@localhost/dbname',
@@ -115,87 +115,87 @@ DATABASES = {
 }
 ```
 
-### Встроенная аутентификация
+### Built-in Authentication
 
-Проекты включают:
+Projects include:
 
-- JWT аутентификацию
-- Middleware для сессий
-- Защищенные страницы
-- Система ролей и разрешений
+- JWT authentication
+- Session middleware
+- Protected pages
+- Role and permission system
 
-### Современный UI
+### Modern UI
 
 - Bootstrap 5
 - Soft UI Dashboard
-- Адаптивный дизайн
-- Font Awesome иконки
-- Темная/светлая тема
+- Responsive design
+- Font Awesome icons
+- Dark/light theme
 
-### API готовность
+### API Readiness
 
 - REST API endpoints
-- Swagger/OpenAPI документация
-- Аутентификация через токены
-- Обработка ошибок
+- Swagger/OpenAPI documentation
+- Token authentication
+- Error handling
 
-## Настройка после создания
+## Setup After Creation
 
-### 1. Установка зависимостей
+### 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Настройка базы данных
+### 2. Configure Database
 
-Отредактируйте `config/settings.py` и укажите параметры подключения.
+Edit `config/settings.py` and specify connection parameters.
 
-### 3. Применение миграций
+### 3. Apply Migrations
 
 ```bash
 alembic upgrade head
 ```
 
-### 4. Создание суперпользователя
+### 4. Create Superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 5. Запуск сервера
+### 5. Run Server
 
 ```bash
 uvicorn core:app --reload
 ```
 
-## Кастомизация шаблонов
+## Template Customization
 
-### Добавление новых полей в модели
+### Adding New Fields to Models
 
 ```python
 # apps/home/models.py
 class HomePage(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # Добавьте новые поля здесь
+    # Add new fields here
     image = models.ImageField(upload_to='home/', blank=True)
     published_date = models.DateField(auto_now_add=True)
 ```
 
-### Создание новых представлений
+### Creating New Views
 
 ```python
 # apps/home/views.py
 async def contact_view(request):
     context = {
-        'title': 'Контакты',
-        'content': 'Свяжитесь с нами'
+        'title': 'Contact Us',
+        'content': 'Get in touch with us'
     }
     return render(request, 'home/contact.html', context)
 ```
 
-### Добавление новых URL
+### Adding New URLs
 
 ```python
 # apps/home/urls.py
@@ -204,75 +204,75 @@ async def contact(request: Request):
     return await views.contact_view(request)
 ```
 
-## Структура шаблонов
+## Template Structure
 
-### Шаблоны приложений
+### Application Templates
 
 ```
 templates/
 └── home/
-    ├── home.html      # Главная страница
-    ├── about.html     # Страница "О нас"
-    └── private.html   # Приватная страница
+    ├── home.html      # Main page
+    ├── about.html     # About Us page
+    └── private.html   # Private page
 ```
 
-### Базовый шаблон
+### Base Template
 
-`base.html` включает:
+`base.html` includes:
 
-- Навигационное меню
-- Боковая панель
-- Хлебные крошки
-- Поиск
-- Футер
-- Подключение CSS/JS
+- Navigation menu
+- Sidebar
+- Breadcrumbs
+- Search
+- Footer
+- CSS/JS integration
 
-## Тестирование
+## Testing
 
-### Запуск тестов
+### Running Tests
 
 ```bash
 python manage.py test
 ```
 
-### Тесты по умолчанию
+### Default Tests
 
-- Тесты представлений
-- Тесты моделей
-- Тесты API
-- Тесты аутентификации
+- View tests
+- Model tests
+- API tests
+- Authentication tests
 
-## Развертывание
+## Deployment
 
-### Продакшн настройки
+### Production Settings
 
 ```python
 # config/settings.py
 DEBUG = False
 ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
 
-# Настройки безопасности
+# Security settings
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 ```
 
-### Статические файлы
+### Static Files
 
 ```bash
 python manage.py collectstatic
 ```
 
-## Поддержка
+## Support
 
-Для получения поддержки:
+For support:
 
-1. Ознакомьтесь с документацией Cotlette
-2. Проверьте примеры в `example/` и `example_async/`
-3. Создайте issue в репозитории
-4. Обратитесь к сообществу разработчиков
+1. Refer to Raystack documentation
+2. Check examples in `example/` and `example_async/`
+3. Create an issue in the repository
+4. Contact the developer community
 
-## Лицензия
+## License
 
-Шаблоны распространяются под той же лицензией, что и фреймворк Cotlette.
+Templates are distributed under the same license as the Raystack framework.
 

@@ -1,113 +1,113 @@
-# Изменения в шаблонах Cotlette
+# Raystack Templates Changelog
 
-## Версия 1.0.0 - Полнофункциональные шаблоны проектов
+## Version 1.0.0 - Full-Featured Project Templates
 
-### Добавлено
+### Added
 
-#### Шаблоны проектов
-- **Полнофункциональный шаблон проекта** с приложением `home`
-- **Поддержка асинхронных баз данных** (SQLite, PostgreSQL, MySQL)
-- **Встроенная система аутентификации** с JWT токенами
-- **Middleware для сессий и аутентификации**
-- **Готовые настройки** для разработки и продакшна
+#### Project Templates
+- **Full-featured project template** with a `home` application
+- **Asynchronous database support** (SQLite, PostgreSQL, MySQL)
+- **Built-in authentication system** with JWT tokens
+- **Session and authentication middleware**
+- **Ready-to-use settings** for development and production
 
-#### Приложение Home
-- **Модель HomePage** с базовыми полями
-- **Представления** для главной страницы, "О нас", приватной страницы
-- **URL маршруты** с поддержкой аутентификации
-- **Админ-панель** для управления контентом
-- **REST API endpoints** для взаимодействия с данными
-- **Контроллеры** для организации бизнес-логики
-- **Тесты** для всех компонентов
+#### Home Application
+- **HomePage model** with basic fields
+- **Views** for the main page, "About Us", private page
+- **URL routes** with authentication support
+- **Admin panel** for content management
+- **REST API endpoints** for data interaction
+- **Controllers** for organizing business logic
+- **Tests** for all components
 
-#### Шаблоны HTML
-- **Базовый шаблон** с современным дизайном
-- **Шаблоны для приложения home** (главная, о нас, приватная)
-- **Интеграция с Bootstrap 5** и Soft UI Dashboard
-- **Адаптивный дизайн** для всех устройств
-- **Навигационное меню** с боковой панелью
+#### HTML Templates
+- **Base template** with modern design
+- **Templates for the home application** (main, about us, private)
+- **Integration with Bootstrap 5** and Soft UI Dashboard
+- **Responsive design** for all devices
+- **Navigation menu** with sidebar
 
-#### Конфигурация
-- **Настройки по умолчанию** для быстрого старта
-- **Поддержка Alembic** для миграций базы данных
-- **Конфигурация статических файлов** с готовыми стилями
-- **Настройки безопасности** и JWT аутентификации
+#### Configuration
+- **Default settings** for quick start
+- **Alembic support** for database migrations
+- **Static files configuration** with ready-to-use styles
+- **Security and JWT authentication settings**
 
-#### Команды управления
-- **startproject** - создание проекта с приложением home
-- **startapp_home** - создание приложения с расширенной функциональностью
-- **Опции команд** для настройки создаваемых компонентов
+#### Management Commands
+- **startproject** - create a project with a home application
+- **startapp_home** - create an application with extended functionality
+- **Command options** for configuring generated components
 
-### Изменено
+### Changed
 
-#### Существующие шаблоны
-- **Обновлены базовые шаблоны** приложений с примерами кода
-- **Улучшены комментарии** и документация в шаблонах
-- **Добавлены примеры** использования всех компонентов
+#### Existing Templates
+- **Updated base application templates** with code examples
+- **Improved comments** and documentation in templates
+- **Added examples** of all component usage
 
-#### Структура шаблонов
-- **Реорганизована структура** для лучшей читаемости
-- **Добавлены недостающие компоненты** (controlles.py, tests.py)
-- **Улучшена организация** файлов и директорий
+#### Template Structure
+- **Reorganized structure** for better readability
+- **Added missing components** (controlles.py, tests.py)
+- **Improved organization** of files and directories
 
-### Улучшено
+### Improved
 
-#### Документация
-- **Подробные инструкции** по использованию шаблонов
-- **Примеры кода** для всех основных функций
-- **Руководство по развертыванию** и настройке
-- **Примеры тестирования** и расширения функциональности
+#### Documentation
+- **Detailed instructions** on using templates
+- **Code examples** for all main functions
+- **Deployment and configuration guide**
+- **Testing and extensibility examples**
 
-#### Готовность к продакшну
-- **Настройки безопасности** по умолчанию
-- **Конфигурация для разных окружений** (dev/prod)
-- **Поддержка Docker** и контейнеризации
-- **Логирование** и мониторинг
+#### Production Readiness
+- **Default security settings**
+- **Configuration for different environments** (dev/prod)
+- **Docker support** and containerization
+- **Logging** and monitoring
 
-### Технические детали
+### Technical Details
 
-#### Зависимости
-- **FastAPI** для веб-фреймворка
-- **SQLAlchemy** для работы с базой данных
-- **Alembic** для миграций
-- **Jinja2** для шаблонов
-- **Bootstrap 5** для UI компонентов
+#### Dependencies
+- **FastAPI** for the web framework
+- **SQLAlchemy** for database interaction
+- **Alembic** for migrations
+- **Jinja2** for templates
+- **Bootstrap 5** for UI components
 
-#### Архитектура
-- **Модульная структура** приложений
-- **Разделение ответственности** между компонентами
-- **Поддержка асинхронности** на всех уровнях
-- **Готовность к масштабированию**
+#### Architecture
+- **Modular application structure**
+- **Separation of concerns** between components
+- **Asynchronous support** at all levels
+- **Scalability readiness**
 
-### Совместимость
+### Compatibility
 
-- **Python 3.8+** для всех компонентов
-- **Совместимость с существующими** проектами Cotlette
-- **Обратная совместимость** с базовыми шаблонами
+- **Python 3.8+** for all components
+- **Compatibility with existing** Raystack projects
+- **Backward compatibility** with base templates
 
-### Планы на будущее
+### Future Plans
 
-#### Версия 1.1.0
-- **Дополнительные шаблоны** для блогов, интернет-магазинов
-- **Интеграция с популярными** CSS фреймворками
-- **Шаблоны для мобильных** приложений
+#### Version 1.1.0
+- **Additional templates** for blogs, e-commerce stores
+- **Integration with popular** CSS frameworks
+- **Templates for mobile** applications
 
-#### Версия 1.2.0
-- **Генераторы кода** для CRUD операций
-- **Интеграция с GraphQL** для API
-- **Шаблоны для микросервисов**
+#### Version 1.2.0
+- **Code generators** for CRUD operations
+- **GraphQL integration** for API
+- **Microservice templates**
 
-### Поддержка
+### Support
 
-Для получения поддержки по новым шаблонам:
+For support on new templates:
 
-1. **Документация** - `README_TEMPLATES.md` и `EXAMPLES.md`
-2. **Примеры** - папки `example/` и `example_async/`
-3. **Issues** - создавайте в репозитории проекта
-4. **Сообщество** - присоединяйтесь к обсуждениям
+1. **Documentation** - `README_TEMPLATES.md` and `EXAMPLES.md`
+2. **Examples** - `example/` and `example_async/` folders
+3. **Issues** - create them in the project repository
+4. **Community** - join discussions
 
 ---
 
-*Дата выпуска: Декабрь 2024*
-*Версия Cotlette: 0.1.0+*
+*Release Date: December 2024*
+*Raystack Version: 0.1.0+*
 

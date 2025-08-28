@@ -1,115 +1,115 @@
-# Примеры использования шаблонов Cotlette
+# Raystack Templates Usage Examples
 
-Этот документ содержит примеры создания и настройки проектов с использованием шаблонов Cotlette.
+This document provides examples for creating and configuring projects using Raystack templates.
 
-## Быстрый старт
+## Quick Start
 
-### 1. Создание нового проекта
+### 1. Create a New Project
 
 ```bash
-# Создать проект с приложением home
-python manage.py startproject mywebsite
+# Create a project with a home app
+raystack startproject mywebsite
 
-# Перейти в директорию проекта
+# Navigate to the project directory
 cd mywebsite
 
-# Установить зависимости
+# Install dependencies
 pip install -r requirements.txt
 
-# Применить миграции
+# Apply migrations
 alembic upgrade head
 
-# Создать суперпользователя
-python manage.py createsuperuser
+# Create a superuser
+raystack createsuperuser
 
-# Запустить сервер
-uvicorn core:app --reload
+# Run the server
+raystack runserver
 ```
 
-### 2. Структура созданного проекта
+### 2. Structure of the Created Project
 
 ```
 mywebsite/
 ├── apps/
-│   └── home/               # Приложение home
-│       ├── models.py       # Модель HomePage
-│       ├── views.py        # Представления
-│       ├── urls.py         # URL маршруты
-│       ├── admin.py        # Админка
-│       ├── api.py          # API
-│       └── tests.py        # Тесты
+│   └── home/               # Home application
+│       ├── models.py       # HomePage model
+│       ├── views.py        # Views
+│       ├── urls.py         # URL routes
+│       ├── admin.py        # Admin configuration
+│       ├── api.py          # API endpoints
+│       └── tests.py        # Tests
 ├── config/
-│   ├── settings.py         # Настройки
-│   └── urls.py             # Главные URL
+│   ├── settings.py         # Settings
+│   └── urls.py             # Main URLs
 ├── core/
-│   └── __init__.py         # Инициализация
+│   └── __init__.py         # Initialization
 ├── templates/
-│   ├── base.html           # Базовый шаблон
-│   └── home/               # Шаблоны home
-├── requirements.txt         # Зависимости
-└── README.md                # Документация
+│   ├── base.html           # Base template
+│   └── home/               # Home templates
+├── requirements.txt         # Dependencies
+└── README.md                # Documentation
 ```
 
-## Примеры настройки
+## Configuration Examples
 
-### Настройка базы данных
+### Database Configuration
 
-#### SQLite (по умолчанию)
+#### SQLite (Default)
 
 ```python
 # config/settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'ENGINE': 'raystack.core.database.sqlalchemy',
         'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
     }
 }
 ```
 
-#### PostgreSQL (асинхронно)
+#### PostgreSQL (Asynchronous)
 
 ```python
 # config/settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'ENGINE': 'raystack.core.database.sqlalchemy',
         'URL': 'postgresql+asyncpg://user:password@localhost/dbname',
     }
 }
 
-# Установить драйвер
+# Install driver
 pip install asyncpg
 ```
 
-#### MySQL (асинхронно)
+#### MySQL (Asynchronous)
 
 ```python
 # config/settings.py
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'ENGINE': 'raystack.core.database.sqlalchemy',
         'URL': 'mysql+aiomysql://user:password@localhost/dbname',
     }
 }
 
-# Установить драйвер
+# Install driver
 pip install aiomysql
 ```
 
-### Настройка аутентификации
+### Authentication Configuration
 
 ```python
 # config/settings.py
 SECRET_KEY = b'your-secret-key-here'
 ALGORITHM = "HS256"
 
-# Настройки JWT
+# JWT Settings
 JWT_SECRET_KEY = "your-jwt-secret"
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ```
 
-### Настройка статических файлов
+### Static Files Configuration
 
 ```python
 # config/settings.py
@@ -117,90 +117,90 @@ STATIC_URL = "static/"
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
 
 STATICFILES_DIRS = [
-    str(BASE_DIR.parent / "cotlette" / "src" / "cotlette" / "contrib" / "static"),
+    str(BASE_DIR.parent / "raystack" / "src" / "raystack" / "contrib" / "static"),
     str(BASE_DIR / "static"),
 ]
 ```
 
-## Примеры расширения
+## Extension Examples
 
-### Добавление нового поля в модель HomePage
+### Adding a New Field to the HomePage Model
 
 ```python
 # apps/home/models.py
-from cotlette.core.database import models
+from raystack.core.database import models
 
 class HomePage(models.Model):
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
-    content = models.TextField(verbose_name="Содержание")
-    is_active = models.BooleanField(default=True, verbose_name="Активна")
+    title = models.CharField(max_length=200, verbose_name="Title")
+    content = models.TextField(verbose_name="Content")
+    is_active = models.BooleanField(default=True, verbose_name="Active")
     
-    # Новые поля
-    subtitle = models.CharField(max_length=300, blank=True, verbose_name="Подзаголовок")
-    featured_image = models.ImageField(upload_to='home/', blank=True, verbose_name="Изображение")
-    meta_description = models.TextField(max_length=500, blank=True, verbose_name="Meta описание")
+    # New fields
+    subtitle = models.CharField(max_length=300, blank=True, verbose_name="Subtitle")
+    featured_image = models.ImageField(upload_to='home/', blank=True, verbose_name="Featured Image")
+    meta_description = models.TextField(max_length=500, blank=True, verbose_name="Meta Description")
     
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Creation Date")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Update Date")
     
     class Meta:
         db_table = 'home_page'
-        verbose_name = 'Главная страница'
-        verbose_name_plural = 'Главные страницы'
+        verbose_name = 'Home Page'
+        verbose_name_plural = 'Home Pages'
     
     def __str__(self):
         return self.title
 ```
 
-### Создание нового представления
+### Creating a New View
 
 ```python
 # apps/home/views.py
-from cotlette.shortcuts import render
+from raystack.shortcuts import render
 from .models import HomePage
 
 async def contact_view(request):
-    """Страница контактов"""
+    """Contact Page"""
     context = {
-        'title': 'Контакты',
-        'content': 'Свяжитесь с нами',
+        'title': 'Contact Us',
+        'content': 'Get in touch with us',
         'contact_info': {
             'email': 'info@example.com',
             'phone': '+7 (999) 123-45-67',
-            'address': 'г. Москва, ул. Примерная, д. 1'
+            'address': 'Moscow, Example St., 1'
         }
     }
     return render(request, 'home/contact.html', context)
 
 async def blog_view(request):
-    """Страница блога"""
+    """Blog Page"""
     try:
         posts = await HomePage.objects.filter(is_active=True).all()
         context = {
-            'title': 'Блог',
+            'title': 'Blog',
             'posts': posts
         }
     except:
         context = {
-            'title': 'Блог',
+            'title': 'Blog',
             'posts': []
         }
     
     return render(request, 'home/blog.html', context)
 ```
 
-### Добавление новых URL
+### Adding New URLs
 
 ```python
 # apps/home/urls.py
 from fastapi import APIRouter, Request
-from cotlette.shortcuts import render_template
+from raystack.shortcuts import render_template
 from starlette.authentication import requires
 from . import views
 
 router = APIRouter()
 
-# Существующие маршруты
+# Existing routes
 @router.get("/")
 async def home(request: Request):    
     return await views.home_view(request)
@@ -213,12 +213,12 @@ async def about(request: Request):
 @requires('user_auth')
 async def private_page(request: Request):
     context = {
-        'title': 'Приватная страница',
-        'message': 'Эта страница доступна только авторизованным пользователям!'
+        'title': 'Private Page',
+        'message': 'This page is only accessible to authenticated users!'
     }
     return render_template(request=request, template_name="home/private.html", context=context)
 
-# Новые маршруты
+# New routes
 @router.get('/contact')
 async def contact(request: Request):
     return await views.contact_view(request)
@@ -237,14 +237,14 @@ async def blog_post(request: Request, post_id: int):
         }
     except:
         context = {
-            'title': 'Пост не найден',
+            'title': 'Post not found',
             'post': None
         }
     
     return render_template(request=request, template_name="home/blog_post.html", context=context)
 ```
 
-### Создание нового шаблона
+### Creating a New Template
 
 ```html
 <!-- templates/home/contact.html -->
@@ -268,7 +268,7 @@ async def blog_post(request: Request, post_id: int):
                                 <p class="text-muted">{{ content }}</p>
                                 
                                 <div class="mt-4">
-                                    <h6>Контактная информация:</h6>
+                                    <h6>Contact Information:</h6>
                                     <ul class="list-unstyled">
                                         <li><i class="fas fa-envelope text-primary me-2"></i>{{ contact_info.email }}</li>
                                         <li><i class="fas fa-phone text-primary me-2"></i>{{ contact_info.phone }}</li>
@@ -279,7 +279,7 @@ async def blog_post(request: Request, post_id: int):
                             <div class="col-md-6">
                                 <form>
                                     <div class="form-group">
-                                        <label for="name">Имя</label>
+                                        <label for="name">Name</label>
                                         <input type="text" class="form-control" id="name" required>
                                     </div>
                                     <div class="form-group">
@@ -287,10 +287,10 @@ async def blog_post(request: Request, post_id: int):
                                         <input type="email" class="form-control" id="email" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="message">Сообщение</label>
+                                        <label for="message">Message</label>
                                         <textarea class="form-control" id="message" rows="5" required></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary mt-3">Отправить</button>
+                                    <button type="submit" class="btn btn-primary mt-3">Send</button>
                                 </form>
                             </div>
                         </div>
@@ -303,11 +303,11 @@ async def blog_post(request: Request, post_id: int):
 {% endblock %}
 ```
 
-### Расширение админки
+### Extending the Admin Panel
 
 ```python
 # apps/home/admin.py
-from cotlette.contrib import admin
+from raystack.contrib import admin
 from .models import HomePage
 
 @admin.register(HomePage)
@@ -319,37 +319,37 @@ class HomePageAdmin(admin.ModelAdmin):
     list_editable = ['is_active']
     
     fieldsets = (
-        ('Основная информация', {
+        ('Main Information', {
             'fields': ('title', 'subtitle', 'content')
         }),
         ('SEO', {
             'fields': ('meta_description',)
         }),
-        ('Медиа', {
+        ('Media', {
             'fields': ('featured_image',)
         }),
-        ('Статус', {
+        ('Status', {
             'fields': ('is_active',)
         }),
-        ('Временные метки', {
+        ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
     
     def save_model(self, request, obj, form, change):
-        # Дополнительная логика при сохранении
+        # Additional logic on save
         if not obj.meta_description:
             obj.meta_description = obj.content[:500] + "..." if len(obj.content) > 500 else obj.content
         super().save_model(request, obj, form, change)
 ```
 
-### Создание API endpoints
+### Creating API Endpoints
 
 ```python
 # apps/home/api.py
 from fastapi import APIRouter, Request, HTTPException
-from cotlette.shortcuts import render_template
+from raystack.shortcuts import render_template
 from .models import HomePage
 from typing import List
 
@@ -357,7 +357,7 @@ router = APIRouter()
 
 @router.get("/api/home/data")
 async def get_home_data(request: Request):
-    """Получение данных главной страницы"""
+    """Get home page data"""
     try:
         home_page = await HomePage.objects.filter(is_active=True).first()
         if home_page:
@@ -377,9 +377,9 @@ async def get_home_data(request: Request):
             return {
                 "status": "success",
                 "data": {
-                    "title": "Добро пожаловать",
+                    "title": "Welcome",
                     "subtitle": "",
-                    "content": "Это главная страница вашего приложения.",
+                    "content": "This is the home page of your application.",
                     "meta_description": "",
                     "featured_image": None,
                     "created_at": None,
@@ -391,7 +391,7 @@ async def get_home_data(request: Request):
 
 @router.get("/api/home/posts")
 async def get_posts(request: Request, limit: int = 10, offset: int = 0):
-    """Получение списка постов"""
+    """Get a list of posts"""
     try:
         posts = await HomePage.objects.filter(is_active=True).limit(limit).offset(offset).all()
         return {
@@ -417,55 +417,55 @@ async def get_posts(request: Request, limit: int = 10, offset: int = 0):
 
 @router.post("/api/home/update")
 async def update_home_page(request: Request):
-    """Обновление данных главной страницы"""
+    """Update home page data"""
     try:
-        # Здесь должна быть логика обновления
-        # Для примера возвращаем успешный ответ
+        # Update logic here
+        # For example, return a successful response
         return {
             "status": "success",
-            "message": "Главная страница обновлена"
+            "message": "Home page updated"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 ```
 
-## Тестирование
+## Testing
 
-### Создание тестов
+### Creating Tests
 
 ```python
 # apps/home/tests.py
-from cotlette.test import TestCase
+from raystack.test import TestCase
 from .models import HomePage
 
 class HomeTestCase(TestCase):
-    """Тесты для приложения home"""
+    """Tests for the home app"""
     
     async def test_home_view(self):
-        """Тест главной страницы"""
+        """Test the home page"""
         response = await self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Добро пожаловать')
+        self.assertContains(response, 'Welcome')
     
     async def test_about_view(self):
-        """Тест страницы 'О нас'"""
+        """Test the 'About Us' page"""
         response = await self.client.get('/about')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'О нас')
+        self.assertContains(response, 'About Us')
     
     async def test_contact_view(self):
-        """Тест страницы контактов"""
+        """Test the contact page"""
         response = await self.client.get('/contact')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Контакты')
+        self.assertContains(response, 'Contact Us')
     
     async def test_private_page_requires_auth(self):
-        """Тест что приватная страница требует авторизации"""
+        """Test that the private page requires authentication"""
         response = await self.client.get('/private')
-        self.assertEqual(response.status_code, 302)  # Редирект на логин
+        self.assertEqual(response.status_code, 302)  # Redirect to login
     
     async def test_home_api_data(self):
-        """Тест API для получения данных главной страницы"""
+        """Test API for getting home page data"""
         response = await self.client.get('/api/home/data')
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -473,7 +473,7 @@ class HomeTestCase(TestCase):
         self.assertIn('data', data)
     
     async def test_home_api_posts(self):
-        """Тест API для получения постов"""
+        """Test API for getting posts"""
         response = await self.client.get('/api/home/posts?limit=5')
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -483,88 +483,88 @@ class HomeTestCase(TestCase):
 
 
 class HomeModelTestCase(TestCase):
-    """Тесты для моделей приложения home"""
+    """Tests for models of the home app"""
     
     async def test_home_page_creation(self):
-        """Тест создания модели HomePage"""
+        """Test HomePage model creation"""
         home_page = await HomePage.objects.create(
-            title='Тестовая страница',
-            subtitle='Тестовый подзаголовок',
-            content='Тестовое содержание',
-            meta_description='Тестовое meta описание'
+            title='Test Page',
+            subtitle='Test Subtitle',
+            content='Test Content',
+            meta_description='Test meta description'
         )
-        self.assertEqual(home_page.title, 'Тестовая страница')
-        self.assertEqual(home_page.subtitle, 'Тестовый подзаголовок')
-        self.assertEqual(home_page.content, 'Тестовое содержание')
-        self.assertEqual(home_page.meta_description, 'Тестовое meta описание')
+        self.assertEqual(home_page.title, 'Test Page')
+        self.assertEqual(home_page.subtitle, 'Test Subtitle')
+        self.assertEqual(home_page.content, 'Test Content')
+        self.assertEqual(home_page.meta_description, 'Test meta description')
         self.assertTrue(home_page.is_active)
     
     async def test_home_page_str_representation(self):
-        """Тест строкового представления модели"""
+        """Test string representation of the model"""
         home_page = await HomePage.objects.create(
-            title='Тестовая страница',
-            content='Тестовое содержание'
+            title='Test Page',
+            content='Test Content'
         )
-        self.assertEqual(str(home_page), 'Тестовая страница')
+        self.assertEqual(str(home_page), 'Test Page')
     
     async def test_home_page_defaults(self):
-        """Тест значений по умолчанию"""
+        """Test default values"""
         home_page = await HomePage.objects.create(
-            title='Тестовая страница',
-            content='Тестовое содержание'
+            title='Test Page',
+            content='Test Content'
         )
         self.assertTrue(home_page.is_active)
         self.assertIsNotNone(home_page.created_at)
         self.assertIsNotNone(home_page.updated_at)
 ```
 
-### Запуск тестов
+### Running Tests
 
 ```bash
-# Запустить все тесты
-python manage.py test
+# Run all tests
+raystack test
 
-# Запустить тесты конкретного приложения
-python manage.py test apps.home
+# Run tests for a specific app
+raystack test apps.home
 
-# Запустить конкретный тест
-python manage.py test apps.home.tests.HomeTestCase.test_home_view
+# Run a specific test
+raystack test apps.home.tests.HomeTestCase.test_home_view
 
-# Запустить тесты с подробным выводом
-python manage.py test -v 2
+# Run tests with verbose output
+raystack test -v 2
 ```
 
-## Развертывание
+## Deployment
 
-### Настройка для продакшна
+### Production Configuration
 
 ```python
 # config/settings.py
 import os
 
-# Базовые настройки
+# Base settings
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-# Настройки безопасности
+# Security settings
 SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-here')
 SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
 CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False').lower() == 'true'
 
-# Настройки базы данных
+# Database settings
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'ENGINE': 'raystack.core.database.sqlalchemy',
         'URL': os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
     }
 }
 
-# Настройки статических файлов
+# Static files settings
 STATIC_ROOT = os.getenv('STATIC_ROOT', str(BASE_DIR / 'staticfiles'))
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
 
-# Логирование
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -593,31 +593,31 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Копирование зависимостей
+# Copy dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование кода
+# Copy code
 COPY . .
 
-# Создание директории для логов
+# Create logs directory
 RUN mkdir -p logs
 
-# Применение миграций
+# Apply migrations
 RUN alembic upgrade head
 
-# Сбор статических файлов
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Открытие порта
+# Expose port
 EXPOSE 8000
 
-# Запуск приложения
+# Run the application
 CMD ["uvicorn", "core:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
@@ -653,17 +653,16 @@ volumes:
   postgres_data:
 ```
 
-## Заключение
+## Conclusion
 
-Эти примеры демонстрируют, как использовать шаблоны Cotlette для быстрого создания полнофункциональных веб-приложений. Шаблоны предоставляют:
+These examples demonstrate how to use Raystack templates to quickly create full-featured web applications. The templates provide:
 
-- Готовую структуру проекта
-- Базовую функциональность
-- Современный UI
-- API готовность
-- Систему аутентификации
-- Админ-панель
-- Тесты
+- A ready-to-use project structure
+- Basic functionality
+- Modern UI
+- API readiness
+- Authentication system
+- Admin panel
+- Tests
 
-Используйте эти примеры как отправную точку для создания собственных проектов на базе Cotlette.
-
+Use these examples as a starting point for building your own Raystack projects.

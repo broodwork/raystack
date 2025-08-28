@@ -1,46 +1,46 @@
-# Cotlette Management Commands
+# Raystack Management Commands
 
 ## Overview
 
-Cotlette provides a set of command-line tools for project management, similar to Django's `manage.py` or Flask CLI. These commands help you create projects, apps, run the development server, and more.
+Raystack provides a set of command-line tools for project management, similar to Django's `manage.py` or Flask CLI. These commands help you create projects, apps, run the development server, and more.
 
 ---
 
 ## Available Commands
 
 ### `startproject <project_name>`
-Creates a new Cotlette project with the recommended structure.
+Creates a new Raystack project with the recommended structure.
 
 ```
-cotlette startproject myproject
+raystack startproject myproject
 ```
 
 ### `startapp <app_name>`
 Creates a new app inside your project.
 
 ```
-cotlette startapp blog
+raystack startapp blog
 ```
 
 ### `runserver`
 Starts the development server (default: http://127.0.0.1:8000).
 
 ```
-cotlette runserver
+raystack runserver
 ```
 
 ### `shell`
 Launches an interactive Python shell with project context loaded.
 
 ```
-cotlette shell
+raystack shell
 ```
 
 ### `createsuperuser`
 Creates a superuser account with all permissions.
 
 ```
-cotlette createsuperuser
+raystack createsuperuser
 ```
 
 Options:
@@ -51,10 +51,10 @@ Options:
 Examples:
 ```bash
 # Interactive creation
-cotlette createsuperuser
+raystack createsuperuser
 
 # Non-interactive creation
-cotlette createsuperuser --username admin --email admin@example.com --noinput
+raystack createsuperuser --username admin --email admin@example.com --noinput
 ```
 
 ### `makemigrations` *(planned)*
@@ -67,12 +67,12 @@ Applies migrations to the database.
 
 ## Custom Commands
 
-You can add your own management commands by creating a Python module in `cotlette/core/management/commands/`.
+You can add your own management commands by creating a Python module in `raystack/core/management/commands/`.
 
 Example:
 ```python
 # myproject/core/management/commands/hello.py
-from cotlette.core.management.base import BaseCommand
+from raystack.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = "Prints Hello, World!"
@@ -83,7 +83,7 @@ class Command(BaseCommand):
 
 Run with:
 ```
-cotlette hello
+raystack hello
 ```
 
 ---
@@ -93,7 +93,7 @@ cotlette hello
 - All commands support `--help` for usage info:
 
 ```
-cotlette runserver --help
+raystack runserver --help
 ```
 
 ---

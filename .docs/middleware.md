@@ -1,14 +1,14 @@
-# Cotlette Middleware
+# Raystack Middleware
 
 ## Overview
 
-Middleware in Cotlette allows you to process requests and responses globally, similar to Django or FastAPI middleware. You can use built-in middleware or write your own for cross-cutting concerns like authentication, logging, or CORS.
+Middleware in Raystack allows you to process requests and responses globally, similar to Django or FastAPI middleware. You can use built-in middleware or write your own for cross-cutting concerns like authentication, logging, or CORS.
 
 ---
 
 ## Built-in Middleware
 
-Cotlette includes (or plans to include):
+Raystack includes (or plans to include):
 - Authentication middleware
 - Session middleware
 - CSRF protection (planned)
@@ -22,12 +22,12 @@ A middleware is a callable that takes a request and a handler, and returns a res
 
 Example:
 ```python
-from cotlette.core.middlewares import BaseMiddleware
+from raystack.core.middlewares import BaseMiddleware
 
 class CustomHeaderMiddleware(BaseMiddleware):
     async def __call__(self, request, call_next):
         response = await call_next(request)
-        response.headers['X-Custom-Header'] = 'Cotlette'
+        response.headers['X-Custom-Header'] = 'Raystack'
         return response
 ```
 
@@ -64,4 +64,4 @@ Middleware are executed in the order they are added. The order matters for thing
 
 ## More
 
-See [FastAPI Middleware](https://fastapi.tiangolo.com/tutorial/middleware/) for advanced patterns (Cotlette is compatible with FastAPI middleware API). 
+See [FastAPI Middleware](https://fastapi.tiangolo.com/tutorial/middleware/) for advanced patterns (Raystack is compatible with FastAPI middleware API). 

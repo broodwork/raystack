@@ -25,8 +25,8 @@ jobs:
 
     - name: Update __init__.py version
       run: |
-        sed -i "s/^__version__ = .*/__version__ = \"${{ env.RELEASE_VERSION }}\"/" src/cotlette/__init__.py
-        cat src/cotlette/__init__.py
+        sed -i "s/^__version__ = .*/__version__ = \"${{ env.RELEASE_VERSION }}\"/" src/raystack/__init__.py
+        cat src/raystack/__init__.py
     
     - name: Set up Python
       uses: actions/setup-python@v4

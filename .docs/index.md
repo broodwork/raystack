@@ -1,8 +1,8 @@
-# Cotlette Technical Documentation
+# Raystack Technical Documentation
 
 ## Overview
 
-Cotlette is a modern, Django-inspired web framework built on top of FastAPI. It provides a familiar project structure, its own ORM, template rendering, and a set of management commands for rapid web development. Cotlette is designed for both beginners and advanced users who want the power of FastAPI with the convenience of Django-like tools.
+Raystack is a modern, Django-inspired web framework built on top of FastAPI. It provides a familiar project structure, its own ORM, template rendering, and a set of management commands for rapid web development. Raystack is designed for both beginners and advanced users who want the power of FastAPI with the convenience of Django-like tools.
 
 ---
 
@@ -15,14 +15,14 @@ Cotlette is a modern, Django-inspired web framework built on top of FastAPI. It 
 - [Templates](#templates)
 - [Middleware](#middleware)
 - [Management Commands](#management-commands)
-- [Extending Cotlette](#extending-cotlette)
+- [Extending Raystack](#extending-raystack)
 - [FAQ](#faq)
 
 ---
 
 ## Project Structure
 
-A typical Cotlette project looks like this:
+A typical Raystack project looks like this:
 
 ```
 myproject/
@@ -51,9 +51,9 @@ myproject/
 
 ## Architecture
 
-Cotlette is built on FastAPI and leverages its async capabilities. Key components:
+Raystack is built on FastAPI and leverages its async capabilities. Key components:
 
-- **ASGI app**: FastAPI-based, with Cotlette-specific extensions
+- **ASGI app**: FastAPI-based, with Raystack-specific extensions
 - **ORM**: Synchronous, inspired by Django ORM, supports SQLite (PostgreSQL in roadmap)
 - **Template Engine**: Jinja2 integration
 - **Management Commands**: CLI for project/app creation, server, shell, migrations (planned)
@@ -111,7 +111,7 @@ See [.docs/commands.md](./commands.md).
 
 ---
 
-## Extending Cotlette
+## Extending Raystack
 
 - **Custom apps**: Add your own Django-style apps
 - **Custom commands**: Add CLI commands
@@ -133,5 +133,5 @@ See [.docs/faq.md](./faq.md) for common questions and troubleshooting.
 - [Template Reference](./templates.md)
 - [Command Reference](./commands.md)
 - [Middleware Reference](./middleware.md)
-- [Extending Cotlette](./extending.md)
+- [Extending Raystack](./extending.md)
 - [FAQ](./faq.md) 

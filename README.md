@@ -1,162 +1,161 @@
-![PyPI Version](https://img.shields.io/pypi/v/cotlette)
-![Python Versions](https://img.shields.io/pypi/pyversions/cotlette)
-![License](https://img.shields.io/pypi/l/cotlette)
-![Downloads](https://img.shields.io/pypi/dm/cotlette)
+# 🚀 Raystack: Where FastAPI Speed Meets Django Elegance
 
-# Cotlette 🚀
+![PyPI Version](https://img.shields.io/pypi/v/raystack)
+![Python Versions](https://img.shields.io/pypi/pyversions/raystack)
+![License](https://img.shields.io/pypi/l/raystack)
+![Downloads](https://img.shields.io/pypi/dm/raystack)
 
-**Cotlette** is a modern, Django-inspired web framework built on top of **FastAPI**. It combines the best of both worlds: the speed and async power of FastAPI with the convenience of Django-like project structure, ORM, templates, and management commands.
+**Raystack** is a modern, high-performance Python web framework that merges the asynchronous power of FastAPI with the battle-tested structure and development convenience inspired by Django. Forget the compromises between speed and ease of development — with Raystack, you get the best of both worlds!
 
----
+## ✨ Why Choose Raystack?
 
-## Key Features
+Do you love FastAPI's speed but miss Django's organized project structure? Do you want a powerful ORM with built-in async support and a familiar admin panel? Raystack is built for you! It's ideal for:
 
-- **FastAPI Under the Hood**: High-performance async web framework
-- **Django-like Project Structure**: Familiar and easy to organize
-- **SQLAlchemy-powered ORM**: Simple, Pythonic, and extensible with support for multiple databases
-- **Alembic Migrations**: Powerful database migration system
-- **Jinja2 Templates**: Powerful and flexible HTML rendering
-- **Admin Panel**: Built-in, customizable (inspired by Django admin)
-- **Management Commands**: CLI for project/app creation, server, shell, migrations, and more
-- **Asynchronous Support**: Full async views and endpoints with automatic context detection
-- **Multi-Database Support**: SQLite, PostgreSQL, MySQL, Oracle, and more
-- **Extensible**: Add your own apps, middleware, commands, and more
+*   **High-Performance APIs and Microservices**: Leverage FastAPI's capabilities for blazing-fast and concurrent request handling.
+*   **Rapid Development of Full-Featured Web Applications**: Benefit from a ready-to-use project structure, templating, admin panel, and CLI tools.
+*   **Developers Transitioning from Django**: Get up to speed instantly with familiar "app" concepts, ORM, and management commands.
+*   **Projects Requiring a Flexible and Robust ORM**: SQLAlchemy under the hood gives you full control over your database.
 
----
+## 🌟 Key Features
 
-## 🎯 URL-Based Async/Sync Mode Detection
+*   **FastAPI at its Core**: Experience incredible speed and asynchronous performance for your web applications.
+*   **Django-Inspired Project Structure**: Organize your project with "apps" for clean, modular, and maintainable code.
+*   **Universal SQLAlchemy ORM**: A powerful and flexible ORM with a unified API for both synchronous and asynchronous operations.
+*   **Smart Database Management (Alembic)**: Seamless database migrations for effortless schema evolution.
+*   **Jinja2 Templating**: A robust and flexible templating engine for dynamic HTML rendering.
+*   **Built-in Admin Panel**: A ready-to-use, customizable administrative interface for easy data management.
+*   **Convenient CLI Commands**: Create projects and apps, run the server, manage migrations, and more—all from your command line.
+*   **Async-First Design**: Full support for asynchronous views and database operations with minimal effort.
+*   **Multi-Database Support**: Connect to SQLite, PostgreSQL, MySQL, and other databases with easy switching between sync and async drivers.
+*   **Extensible Architecture**: Easily integrate your own apps, middleware, and commands to tailor the framework to your needs.
 
-Cotlette uses **URL-based mode detection** to determine whether to use synchronous or asynchronous database operations. This approach provides explicit control and predictable behavior across all frameworks.
+## ⚡ Quick Start
 
-### How It Works
+Get your project up and running in minutes!
 
-The mode is determined by the presence of async drivers in your database URL:
+### 1. Install Raystack
+
+```bash
+pip install raystack
+```
+
+### 2. Create a New Project
+
+```bash
+raystack startproject myproject
+cd myproject
+```
+
+### 3. Run the Development Server
+
+```bash
+raystack runserver
+```
+
+Open your browser and navigate to: [http://127.0.0.1:8000](http://127.0.0.1:8000/)
+
+## 🏗️ Project Structure
+
+Raystack offers a clear and modular project structure, inspired by Django:
+
+```mermaid
+graph TD
+    A[Raystack Project] --> B[myproject/];
+    B --> C[apps/];
+    C --> D[home/];
+    D --> D1[models.py];
+    D --> D2[views.py];
+    D --> D3[urls.py];
+    D --> D4[admin.py];
+    B --> E[config/];
+    E --> E1[settings.py];
+    E --> E2[urls.py];
+    B --> F[core/];
+    F --> F1[__init__.py];
+    B --> G[templates/];
+    G --> G1[base.html];
+    G --> G2[home/];
+    B --> H[requirements.txt];
+    B --> I[README.md];
+```
+
+## 🌐 URL-Based Async/Sync Mode Detection
+
+Raystack introduces a unique approach to database interaction, allowing you to explicitly control whether to use synchronous or asynchronous operations by simply specifying the appropriate driver in your database URL.
+
+### How It Works:
+
+The mode is determined by the presence of async drivers in your database URL within your `config/settings.py` file.
 
 ```python
 # Synchronous mode (default)
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Sync mode
+        'ENGINE': 'raystack.core.database.sqlalchemy',
+        'URL': 'sqlite:///db.sqlite3',  # Sync mode
     }
 }
 
-# Asynchronous mode  
+# Asynchronous mode
 DATABASES = {
     'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
+        'ENGINE': 'raystack.core.database.sqlalchemy',
         'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Async mode
     }
 }
 ```
 
-### Supported Database Drivers
+### Supported Drivers:
 
-**Synchronous Drivers:**
-- SQLite: `sqlite:///db.sqlite3`
-- PostgreSQL: `postgresql://user:pass@localhost/dbname`
-- MySQL: `mysql://user:pass@localhost/dbname`
-- Oracle: `oracle://user:pass@localhost/dbname`
+**Synchronous:**
+*   **SQLite**: `sqlite:///db.sqlite3`
+*   **PostgreSQL**: `postgresql://user:pass@localhost/dbname`
+*   **MySQL**: `mysql://user:pass@localhost/dbname`
 
-**Asynchronous Drivers:**
-- SQLite: `sqlite+aiosqlite:///db.sqlite3`
-- PostgreSQL: `postgresql+asyncpg://user:pass@localhost/dbname`
-- MySQL: `mysql+aiomysql://user:pass@localhost/dbname`
+**Asynchronous:**
+*   **SQLite**: `sqlite+aiosqlite:///db.sqlite3` (requires `aiosqlite`)
+*   **PostgreSQL**: `postgresql+asyncpg://user:pass@localhost/dbname` (requires `asyncpg`)
+*   **MySQL**: `mysql+aiomysql://user:pass@localhost/dbname` (requires `aiomysql`)
 
-### Benefits
+### Benefits:
 
-- ✅ **Explicit Control**: You choose the mode explicitly in settings
-- ✅ **Predictable Behavior**: No dependency on execution context
-- ✅ **Framework Agnostic**: Works with FastAPI, Django, Flask, or any framework
-- ✅ **Easy Switching**: Simply change the URL to switch modes
-- ✅ **Clear Intent**: URL clearly shows sync or async database drivers
+*   ✅ **Explicit Control**: You explicitly choose the mode in settings, not based on execution context.
+*   ✅ **Predictable Behavior**: Database operations are always clear and predictable.
+*   ✅ **Framework Agnostic**: Works consistently with FastAPI, Django, Flask, or any other framework.
+*   ✅ **Easy Switching**: Simply change the URL to switch between sync and async modes.
+*   ✅ **Clear Intent**: The URL clearly indicates whether you're using sync or async database drivers.
 
----
+## 🛠️ ORM Usage Examples
 
-## Quick Start
+Raystack's ORM automatically detects the mode based on your database configuration and adapts accordingly. No need for separate sync/async methods!
 
-### 1. Install Cotlette
-```bash
-pip install cotlette
-```
+### Basic CRUD Operations
 
-### 2. Create a New Project
-```bash
-cotlette startproject myproject
-cd myproject
-```
-
-### 3. Run the Development Server
-```bash
-cotlette runserver
-```
-
-Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000/)
-
----
-
-## Example Projects
-
-Cotlette comes with two complete example projects demonstrating both synchronous and asynchronous modes:
-
-### Synchronous Example (`example/`)
-```bash
-cd example
-cotlette runserver
-```
-- Uses `sqlite:///db.sqlite3` (synchronous mode)
-- Direct iteration: `for user in users:`
-- Direct template passing: `"users": users`
-
-### Asynchronous Example (`example_async/`)
-```bash
-cd example_async
-cotlette runserver
-```
-- Uses `sqlite+aiosqlite:///db.sqlite3` (asynchronous mode)
-- Async iteration: `async for user in users:`
-- Template execution: `"users": await users.execute()`
-
----
-
-## Project Configuration
-
-### Settings Structure
 ```python
-# config/settings.py
-import pathlib
+# Create
+article = await Article.objects.create(title="Hello", content="World", author_id=1)
 
-BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
+# Get a single object
+user = await UserModel.objects.get(id=1)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Sync mode
-        # 'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # Async mode
-    }
-}
+# Filter
+users = await UserModel.objects.filter(age__gte=25).execute()
 
-INSTALLED_APPS = [
-    'apps.home',
-    'apps.admin',
-    'apps.users',
-    'apps.accounts',
-    'apps.groups',
-]
+# Update
+user.name = "Jane Doe"
+await user.save()
 
-TEMPLATES = [
-    {
-        "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
-        "DIRS": ["templates"],
-        "APP_DIRS": True
-    },
-]
+# Delete
+await user.delete()
 
-SECRET_KEY = b'your-secret-key'
-ALGORITHM = "HS256"
+# Count
+count = await UserModel.objects.count()
+
+# Check existence
+exists = await UserModel.objects.filter(email="john@example.com").exists()
 ```
 
-## Screenshots
+## 🖼️ Screenshots
 
 **Home Page:**
 ![Home Page](.docs/img/first_page.jpg)
@@ -167,409 +166,20 @@ ALGORITHM = "HS256"
 **Admin Panel:**
 ![Admin Page](.docs/img/admin_page.jpg)
 
----
+## 📚 Documentation
 
-## Example: Defining a Model
-```python
-from cotlette.core.database import Model, CharField, IntegerField, AutoField
-from cotlette.core.database.fields.related import ForeignKeyField
+*   [Technical Documentation](.docs/index.md)
+*   [ORM Reference](.docs/orm.md)
+*   [Template Reference](.docs/templates.md)
+*   [Command Reference](.docs/commands.md)
+*   [Middleware Reference](.docs/middleware.md)
+*   [Extending Raystack](.docs/extending.md)
+*   [FAQ](.docs/faq.md)
 
-class UserModel(Model):
-    table = "users_usermodel"
-    
-    id = AutoField()  # Primary key
-    name = CharField(max_length=50)
-    age = IntegerField()
-    email = CharField(max_length=100)
-    password_hash = CharField(max_length=255)
-    group = ForeignKeyField(to="GroupModel", related_name="users")
-    organization = CharField(max_length=100)
-```
+## 🤝 Contributing
 
----
+Pull requests and issues are welcome! See [GitHub](https://github.com/ForceFledgling/raystack).
 
-## Universal ORM Usage
-
-Cotlette ORM automatically detects the mode based on your database URL configuration and works accordingly. No need for separate sync/async methods!
-
-### Basic CRUD Operations
-```python
-# Create
-article = Article.objects.create(title="Hello", content="World", author_id=1)
-
-# Get single object
-user = UserModel.objects.get(id=1)
-user = UserModel.objects.get(email="john@example.com")
-
-# Filter
-users = UserModel.objects.filter(age__gte=25).execute()
-users = UserModel.objects.filter(group_id=1).execute()
-
-# Update
-user.name = "Jane Doe"
-user.save()
-
-# Delete
-user.delete()
-
-# Count
-count = UserModel.objects.count()
-active_users = UserModel.objects.filter(age__gte=18).count()
-
-# Exists
-exists = UserModel.objects.filter(email="john@example.com").exists()
-```
-
-### In Async Mode
-When using async database URLs, the same methods automatically work asynchronously:
-
-```python
-async def async_view():
-    # Create
-    article = await Article.objects.create(title="Hello", content="World", author_id=1)
-    
-    # Get
-    user = await UserModel.objects.get(id=1)
-    
-    # Filter
-    users = await UserModel.objects.filter(age__gte=25).execute()
-    
-    # Update
-    user.name = "Jane Doe"
-    await user.save()
-    
-    # Delete
-    await user.delete()
-    
-    # Count
-    count = await UserModel.objects.count()
-    
-    # Exists
-    exists = await UserModel.objects.filter(email="john@example.com").exists()
-```
-
----
-
-## Example: Creating Views
-
-### Synchronous View (with sync database URL)
-```python
-from fastapi import APIRouter, Request
-from cotlette.shortcuts import render_template
-from starlette.authentication import requires
-from .models import UserModel
-
-router = APIRouter()
-
-@router.get("/users", response_model=None)
-@requires("user_auth")
-async def users_view(request: Request):
-    users = UserModel.objects.all()  # Direct iteration works in sync mode
-    
-    return render_template(request=request, template_name="admin/users.html", context={
-        "users": users,  # Can be passed directly to template
-        "config": request.app.settings,
-    })
-```
-
-### Asynchronous View (with async database URL)
-```python
-from fastapi import APIRouter, Request
-from cotlette.shortcuts import render_template
-from starlette.authentication import requires
-from .models import UserModel
-
-router = APIRouter()
-
-@router.get("/users", response_model=None)
-@requires("user_auth")
-async def users_view(request: Request):
-    users = UserModel.objects.all()
-    
-    # Option 1: Async iteration for lazy loading
-    async for user in users:
-        print("user", user)
-    
-    # Option 2: Execute for template context
-    return render_template(request=request, template_name="admin/users.html", context={
-        "users": await users.execute(),  # Must execute for template
-        "config": request.app.settings,
-    })
-```
-
-**Note**: The same ORM methods work in both contexts! Cotlette automatically detects the mode based on database URL configuration.
-
----
-
-## Lazy Loading and Iteration
-
-Cotlette supports lazy loading and iteration over QuerySet objects in both synchronous and asynchronous modes.
-
-### Synchronous Mode
-
-```python
-# Method 1: Execute to get list
-users = UserModel.objects.all().execute()
-for user in users:
-    print(user.name)
-
-# Method 2: Direct iteration (lazy loading)
-users = UserModel.objects.all()
-for user in users:
-    print(user.name)
-
-# Method 3: Indexing
-first_user = UserModel.objects.all().get_item(0)
-first_two = UserModel.objects.all().get_item(slice(0, 2))
-```
-
-### Asynchronous Mode
-
-```python
-# Method 1: Execute to get list
-users = await UserModel.objects.all().execute()
-for user in users:
-    print(user.name)
-
-# Method 2: Async iteration (lazy loading)
-users = UserModel.objects.all()
-async for user in users:
-    print(user.name)
-
-# Method 3: Indexing
-first_user = await UserModel.objects.all().get_item(0)
-first_two = await UserModel.objects.all().get_item(slice(0, 2))
-```
-
-### Template Usage
-
-**Synchronous Mode:**
-```python
-@router.get("/users")
-async def users_view(request: Request):
-    users = UserModel.objects.all()
-    return render_template(request=request, template_name="users.html", context={
-        "users": users,  # Can be passed directly
-    })
-```
-
-**Asynchronous Mode:**
-```python
-@router.get("/users")
-async def users_view(request: Request):
-    users = UserModel.objects.all()
-    return render_template(request=request, template_name="users.html", context={
-        "users": await users.execute(),  # Must execute for template
-    })
-```
-
-### Important Notes
-
-- In **synchronous mode**: Use regular `for` loops for iteration
-- In **asynchronous mode**: Use `async for` loops for iteration
-- The `execute()` method always returns a list that can be iterated normally
-- Direct iteration provides lazy loading - data is fetched only when needed
-- Indexing and slicing work in both modes with appropriate await calls
-- For Jinja2 templates in async mode, use `await queryset.execute()` to get a regular list
-
----
-
-## Advanced ORM Features
-
-### Query Chaining
-```python
-# Complex queries with chaining (sync mode)
-articles = Article.objects.filter(author_id=1).order_by('-id').execute()
-
-# In async mode
-articles = await Article.objects.filter(author_id=1).order_by('-id').execute()
-```
-
-### Iteration and Lazy Loading
-```python
-# Iterate over QuerySet results (sync mode)
-for article in Article.objects.all().iter():
-    print(article.title)
-
-# Get specific items by index or slice (sync mode)
-first_article = Article.objects.all().get_item(0)
-recent_articles = Article.objects.all().get_item(slice(0, 10))
-
-# In async mode
-async for article in Article.objects.all().iter():
-    print(article.title)
-
-first_article = await Article.objects.all().get_item(0)
-recent_articles = await Article.objects.all().get_item(slice(0, 10))
-```
-
-### Bulk Operations
-```python
-# Create multiple objects (sync mode)
-articles = [
-    Article(title="Article 1", content="Content 1", author_id=1),
-    Article(title="Article 2", content="Content 2", author_id=1),
-]
-
-for article in articles:
-    article.save()
-
-# In async mode
-for article in articles:
-    await article.save()
-```
-
-### Database Support
-Cotlette supports multiple databases through SQLAlchemy with both sync and async drivers:
-
-```python
-# SQLite (sync and async)
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///db.sqlite3',  # Sync mode
-        # 'URL': 'sqlite+aiosqlite:///db.sqlite3',  # Async mode
-    }
-}
-
-# PostgreSQL (sync and async)
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'postgresql://user:pass@localhost/dbname',  # Sync mode
-        # 'URL': 'postgresql+asyncpg://user:pass@localhost/dbname',  # Async mode
-    }
-}
-
-# MySQL (sync and async)
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'mysql://user:pass@localhost/dbname',  # Sync mode
-        # 'URL': 'mysql+aiomysql://user:pass@localhost/dbname',  # Async mode
-    }
-}
-```
-
-### Async/Sync Mode Configuration
-Cotlette determines the database mode (sync/async) based on the URL configuration in settings:
-
-```python
-# Synchronous mode (default)
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite:///db.sqlite3',  # Sync mode
-    }
-}
-
-# Asynchronous mode
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'sqlite+aiosqlite:///db.sqlite3',  # Async mode
-    }
-}
-
-# PostgreSQL examples
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'postgresql://user:pass@localhost/dbname',  # Sync mode
-    }
-}
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'postgresql+asyncpg://user:pass@localhost/dbname',  # Async mode
-    }
-}
-
-# MySQL examples
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'mysql://user:pass@localhost/dbname',  # Sync mode
-    }
-}
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'cotlette.core.database.sqlalchemy',
-        'URL': 'mysql+aiomysql://user:pass@localhost/dbname',  # Async mode
-    }
-}
-```
-
-**Note**: The mode is determined by the presence of async drivers in the URL. No automatic conversion - you explicitly choose sync or async mode in your settings!
-
-### Benefits of URL-based Mode Detection
-
-- **Explicit Control**: You choose the mode explicitly in settings, not based on execution context
-- **Predictable Behavior**: No dependency on whether you're in an async function or not
-- **Framework Agnostic**: Works consistently with FastAPI, Django, Flask, or any other framework
-- **Easy Switching**: Simply change the URL to switch between sync and async modes
-- **Clear Intent**: The URL clearly shows whether you're using sync or async database drivers
-
-### Supported Async Drivers
-
-- **SQLite**: `sqlite+aiosqlite://` (requires `aiosqlite` package)
-- **PostgreSQL**: `postgresql+asyncpg://` (requires `asyncpg` package)  
-- **MySQL**: `mysql+aiomysql://` (requires `aiomysql` package)
-- **MySQL**: `mysql+asyncmy://` (requires `asyncmy` package)
-
----
-
-## Management Commands
-
-### Project Management
-- `cotlette startproject <project_name>` — Create a new Cotlette project directory structure
-- `cotlette startapp <app_name>` — Create a new Cotlette app directory structure
-
-### Development Server
-- `cotlette runserver [addrport]` — Start the development server
-  - Optional arguments: `--ipv6`, `--reload`
-  - Example: `cotlette runserver 0.0.0.0:8000`
-
-### Interactive Shell
-- `cotlette shell` — Interactive Python shell with auto-imports
-  - Options: `--no-startup`, `--no-imports`, `--interface`, `--command`
-  - Supports IPython, bpython, and standard Python
-
-### Database Management
-- `cotlette makemigrations [--message] [--empty]` — Create database migrations
-  - Options: `--message`, `--empty`
-  - Example: `cotlette makemigrations --message "Add user model"`
-- `cotlette migrate [--revision] [--fake]` — Apply database migrations
-  - Options: `--revision`, `--fake`
-  - Example: `cotlette migrate --revision head`
-
-### User Management
-- `cotlette createsuperuser` — Create a superuser account
-  - Options: `--username`, `--email`, `--noinput`
-  - Interactive mode for secure password input
-
----
-
-## Documentation
-
-- [Technical Documentation](.docs/index.md)
-- [ORM Reference](.docs/orm.md)
-- [Template Reference](.docs/templates.md)
-- [Command Reference](.docs/commands.md)
-- [Middleware Reference](.docs/middleware.md)
-- [Extending Cotlette](.docs/extending.md)
-- [FAQ](.docs/faq.md)
-
----
-
-## License
+## 📜 License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-## Contributing
-
-Pull requests and issues are welcome! See [GitHub](https://github.com/ForceFledgling/cotlette).

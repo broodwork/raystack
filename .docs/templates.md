@@ -1,8 +1,8 @@
-# Cotlette Templates Documentation
+# Raystack Templates Documentation
 
 ## Overview
 
-Cotlette uses Jinja2 as its template engine, providing a familiar and powerful way to render HTML pages with dynamic content.
+Raystack uses Jinja2 as its template engine, providing a familiar and powerful way to render HTML pages with dynamic content.
 
 ---
 
@@ -29,7 +29,7 @@ myproject/
 Use the `render_template` shortcut in your views:
 
 ```python
-from cotlette.shortcuts import render_template
+from raystack.shortcuts import render_template
 
 @router.get("/")
 async def home():
@@ -94,7 +94,7 @@ app.jinja_env.filters['reverse'] = reverse_string
 
 Usage in template:
 ```jinja2
-{{ 'cotlette'|reverse }}
+{{ 'raystack'|reverse }}
 ```
 
 ---
@@ -116,7 +116,7 @@ Configure template directories and options in `config/settings.py`:
 ```python
 TEMPLATES = [
     {
-        "BACKEND": "cotlette.template.backends.jinja2.Jinja2",
+        "BACKEND": "raystack.template.backends.jinja2.Jinja2",
         "DIRS": ["templates"],
         "APP_DIRS": True,
     },
