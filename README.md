@@ -1,7 +1,7 @@
 # 🚀 Raystack: Where FastAPI Speed Meets Django Elegance
 
 ![PyPI Version](https://img.shields.io/pypi/v/raystack)
-![Python Versions](https://img.shields.io/pypi/pyversions/raystack)
+![Python Versions](https://img.shields.io/pypi/pyversions/raystack) ![Python 3.6+](https://img.shields.io/badge/Python-3.6%2B-blue)
 ![License](https://img.shields.io/pypi/l/raystack)
 ![Downloads](https://img.shields.io/pypi/dm/raystack)
 
