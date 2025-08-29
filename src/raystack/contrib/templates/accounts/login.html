@@ -51,7 +51,7 @@
 
   {% include 'admin/includes/footer-fullscreen.html' %}
 
-  <!-- JavaScript для отправки формы входа -->
+  <!-- JavaScript for login form submission -->
 
   <script>
     document.getElementById('loginForm').addEventListener('submit', async function (event) {
@@ -72,16 +72,16 @@
 
             const response = await fetch('/accounts/login/', {
                 method: 'POST',
-                body: formData, // Отправляем данные в формате FormData
+                body: formData, // Send data in FormData format
             });
 
             if (!response.ok) {
                 throw new Error('Incorrect email or password');
             }
 
-            // Получаем URL для перенаправления из заголовков ответа
+            // Get redirect URL from response headers
             if (response.url) {
-                window.location.href = response.url; // Выполняем перенаправление
+                window.location.href = response.url; // Perform redirect
               } else {
                   console.error('Redirect URL not found in response body.');
               }

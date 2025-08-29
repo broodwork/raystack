@@ -12,7 +12,7 @@ class Manager:
         return QuerySet(self.model_class).all()
 
     def create(self, **kwargs):
-        # create обычно сразу создает объект, поэтому реализуем sync+async
+        # create usually creates object immediately, so we implement sync+async
         if should_use_async():
             return QuerySet(self.model_class)._create_async(**kwargs)
         else:
@@ -33,23 +33,23 @@ class Manager:
         qs = QuerySet(self.model_class).filter(**kwargs)
         return qs.delete()
 
-    # Поддержка lazy загрузки и итерации
+            # Support for lazy loading and iteration
     def iter(self):
-        """Возвращает итерируемый объект с результатами запроса (lazy loading)."""
+        """Returns an iterable object with query results (lazy loading)."""
         return QuerySet(self.model_class).iter()
 
     def get_item(self, key):
-        """Получает элемент по индексу или срезу (lazy loading)."""
+        """Gets element by index or slice (lazy loading)."""
         return QuerySet(self.model_class).get_item(key)
 
     def __iter__(self):
-        """Поддержка прямого итерирования по Manager (lazy loading)."""
+        """Support for direct iteration over Manager (lazy loading)."""
         return self.iter()
 
     def __getitem__(self, key):
-        """Поддержка индексации Manager (lazy loading)."""
+        """Support for Manager indexing (lazy loading)."""
         return self.get_item(key)
 
     def __aiter__(self):
-        """Поддержка асинхронного итерирования по Manager (lazy loading)."""
+        """Support for asynchronous iteration over Manager (lazy loading)."""
         return QuerySet(self.model_class).__aiter__()

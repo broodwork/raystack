@@ -374,12 +374,12 @@ class ManagementUtility:
         except CommandError:
             pass  # Ignore any option errors at this point.
 
-        try:
-            settings.INSTALLED_APPS
-        except ImproperlyConfigured as exc:
-            self.settings_exception = exc
-        except ImportError as exc:
-            self.settings_exception = exc
+        # try:
+        #     settings.INSTALLED_APPS
+        # except ImproperlyConfigured as exc:
+        #     self.settings_exception = exc
+        # except ImportError as exc:
+        #     self.settings_exception = exc
 
         if settings.configured:  # TODO # FIXME
             pass

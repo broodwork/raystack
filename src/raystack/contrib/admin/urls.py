@@ -23,8 +23,8 @@ router = APIRouter()
 
 def url_for(endpoint, **kwargs):
     """
-    Функция для генерации URL на основе endpoint и дополнительных параметров.
-    В данном случае endpoint игнорируется, так как мы используем только filename.
+    Function for generating URL based on endpoint and additional parameters.
+    In this case, endpoint is ignored as we only use filename.
     """
     path = f"/{endpoint}"
 
@@ -40,7 +40,7 @@ def url_for(endpoint, **kwargs):
 @router.get("/users", response_model=None)
 @login_required(["user_auth"])
 async def users_view(request: Request):
-    users = UserModel.objects.all().execute_all()  # type: ignore
+    users = await UserModel.objects.all().execute_all()  # type: ignore
     # for user in users:
     #     print("user", user)
 
@@ -56,7 +56,7 @@ async def users_view(request: Request):
 @router.get("/groups", response_model=None)
 @login_required(["user_auth"])
 async def groups_view(request: Request):
-    groups = GroupModel.objects.all().execute()  # type: ignore
+    groups = await GroupModel.objects.all().execute()  # type: ignore
 
     return render_template(request=request, template_name="admin/groups.html", context={
         "url_for": url_for,
@@ -253,7 +253,7 @@ async def group_create_post(request: Request):
         "form": form,
         "url_for": url_for,
         "config": request.app.settings,
-        "errors": "Пожалуйста, исправьте ошибки в форме."
+        "errors": "Please fix the errors in the form."
     })
 
 # --- Group Delete ---

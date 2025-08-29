@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-# asynccontextmanager для Python 3.6 совместимости
+# asynccontextmanager for Python 3.6 compatibility
 try:
     from contextlib import asynccontextmanager
 except ImportError:
@@ -16,20 +16,20 @@ Base = declarative_base()
 
 class SQLAlchemyBackend:
     """
-    SQLAlchemy backend для Raystack ORM.
-    Поддерживает различные базы данных через SQLAlchemy.
+    SQLAlchemy backend for Raystack ORM.
+    Supports various databases through SQLAlchemy.
     """
     
     def __init__(self, database_url: str = None):
         """
-        Инициализация бэкенда.
+        Backend initialization.
         
-        :param database_url: URL базы данных (например, 'sqlite:///db.sqlite3', 
+        :param database_url: Database URL (e.g., 'sqlite:///db.sqlite3', 
                            'postgresql://user:pass@localhost/dbname',
                            'mysql://user:pass@localhost/dbname')
         """
         if database_url is None:
-            # По умолчанию используем SQLite
+            # By default use SQLite
             database_url = "sqlite:///db.sqlite3"
         
         self.database_url = database_url
@@ -44,20 +44,20 @@ class SQLAlchemyBackend:
         
     def is_async_url(self) -> bool:
         """
-        Определяет, является ли URL асинхронным по наличию async драйвера.
+        Determines if URL is asynchronous by presence of async driver.
         """
         return any(driver in self.database_url for driver in [
             '+aiosqlite://', '+asyncpg://', '+aiomysql://', '+asyncmy://'
         ])
         
     def initialize(self):
-        """Инициализация подключения к базе данных."""
+        """Initialize database connection."""
         if self._initialized:
             return
             
-        # Создаем engine
+        # Create engine
         if self.database_url.startswith('sqlite://'):
-            # Для SQLite используем StaticPool для лучшей совместимости
+            # For SQLite use StaticPool for better compatibility
             self.engine = create_engine(
                 self.database_url,
                 poolclass=StaticPool,
@@ -66,17 +66,17 @@ class SQLAlchemyBackend:
         else:
             self.engine = create_engine(self.database_url)
         
-        # Создаем фабрику сессий
+        # Create session factory
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         
-        # Создаем таблицы
+        # Create tables
         Base.metadata.create_all(bind=self.engine)
         
         self._initialized = True
     
     @contextmanager
     def get_session(self) -> Session:
-        """Контекстный менеджер для получения сессии базы данных."""
+        """Context manager for getting database session."""
         if not self._initialized:
             self.initialize()
             
@@ -92,11 +92,11 @@ class SQLAlchemyBackend:
     
     def create_table(self, table_name: str, columns: List[Dict[str, Any]]) -> Table:
         """
-        Создает таблицу в базе данных.
+        Creates table in database.
         
-        :param table_name: Имя таблицы
-        :param columns: Список колонок с их определениями
-        :return: Созданная таблица
+        :param table_name: Table name
+        :param columns: List of columns with their definitions
+        :return: Created table
         """
         if table_name in self._tables:
             return self._tables[table_name]
@@ -111,11 +111,11 @@ class SQLAlchemyBackend:
             unique = col_def.get('unique', False)
             foreign_key = col_def.get('foreign_key')
             
-            # Определяем тип колонки
+            # Determine column type
             if column_type == 'INTEGER':
                 sqlalchemy_type = Integer
             elif column_type.startswith('VARCHAR'):
-                max_length = int(column_type[8:-1])  # Извлекаем длину из VARCHAR(n)
+                max_length = int(column_type[8:-1])  # Extract length from VARCHAR(n)
                 sqlalchemy_type = String(max_length)
             elif column_type == 'TEXT':
                 sqlalchemy_type = Text
@@ -126,7 +126,7 @@ class SQLAlchemyBackend:
             else:
                 sqlalchemy_type = String
             
-            # Создаем колонку
+            # Create column
             column = Column(
                 name, 
                 sqlalchemy_type, 
@@ -135,7 +135,7 @@ class SQLAlchemyBackend:
                 unique=unique
             )
             
-            # Добавляем внешний ключ если указан
+            # Add foreign key if specified
             if foreign_key:
                 column = Column(
                     name,
@@ -148,30 +148,30 @@ class SQLAlchemyBackend:
             
             table_columns.append(column)
         
-        # Создаем таблицу
+        # Create table
         table = Table(table_name, self.metadata, *table_columns)
         self._tables[table_name] = table
         
-        # Создаем таблицу в базе данных
+        # Create table in database
         table.create(self.engine, checkfirst=True)
         
         return table
     
     def execute(self, query: str, params: tuple = None, fetch: bool = False):
         """
-        Выполняет SQL запрос.
+        Executes SQL query.
         
-        :param query: SQL запрос
-        :param params: Параметры запроса (игнорируются для SQLAlchemy)
-        :param fetch: Если True, возвращает результаты запроса
-        :return: Результаты запроса или cursor
+        :param query: SQL query
+        :param params: Query parameters (ignored for SQLAlchemy)
+        :param fetch: If True, returns query results
+        :return: Query results or cursor
         """
         with self.get_session() as session:
-            # Оборачиваем SQL запрос в text() для SQLAlchemy
+            # Wrap SQL query in text() for SQLAlchemy
             print('query', query)
             sql_text = text(query)
             
-            # Выполняем запрос без параметров
+            # Execute query without parameters
             result = session.execute(sql_text)
                 
             if fetch:
@@ -179,13 +179,13 @@ class SQLAlchemyBackend:
             return result
     
     def commit(self):
-        """Фиктивный метод для совместимости с существующим кодом."""
+        """Dummy method for compatibility with existing code."""
         pass
     
     def lastrowid(self):
-        """Возвращает ID последней вставленной записи."""
+        """Returns ID of last inserted record."""
         with self.get_session() as session:
-            # Для разных баз данных нужны разные подходы
+            # Different approaches for different databases
             if self.database_url.startswith('sqlite://'):
                 return session.execute(text("SELECT last_insert_rowid()")).scalar()
             elif self.database_url.startswith('postgresql://'):
@@ -195,15 +195,15 @@ class SQLAlchemyBackend:
             else:
                 return None
     
-    # Асинхронные методы
+    # Asynchronous methods
     async def initialize_async(self):
-        """Асинхронная инициализация подключения к базе данных."""
+        """Asynchronous database connection initialization."""
         if self._async_initialized:
             return
             
-        # Создаем async engine
+        # Create async engine
         if self.database_url.startswith('sqlite://'):
-            # Конвертируем в асинхронный URL
+            # Convert to asynchronous URL
             async_url = self.database_url.replace('sqlite://', 'sqlite+aiosqlite://')
             self.async_engine = create_async_engine(
                 async_url,
@@ -216,10 +216,10 @@ class SQLAlchemyBackend:
             async_url = self.database_url.replace('mysql://', 'mysql+aiomysql://')
             self.async_engine = create_async_engine(async_url)
         else:
-            # Для других баз данных используем тот же URL
+            # For other databases use the same URL
             self.async_engine = create_async_engine(self.database_url)
         
-        # Создаем фабрику асинхронных сессий (совместимость с SQLAlchemy 1.4)
+        # Create asynchronous session factory (compatibility with SQLAlchemy 1.4)
         from sqlalchemy.orm import sessionmaker
         self.AsyncSessionLocal = sessionmaker(
             autocommit=False, 
@@ -228,14 +228,14 @@ class SQLAlchemyBackend:
             class_=AsyncSession
         )
         
-        # Создаем таблицы
+        # Create tables
         async with self.async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         
         self._async_initialized = True
     
     async def get_async_session(self) -> AsyncSession:
-        """Получает асинхронную сессию базы данных."""
+        """Gets asynchronous database session."""
         if not self._async_initialized:
             await self.initialize_async()
             
@@ -243,25 +243,25 @@ class SQLAlchemyBackend:
     
     async def execute_async(self, query: str, params: tuple = None, fetch: bool = False):
         """
-        Асинхронно выполняет SQL запрос.
+        Asynchronously executes SQL query.
         
-        :param query: SQL запрос
-        :param params: Параметры запроса (игнорируются для SQLAlchemy)
-        :param fetch: Если True, возвращает результаты запроса
-        :return: Результаты запроса или cursor
+        :param query: SQL query
+        :param params: Query parameters (ignored for SQLAlchemy)
+        :param fetch: If True, returns query results
+        :return: Query results or cursor
         """
         if not self._async_initialized:
             await self.initialize_async()
             
         session = await self.get_async_session()
         try:
-            # Оборачиваем SQL запрос в text() для SQLAlchemy
+            # Wrap SQL query in text() for SQLAlchemy
             sql_text = text(query)
             
-            # Выполняем запрос без параметров
+            # Execute query without parameters
             result = await session.execute(sql_text)
             
-            # Делаем commit для сохранения изменений
+            # Make commit to save changes
             await session.commit()
                 
             if fetch:
@@ -275,11 +275,11 @@ class SQLAlchemyBackend:
     
     async def create_table_async(self, table_name: str, columns: List[Dict[str, Any]]) -> Table:
         """
-        Асинхронно создает таблицу в базе данных.
+        Asynchronously creates table in database.
         
-        :param table_name: Имя таблицы
-        :param columns: Список колонок с их определениями
-        :return: Созданная таблица
+        :param table_name: Table name
+        :param columns: List of columns with their definitions
+        :return: Created table
         """
         if not self._async_initialized:
             await self.initialize_async()
@@ -297,11 +297,11 @@ class SQLAlchemyBackend:
             unique = col_def.get('unique', False)
             foreign_key = col_def.get('foreign_key')
             
-            # Определяем тип колонки
+            # Determine column type
             if column_type == 'INTEGER':
                 sqlalchemy_type = Integer
             elif column_type.startswith('VARCHAR'):
-                max_length = int(column_type[8:-1])  # Извлекаем длину из VARCHAR(n)
+                max_length = int(column_type[8:-1])  # Extract length from VARCHAR(n)
                 sqlalchemy_type = String(max_length)
             elif column_type == 'TEXT':
                 sqlalchemy_type = Text
@@ -312,7 +312,7 @@ class SQLAlchemyBackend:
             else:
                 sqlalchemy_type = String
             
-            # Создаем колонку
+            # Create column
             column = Column(
                 name, 
                 sqlalchemy_type, 
@@ -321,7 +321,7 @@ class SQLAlchemyBackend:
                 unique=unique
             )
             
-            # Добавляем внешний ключ если указан
+            # Add foreign key if specified
             if foreign_key:
                 column = Column(
                     name,
@@ -334,24 +334,24 @@ class SQLAlchemyBackend:
             
             table_columns.append(column)
         
-        # Создаем таблицу
+        # Create table
         table = Table(table_name, self.metadata, *table_columns)
         self._tables[table_name] = table
         
-        # Создаем таблицу в базе данных асинхронно
+        # Create table in database asynchronously
         async with self.async_engine.begin() as conn:
             await conn.run_sync(lambda sync_conn: table.create(sync_conn, checkfirst=True))
         
         return table
     
     async def lastrowid_async(self):
-        """Асинхронно возвращает ID последней вставленной записи."""
+        """Asynchronously returns ID of last inserted record."""
         if not self._async_initialized:
             await self.initialize_async()
             
         session = await self.get_async_session()
         try:
-            # Для разных баз данных нужны разные подходы
+            # Different approaches for different databases
             if self.database_url.startswith('sqlite://'):
                 result = await session.execute(text("SELECT last_insert_rowid()"))
                 row = result.fetchone()
@@ -371,15 +371,15 @@ class SQLAlchemyBackend:
 
 def get_database_url_from_settings():
     """
-    Получает URL базы данных из настроек.
+    Gets database URL from settings.
     """
     try:
-        # Пытаемся импортировать настройки
+        # Try to import settings
         import config.settings
         return config.settings.DATABASES['default']['URL']
     except (ImportError, KeyError, AttributeError):
-        # Если не удалось получить из настроек, возвращаем значение по умолчанию
+        # If failed to get from settings, return default value
         return "sqlite:///db.sqlite3"
 
-# Глобальный экземпляр бэкенда
+# Global backend instance
 db = SQLAlchemyBackend(get_database_url_from_settings()) 

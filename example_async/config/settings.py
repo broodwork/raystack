@@ -10,13 +10,13 @@ API_V1_STR = "/api/v1"
 DATABASES = {
     'default': {
         'ENGINE': 'raystack.core.database.sqlalchemy',
-        # Синхронный режим (для команд управления)
+        # Synchronous mode (for management commands)
         # 'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Асинхронный режим (для веб-сервера)
+        # Asynchronous mode (for web server)
         'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Другие примеры асинхронных URL:
+        # Other examples of asynchronous URLs:
         # PostgreSQL: 'postgresql+asyncpg://user:pass@localhost/dbname'
         # MySQL: 'mysql+aiomysql://user:pass@localhost/dbname'
     }
@@ -50,7 +50,7 @@ ALGORITHM = "HS256"
 
 STATIC_URL = "static/"
 
-# Настройки статических файлов
+# Static files settings
 STATICFILES_DIRS = [
     str(BASE_DIR.parent / "raystack" / "src" / "raystack" / "contrib" / "static"),
     str(BASE_DIR / "static"),

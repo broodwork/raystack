@@ -7,13 +7,13 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 DATABASES = {
     'default': {
         'ENGINE': 'raystack.core.database.sqlalchemy',
-        # Синхронный режим (по умолчанию)
+        # Synchronous mode (default)
         'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Асинхронный режим (раскомментируйте для использования)
+        # Asynchronous mode (uncomment to use)
         # 'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Другие примеры асинхронных URL:
+        # Other examples of asynchronous URLs:
         # PostgreSQL: 'postgresql+asyncpg://user:pass@localhost/dbname'
         # MySQL: 'mysql+aiomysql://user:pass@localhost/dbname'
     }
@@ -45,7 +45,7 @@ ALGORITHM = "HS256"
 
 STATIC_URL = "static/"
 
-# Настройки статических файлов
+# Static files settings
 STATICFILES_DIRS = [
     str(BASE_DIR.parent / "src" / "raystack" / "contrib" / "static"),
     str(BASE_DIR / "static"),

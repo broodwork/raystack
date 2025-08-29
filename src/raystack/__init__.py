@@ -12,6 +12,13 @@ from raystack.conf import settings
 from raystack import shortcuts
 
 
+def setup():
+    """
+    Configure the settings module if not already configured.
+    """
+    if not settings.configured:
+        settings.configure()
+
 
 logger = logging.getLogger("uvicorn")
 

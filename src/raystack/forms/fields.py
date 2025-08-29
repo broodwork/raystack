@@ -10,8 +10,8 @@ class Field:
 
     def clean(self, value):
         if self.required and (value is None or value == ''):
-            self.errors.append('Это поле обязательно.')
-            raise ValueError('Это поле обязательно.')
+            self.errors.append('This field is required.')
+            raise ValueError('This field is required.')
         return value
 
     def get_bound_value(self, data, name):
@@ -19,7 +19,7 @@ class Field:
 
     def render(self, name, value=None):
         value = value if value is not None else self.initial or ''
-        return f'<input type="text" name="{name}" value="{value}">'  # базовый input
+        return f'<input type="text" name="{name}" value="{value}">'  # basic input
 
 class CharField(Field):
     def clean(self, value):
@@ -35,6 +35,6 @@ class IntegerField(Field):
             try:
                 value = int(value)
             except (TypeError, ValueError):
-                self.errors.append('Введите целое число.')
-                raise ValueError('Введите целое число.')
+                self.errors.append('Please enter an integer.')
+                raise ValueError('Please enter an integer.')
         return value 

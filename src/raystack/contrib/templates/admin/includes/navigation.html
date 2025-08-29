@@ -138,7 +138,7 @@
 <script>
 async function performLogout() {
     try {
-        // Отправляем POST запрос на logout
+        // Send POST request to logout
         const response = await fetch('/accounts/logout', {
             method: 'POST',
             headers: {
@@ -147,16 +147,16 @@ async function performLogout() {
         });
 
         if (response.ok) {
-            // Если logout успешен, перенаправляем на страницу входа
+            // If logout is successful, redirect to login page
             window.location.href = '/accounts/login';
         } else {
             console.error('Logout failed:', response.statusText);
-            // Даже если logout не удался, перенаправляем на страницу входа
+            // Even if logout failed, redirect to login page
             window.location.href = '/accounts/login';
         }
     } catch (error) {
         console.error('Error during logout:', error);
-        // В случае ошибки тоже перенаправляем на страницу входа
+        // In case of error, also redirect to login page
         window.location.href = '/accounts/login';
     }
 }

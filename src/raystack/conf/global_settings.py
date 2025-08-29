@@ -275,6 +275,7 @@ IGNORABLE_404_URLS = []
 # loudly.
 SECRET_KEY = "raystack-insecure-key" # SHOULD BE CHANGED IN PRODUCTION!
 ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # List of secret keys used to verify the validity of signatures. This allows
 # secret key rotation.

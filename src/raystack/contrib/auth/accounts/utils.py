@@ -7,7 +7,7 @@ from starlette.authentication import requires
 from raystack.contrib.auth.users.models import UserModel
 
 
-# Настройки JWT
+# JWT settings
 SECRET_KEY = "your-secret-key-here"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -65,24 +65,24 @@ async def get_current_active_superuser(current_user: UserModel = Depends(get_cur
     return current_user
 
 
-# Функции для работы с паролями (заглушки)
+# Password handling functions (stubs)
 async def hash_password(password: str) -> str:
-    # В реальном приложении здесь должна быть хеширование пароля
+    # In a real application, password hashing should be implemented here
     return password
 
 
 async def check_password(plain_password: str, hashed_password: str) -> bool:
-    # В реальном приложении здесь должна быть проверка пароля
+    # In a real application, password verification should be implemented here
     return plain_password == hashed_password
 
 
 def generate_jwt(user_id: int) -> str:
-    # Генерация JWT токена
+    # JWT token generation
     data = {"sub": str(user_id)}
     return create_access_token(data, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
 
-# Дополнительные функции для различных способов аутентификации
+# Additional functions for various authentication methods
 async def get_current_user_from_token(token: str):
     return await get_current_user(token)
 
@@ -96,7 +96,7 @@ async def get_current_active_superuser_from_token(token: str):
 
 
 async def get_current_user_from_cookie(request):
-    # Получение пользователя из cookie
+    # Get user from cookie
     token = request.cookies.get("jwt")
     if token:
         return await get_current_user(token)
@@ -118,7 +118,7 @@ async def get_current_active_superuser_from_cookie(request):
 
 
 async def get_current_user_from_header(request):
-    # Получение пользователя из заголовка
+    # Get user from header
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         token = auth_header.split(" ")[1]
@@ -141,7 +141,7 @@ async def get_current_active_superuser_from_header(request):
 
 
 async def get_current_user_from_query(request):
-    # Получение пользователя из query параметра
+    # Get user from query parameter
     token = request.query_params.get("token")
     if token:
         return await get_current_user(token)
@@ -163,7 +163,7 @@ async def get_current_active_superuser_from_query(request):
 
 
 async def get_current_user_from_body(request):
-    # Получение пользователя из body
+    # Get user from body
     body = await request.json()
     token = body.get("token")
     if token:

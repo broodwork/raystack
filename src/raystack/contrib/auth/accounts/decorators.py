@@ -6,18 +6,18 @@ from starlette.authentication import has_required_scope
 
 def login_required(required_scopes=None):
     """
-    Декоратор для проверки аутентификации.
-    Если пользователь не аутентифицирован, перенаправляет на страницу входа.
+    Decorator for authentication check.
+    If user is not authenticated, redirects to login page.
     """
     def decorator(func):
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
-            # Проверяем, есть ли у пользователя необходимые права
+            # Check if user has required permissions
             if not has_required_scope(request, required_scopes or []):
-                # Перенаправляем на страницу входа
+                # Redirect to login page
                 return RedirectResponse(url="/accounts/login", status_code=303)
             
-            # Если все проверки пройдены, вызываем оригинальную функцию
+            # If all checks passed, call the original function
             return await func(request, *args, **kwargs)
         
         return wrapper

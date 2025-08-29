@@ -264,3 +264,7 @@ class UserSettingsHolder:
 
 
 settings = LazySettings()
+
+def get_settings():
+    """Returns the currently configured settings object."""
+    return settings

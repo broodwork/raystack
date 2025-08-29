@@ -8,10 +8,10 @@
 <body>
     <h1>Welcome to the Dashboard</h1>
     <script>
-        // Получаем токен из контекста шаблона
+        // Get token from template context
         const accessToken = "{{ access_token }}";
 
-        // Пример использования токена для API-запроса
+        // Example of using token for API request
         async function fetchData() {
             const response = await fetch("/admin/protected", {
                 method: "GET",

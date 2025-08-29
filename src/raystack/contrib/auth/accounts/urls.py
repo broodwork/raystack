@@ -38,8 +38,8 @@ router = APIRouter()
 
 def url_for(endpoint, **kwargs):
     """
-    Функция для генерации URL на основе endpoint и дополнительных параметров.
-    В данном случае endpoint игнорируется, так как мы используем только filename.
+    Function for generating URL based on endpoint and additional parameters.
+    In this case, the endpoint is ignored as we only use the filename.
     """
     if not kwargs:
         return f"/{endpoint}"

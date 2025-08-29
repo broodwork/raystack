@@ -8,32 +8,56 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from raystack.core.database.base import get_async_db, async_engine # Используем асинхронный движок
-from raystack.core.security.jwt import create_access_token # Чтобы не было циклической зависимости
+# Lazy import to avoid errors when loading
+# from raystack.core.database.base import get_async_db, get_sync_engine
+from raystack.core.security.jwt import create_access_token # To avoid circular dependency
 
-# Safe import to avoid circular dependency
-try:
-    from raystack.conf import settings
-    API_V1_STR = getattr(settings, 'API_V1_STR', '/api/v1')
-    SECRET_KEY = getattr(settings, 'SECRET_KEY', 'default-secret-key')
-    ALGORITHM = getattr(settings, 'ALGORITHM', 'HS256')
-except ImportError:
-    API_V1_STR = '/api/v1'
-    SECRET_KEY = 'default-secret-key'
-    ALGORITHM = 'HS256'
+# Lazy imports to avoid circular dependencies
+
+def get_api_v1_str():
+    try:
+        from raystack.conf import get_settings
+        return getattr(get_settings(), 'API_V1_STR', '/api/v1')
+    except ImportError:
+        return '/api/v1'
+
+def get_secret_key():
+    try:
+        from raystack.conf import get_settings
+        return getattr(get_settings(), 'SECRET_KEY', 'default-secret-key')
+    except ImportError:
+        return 'default-secret-key'
+
+def get_algorithm():
+    try:
+        from raystack.conf import get_settings
+        return getattr(get_settings(), 'ALGORITHM', 'HS256')
+    except ImportError:
+        return 'HS256'
 
 # TODO: Define a base User model in raystack.contrib.auth.models that these projects can import
 # For now, we'll assume a User model exists in the project's models.py for demonstration.
 # from your_project.models import TokenPayload, User 
 # (This is a placeholder and will need to be addressed later.)
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{API_V1_STR}/login/access-token"
-)
+_reusable_oauth2 = None
+
+def get_reusable_oauth2():
+    global _reusable_oauth2
+    if _reusable_oauth2 is None:
+        _reusable_oauth2 = OAuth2PasswordBearer(
+            tokenUrl=f"{get_api_v1_str()}/login/access-token"
+        )
+    return _reusable_oauth2
 
 def get_db():
-    with Session(async_engine) as session: # Используем async_engine для создания синхронной сессии
-        yield session
+    try:
+        from raystack.core.database.base import get_sync_engine
+        with Session(get_sync_engine()) as session: # Use get_sync_engine() to create synchronous session
+            yield session
+    except ImportError:
+        # Fallback if database is not configured
+        raise RuntimeError("Database is not configured")
 
 # For Python 3.6 compatibility, we'll use regular types instead of Annotated
 SessionDep = Session
@@ -56,7 +80,7 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
     try:
         # TODO: Replace with actual TokenPayload model from the project
         payload = jwt.decode(
-            token, SECRET_KEY, algorithms=[ALGORITHM]
+            token, get_secret_key(), algorithms=[get_algorithm()]
         )
         token_data = TokenPayload(**payload) # Needs to be project specific
     except (InvalidTokenError, ValidationError):

@@ -2,6 +2,7 @@ from raystack.core.management.templates import TemplateCommand
 import os
 import shutil
 from ..utils import get_random_secret_key
+import raystack
 
 
 SECRET_KEY_INSECURE_PREFIX = "insecure-"
@@ -27,21 +28,34 @@ class Command(TemplateCommand):
             action="store_true",
             help="Create project without home app",
         )
+        parser.add_argument(
+            "--async",
+            action="store_true",
+            help="Create an asynchronous project (default: synchronous).",
+        )
 
     def handle(self, **options):
         project_name = options.pop("name")
         target = options.pop("directory")
-        with_home = options.pop("with_home", False)  # store_true по умолчанию False
-        no_home = options.pop("no_home", False)      # store_true по умолчанию False
+        with_home = options.pop("with_home", False)  # store_true defaults to False
+        no_home = options.pop("no_home", False)      # store_true defaults to False
+        async_project = options.pop("async", False)  # store_true defaults to False
+
+        if async_project:
+            template_name = "project_template_async"
+        else:
+            template_name = "project_template_sync"
+
+        options["template"] = os.path.join(raystack.__path__[0], "conf", template_name)
 
         # Create a random SECRET_KEY to put it in the main settings.
         options["secret_key"] = SECRET_KEY_INSECURE_PREFIX + get_random_secret_key()
         
-        # Set home app option - по умолчанию создаем приложение home
-        # Если явно указан --no-home, то не создаем
-        # Если явно указан --with-home, то создаем
-        # Если ничего не указано, то создаем по умолчанию
-        create_home_app = not no_home  # По умолчанию True, если не указан --no-home
+        # Set home app option - by default create home app
+        # If --no-home is explicitly specified, don't create
+        # If --with-home is explicitly specified, create
+        # If nothing is specified, create by default
+        create_home_app = not no_home  # By default True, if --no-home is not specified
         options["create_home_app"] = create_home_app
 
         # First create the project

@@ -34,14 +34,20 @@ class Command(BaseCommand):
         email = options.get("email")
         noinput = options.get("noinput")
 
-        # Импортируем все модели для регистрации в ModelMeta
+        # Import all models for registration in ModelMeta
         self._import_all_models()
         
-        # Проверяем регистрацию моделей
-        from raystack.core.database.models import ModelMeta
-        self.stdout.write(f'Зарегистрировано моделей: {len(ModelMeta._registry)}')
-        for model_name, model in ModelMeta._registry.items():
-            self.stdout.write(f'  - {model_name}: {model.objects}')
+        # Check model registration
+        try:
+            from raystack.core.database.models import ModelMeta
+            self.stdout.write(f'Registered models: {len(ModelMeta._registry)}')
+            for model_name, model in ModelMeta._registry.items():
+                self.stdout.write(f'  - {model_name}: {model.objects}')
+        except ImportError as e:
+            self.stdout.write(
+                self.style.ERROR(f'Failed to import database module: {e}')
+            )
+            return
 
         # Try to get the User model
         try:
@@ -102,7 +108,7 @@ class Command(BaseCommand):
             if GroupModel:
                 group = GroupModel.objects.filter(id=1).first()
                 if not group:
-                    # Создаем группу через ORM
+                    # Create group through ORM
                     try:
                         group = GroupModel.objects.create(
                             name="Admin",
@@ -110,7 +116,7 @@ class Command(BaseCommand):
                         )
                         group_id = group.id if group else 1
                     except Exception as e:
-                        # Группа уже существует или другая ошибка
+                        # Group already exists or other error
                         group_id = 1
                 else:
                     group_id = group.id
@@ -119,7 +125,7 @@ class Command(BaseCommand):
 
             # Create the superuser using ORM
             try:
-                # Создаем пользователя без ожидания возврата объекта
+                # Create user without waiting for object return
                 fields = []
                 values = []
                 for field_name, value in [
@@ -139,10 +145,12 @@ class Command(BaseCommand):
                 
                 insert_query = f'INSERT INTO "{UserModel.get_table_name()}" ({", ".join(fields)}) VALUES ({", ".join(values)})'
                 
-                # Выполняем запрос напрямую через базу данных
-                from raystack.core.database.sqlalchemy import db
+                # Execute query directly through database
                 try:
+                    from raystack.core.database.sqlalchemy import db
                     db.execute(insert_query)
+                except ImportError as e:
+                    raise CommandError(f"Failed to import database module: {e}")
                 except Exception as e:
                     raise CommandError(f"Error creating superuser: {e}")
                 
@@ -151,9 +159,15 @@ class Command(BaseCommand):
                 raise CommandError(f"Error creating superuser: {e}")
 
         # Run the sync function
-        # Временно переопределяем should_use_async для использования синхронных операций
-        import raystack.core.database.query
-        original_should_use_async = raystack.core.database.query.should_use_async
+        # Temporarily override should_use_async to use synchronous operations
+        try:
+            import raystack.core.database.query
+            original_should_use_async = raystack.core.database.query.should_use_async
+        except ImportError as e:
+            self.stdout.write(
+                self.style.ERROR(f'Failed to import database module: {e}')
+            )
+            return
         
         def force_sync():
             return False
@@ -163,27 +177,27 @@ class Command(BaseCommand):
         try:
             create_superuser_sync()
         finally:
-            # Восстанавливаем оригинальную функцию
+            # Restore original function
             raystack.core.database.query.should_use_async = original_should_use_async
     
     def _import_all_models(self):
-        """Импортирует все модели для регистрации в ModelMeta"""
+        """Imports all models for registration in ModelMeta"""
         try:
-            # Импортируем модели из contrib
+            # Import models from contrib
             import raystack.contrib.auth.users.models
             import raystack.contrib.auth.groups.models
             import raystack.contrib.admin.models
             
-            # Импортируем модели из приложений проекта
+            # Import models from project apps
             try:
                 import apps.home.models
             except ImportError:
                 pass
                 
         except ImportError as e:
-            self.stdout.write(
-                self.style.WARNING(f'Предупреждение: не удалось импортировать некоторые модели: {e}')
-            )
+                            self.stdout.write(
+                    self.style.WARNING(f'Warning: failed to import some models: {e}')
+                )
 
     def _get_username(self, username=None):
         """Get username from user input."""

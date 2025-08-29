@@ -82,7 +82,7 @@ class RelatedField(Field):
             related_model._meta['reverse_relations'][self.related_name] = model_class
 
 
-# Базовые поля
+# Basic fields
 class CharField(Field):
     def __init__(self, max_length, **kwargs):
         super().__init__(f"VARCHAR({max_length})", **kwargs)
@@ -199,7 +199,7 @@ class UUIDField(Field):
     def __init__(self, **kwargs):
         super().__init__("VARCHAR(32)", **kwargs)
 
-# Специальные поля
+# Special fields
 class JSONField(Field):
     def __init__(self, **kwargs):
         super().__init__("TEXT", **kwargs)
@@ -208,7 +208,7 @@ class BinaryField(Field):
     def __init__(self, **kwargs):
         super().__init__("BLOB", **kwargs)
 
-# Поля для отношений
+# Relationship fields
 class ForeignKey(RelatedField):
     def __init__(self, to, on_delete=None, **kwargs):
         super().__init__(to, on_delete=on_delete, **kwargs)
@@ -223,13 +223,13 @@ class ManyToManyField(RelatedField):
         self.through = through
         self.through_fields = through_fields
 
-# Поля для вычислений
+# Computation fields
 class ComputedField(Field):
     def __init__(self, compute=None, **kwargs):
         super().__init__("COMPUTED", **kwargs)
         self.compute = compute
 
-# Поля для индексов
+# Index fields
 class IndexField(Field):
     def __init__(self, **kwargs):
         super().__init__("INDEX", **kwargs)

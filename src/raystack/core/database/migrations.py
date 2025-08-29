@@ -13,15 +13,15 @@ from datetime import datetime
 
 class MigrationManager:
     """
-    Менеджер миграций для Raystack ORM с использованием Alembic.
+    Migration manager for Raystack ORM using Alembic.
     """
     
     def __init__(self, database_url: str = None, migrations_dir: str = "migrations"):
         """
-        Инициализация менеджера миграций.
+        Initialize migration manager.
         
-        :param database_url: URL базы данных
-        :param migrations_dir: Директория для миграций
+        :param database_url: Database URL
+        :param migrations_dir: Migrations directory
         """
         if database_url is None:
             database_url = "sqlite:///db.sqlite3"
@@ -32,36 +32,36 @@ class MigrationManager:
         self._setup_alembic()
     
     def _setup_alembic(self):
-        """Настройка Alembic конфигурации."""
-        # Создаем директорию для миграций если её нет
+        """Configure Alembic configuration."""
+        # Create migrations directory if it doesn't exist
         self.migrations_dir.mkdir(exist_ok=True)
         
-        # Создаем директорию versions если её нет
+        # Create versions directory if it doesn't exist
         versions_dir = self.migrations_dir / "versions"
         versions_dir.mkdir(exist_ok=True)
         
-        # Создаем alembic.ini если его нет
+        # Create alembic.ini if it doesn't exist
         alembic_ini_path = Path("alembic.ini")
         if not alembic_ini_path.exists():
             self._create_alembic_ini()
         
-        # Создаем env.py если его нет
+        # Create env.py if it doesn't exist
         env_py_path = self.migrations_dir / "env.py"
         if not env_py_path.exists():
             self._create_env_py()
         
-        # Создаем script.py.mako если его нет
+        # Create script.py.mako if it doesn't exist
         script_py_mako_path = self.migrations_dir / "script.py.mako"
         if not script_py_mako_path.exists():
             self._create_script_py_mako()
         
-        # Настраиваем конфигурацию Alembic
+        # Configure Alembic configuration
         self.alembic_cfg = Config("alembic.ini")
         self.alembic_cfg.set_main_option("script_location", str(self.migrations_dir))
         self.alembic_cfg.set_main_option("sqlalchemy.url", self.database_url)
     
     def _create_alembic_ini(self):
-        """Создает файл alembic.ini."""
+        """Creates alembic.ini file."""
         ini_content = """[alembic]
 script_location = migrations
 sqlalchemy.url = sqlite:///db.sqlite3
@@ -107,7 +107,7 @@ datefmt = {H}:{M}:{S}
             f.write(ini_content)
     
     def _create_env_py(self):
-        """Создает файл env.py для Alembic."""
+        """Creates env.py file for Alembic."""
         env_content = '''from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -159,7 +159,7 @@ else:
             f.write(env_content)
     
     def _create_script_py_mako(self):
-        """Создает файл script.py.mako для Alembic."""
+        """Creates script.py.mako file for Alembic."""
         mako_content = '''"""${message}
 
 Revision ID: ${up_revision}
@@ -189,42 +189,42 @@ def downgrade():
             f.write(mako_content)
     
     def init(self):
-        """Инициализирует систему миграций."""
+        """Initializes the migration system."""
         if self.alembic_cfg is None:
             self._setup_alembic()
         
         try:
             command.init(self.alembic_cfg, str(self.migrations_dir))
         except Exception as e:
-            # Если директория уже инициализирована, игнорируем ошибку
+            # If directory is already initialized, ignore the error
             if "already exists" not in str(e):
                 raise
     
     def create_migration(self, message: str, models: List[Any] = None):
         """
-        Создает новую миграцию.
+        Creates a new migration.
         
-        :param message: Сообщение для миграции
-        :param models: Список моделей для миграции
-        :return: Результат создания миграции
+        :param message: Migration message
+        :param models: List of models for migration
+        :return: Migration creation result
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
         
-        # Создаем SQL миграцию в файле
+        # Create SQL migration in file
         if models:
             migration_content = self._generate_migration_content(models, message)
-            # Создаем файл миграции
+            # Create migration file
             migration_file = self._create_migration_file(migration_content, message)
             return migration_file
         
-        # Создаем пустую миграцию для Alembic
+        # Create empty migration for Alembic
         result = command.revision(self.alembic_cfg, message=message, autogenerate=False)
         return result
     
     def _generate_migration_content(self, models, message):
         """
-        Генерирует содержимое миграции.
+        Generates migration content.
         """
         migration_sql = []
         
@@ -237,24 +237,24 @@ def downgrade():
     
     def _create_migration_file(self, migration_content, message):
         """
-        Создает файл миграции с SQL командами.
+        Creates migration file with SQL commands.
         """
         
-        # Создаем уникальный ID для миграции (без дефисов)
+        # Create unique migration ID (without hyphens)
         migration_id = str(uuid.uuid4()).replace('-', '')[:12]
         
-        # Создаем SQL команды для upgrade
+        # Create SQL commands for upgrade
         upgrade_commands = []
         for sql in migration_content:
             upgrade_commands.append(f"    op.execute('''{sql}''')")
         
-        # Создаем SQL команды для downgrade
+        # Create SQL commands for downgrade
         downgrade_commands = []
         for sql in migration_content:
-            table_name = sql.split()[5]  # Получаем имя таблицы из CREATE TABLE
+            table_name = sql.split()[5]  # Get table name from CREATE TABLE
             downgrade_commands.append(f"    op.execute('DROP TABLE IF EXISTS {table_name}')")
         
-        # Создаем содержимое файла миграции
+        # Create migration file content
         file_content = f'''"""Migration: {message}
 
 Revision ID: {migration_id}
@@ -287,7 +287,7 @@ def downgrade():
     # ### end Raystack commands ###
 '''
         
-        # Создаем файл миграции
+        # Create migration file
         versions_dir = Path('migrations/versions')
         versions_dir.mkdir(exist_ok=True)
         
@@ -299,13 +299,13 @@ def downgrade():
     
     def _create_table_sql(self, model):
         """
-        Создает SQL для создания таблицы модели.
+        Creates SQL for creating model table.
         """
         table_name = model.get_table_name()
         columns = []
         
         for field_name, field in model._fields.items():
-            # Определяем тип колонки
+            # Determine column type
             if field.column_type == int:
                 column_type = "INTEGER"
             elif field.column_type == str:
@@ -317,7 +317,7 @@ def downgrade():
             else:
                 column_type = "TEXT"
             
-            # Добавляем ограничения
+            # Add constraints
             constraints = []
             if field.primary_key:
                 constraints.append("PRIMARY KEY")
@@ -340,9 +340,9 @@ def downgrade():
     
     def upgrade(self, revision: str = "head"):
         """
-        Применяет миграции.
+        Applies migrations.
         
-        :param revision: Ревизия для применения (по умолчанию "head")
+        :param revision: Revision to apply (default "head")
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
@@ -351,9 +351,9 @@ def downgrade():
     
     def downgrade(self, revision: str):
         """
-        Откатывает миграции.
+        Rolls back migrations.
         
-        :param revision: Ревизия для отката
+        :param revision: Revision to rollback
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
@@ -362,7 +362,7 @@ def downgrade():
     
     def current(self):
         """
-        Возвращает текущую ревизию.
+        Returns current revision.
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
@@ -374,7 +374,7 @@ def downgrade():
     
     def history(self):
         """
-        Возвращает историю миграций.
+        Returns migration history.
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
@@ -383,9 +383,9 @@ def downgrade():
     
     def show(self, revision: str):
         """
-        Показывает информацию о ревизии.
+        Shows revision information.
         
-        :param revision: Ревизия для показа
+        :param revision: Revision to show
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
@@ -394,9 +394,9 @@ def downgrade():
     
     def stamp(self, revision: str):
         """
-        Отмечает текущую ревизию без применения миграций.
+        Marks current revision without applying migrations.
         
-        :param revision: Ревизия для отметки
+        :param revision: Revision to mark
         """
         if self.alembic_cfg is None:
             self._setup_alembic()
@@ -404,5 +404,5 @@ def downgrade():
         command.stamp(self.alembic_cfg, revision)
 
 
-# Глобальный экземпляр менеджера миграций
+# Global migration manager instance
 migration_manager = MigrationManager() 

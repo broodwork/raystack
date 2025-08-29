@@ -9,7 +9,7 @@ from raystack.contrib.auth.groups import api as groups_api
 from raystack.contrib.auth.accounts import urls as accounts_urls
 from raystack.contrib.auth.accounts import api as accounts_api
 
-# Импортируем модели для удобства
+# Import models for convenience
 from raystack.contrib.auth.users.models import UserModel, User, UserCreate
 from raystack.contrib.auth.groups.models import GroupModel, Group
 
@@ -21,15 +21,15 @@ __all__ = [
 
 router = APIRouter()
 
-# Подключаем роуты пользователей
+# Connect user routes
 if hasattr(users_api, 'router'):
     router.include_router(users_api.router, prefix="/users", tags=["users"])
-# Подключаем роуты групп
+# Connect group routes
 if hasattr(groups_api, 'router'):
     router.include_router(groups_api.router, prefix="/groups", tags=["groups"])
-# Подключаем роуты аккаунтов (регистрация, аутентификация, смена пароля)
+# Connect account routes (registration, authentication, password change)
 if hasattr(accounts_urls, 'router'):
     router.include_router(accounts_urls.router, prefix="/accounts", tags=["accounts"])
-# Подключаем роуты аккаунтов (login/logout)
+# Connect account routes (login/logout)
 if hasattr(accounts_api, 'router'):
     router.include_router(accounts_api.router, prefix="/accounts", tags=["accounts"])

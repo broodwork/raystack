@@ -3,7 +3,7 @@ from raystack.core.database.sqlalchemy import db
 from raystack.core.database.fields.related import ForeignKeyField
 
 def is_async_context():
-    """Точно определяет, находимся ли мы в async-контексте"""
+    """Accurately determines if we are in an async context"""
     try:
         asyncio.get_running_loop()
         return True
@@ -12,8 +12,8 @@ def is_async_context():
 
 def should_use_async():
     """
-    Определяет, нужно ли использовать асинхронный режим.
-    Теперь определяется по URL в настройках, а не по контексту выполнения.
+    Determines whether to use asynchronous mode.
+    Now determined by URL in settings, not by execution context.
     """
     return db.is_async_url()
 
@@ -25,7 +25,7 @@ class QuerySet:
         self.order_by_fields = []
 
     def filter(self, **kwargs):
-        # Всегда возвращает QuerySet, не корутину
+        # Always returns QuerySet, not coroutine
         return self._filter_sync(**kwargs)
 
     def _filter_sync(self, **kwargs):
@@ -53,25 +53,25 @@ class QuerySet:
         return new_queryset
 
     def all(self):
-        # Всегда возвращает QuerySet
+        # Always returns QuerySet
         return self
 
     def execute_all(self):
-        """Выполняет запрос и возвращает все результаты."""
+        """Executes the query and returns all results."""
         if should_use_async():
             return self._execute_async()
         else:
             return self._execute_sync()
 
     async def aexecute_all(self):
-        """Асинхронная версия execute_all() для использования в async контексте."""
+        """Asynchronous version of execute_all() for use in async context."""
         if should_use_async():
             return await self._execute_async()
         else:
             return self._execute_sync()
 
     def order_by(self, *fields):
-        # Всегда возвращает QuerySet
+        # Always returns QuerySet
         new_queryset = QuerySet(self.model_class)
         new_queryset.query = self.query
         new_queryset.params = self.params
@@ -99,7 +99,7 @@ class QuerySet:
             return self._first_sync()
 
     async def afirst(self):
-        """Асинхронная версия first() для использования в async контексте."""
+        """Asynchronous version of first() for use in async context."""
         if should_use_async():
             return await self._first_async()
         else:
@@ -129,7 +129,7 @@ class QuerySet:
         else:
             return self._create_sync(**kwargs)
 
-    # Все sync-методы используют только _sync-реализации, async — только _async-реализации
+    # All sync methods use only _sync implementations, async — only _async implementations
 
     def _execute_sync(self):
         result = db.execute(self.query, self.params or (), fetch=True)
@@ -250,48 +250,48 @@ class QuerySet:
             raise RuntimeError("Failed to retrieve the ID of the newly created record.")
         return await self.model_class.objects.get(id=last_id)
 
-    # Поддержка итераций и lazy загрузки
+    # Support for iterations and lazy loading
     def __repr__(self):
-        """Строковое представление QuerySet."""
+        """String representation of QuerySet."""
         return f"<QuerySet: {self.model_class.__name__}>"
 
     def __str__(self):
-        """Строковое представление QuerySet."""
+        """String representation of QuerySet."""
         return f"<QuerySet: {self.model_class.__name__}>"
 
-    # Методы для итераций (работают в sync и async контекстах)
+    # Methods for iterations (work in sync and async contexts)
     def iter(self):
-        """Возвращает итерируемый объект с результатами запроса (lazy loading)."""
+        """Returns an iterable object with query results (lazy loading)."""
         if should_use_async():
             return self._iter_async()
         else:
             return self._iter_sync()
 
     def _iter_sync(self):
-        """Синхронная итерация по результатам (lazy loading)."""
-        # Выполняем запрос и возвращаем итератор
+        """Synchronous iteration over results (lazy loading)."""
+        # Execute query and return iterator
         result = self._execute_sync()
         for item in result:
             yield item
 
     async def _iter_async(self):
-        """Асинхронная итерация по результатам (lazy loading)."""
-        # Выполняем запрос и возвращаем асинхронный итератор
+        """Asynchronous iteration over results (lazy loading)."""
+        # Execute query and return async iterator
         result = await self._execute_async()
         for item in result:
             yield item
 
     def get_item(self, key):
-        """Получает элемент по индексу или срезу."""
+        """Gets element by index or slice."""
         if should_use_async():
             return self._get_item_async(key)
         else:
             return self._get_item_sync(key)
 
     def _get_item_sync(self, key):
-        """Синхронное получение элемента."""
+        """Synchronous element retrieval."""
         if isinstance(key, slice):
-            # Срез - добавляем LIMIT и OFFSET
+            # Slice - add LIMIT and OFFSET
             start = key.start or 0
             stop = key.stop
             limit = stop - start if stop is not None else None
@@ -307,7 +307,7 @@ class QuerySet:
             
             return new_queryset._execute_sync()
         elif isinstance(key, int):
-            # Индекс - получаем конкретную запись
+            # Index - get specific record
             if key < 0:
                 raise IndexError("Negative indexing is not supported")
             
@@ -325,9 +325,9 @@ class QuerySet:
             raise TypeError("QuerySet indices must be integers or slices")
 
     async def _get_item_async(self, key):
-        """Асинхронное получение элемента."""
+        """Asynchronous element retrieval."""
         if isinstance(key, slice):
-            # Срез - добавляем LIMIT и OFFSET
+            # Slice - add LIMIT and OFFSET
             start = key.start or 0
             stop = key.stop
             limit = stop - start if stop is not None else None
@@ -343,7 +343,7 @@ class QuerySet:
             
             return await new_queryset._execute_async()
         elif isinstance(key, int):
-            # Индекс - получаем конкретную запись
+            # Index - get specific record
             if key < 0:
                 raise IndexError("Negative indexing is not supported")
             
@@ -352,7 +352,7 @@ class QuerySet:
             new_queryset.params = self.params
             new_queryset.query += f" LIMIT 1 OFFSET {key}"
             
-            result = await new_queryset._execute_async()
+            result = await new_queryset._execute_sync()
             if result:
                 return result[0]
             else:
@@ -361,31 +361,31 @@ class QuerySet:
             raise TypeError("QuerySet indices must be integers or slices")
 
     def __len__(self):
-        """Возвращает количество записей в QuerySet."""
+        """Returns the number of records in QuerySet."""
         return self.count()
 
     def __bool__(self):
-        """Проверяет, существуют ли записи в QuerySet."""
+        """Checks if records exist in QuerySet."""
         return self.exists()
 
     def __contains__(self, item):
-        """Проверяет, содержится ли объект в QuerySet."""
+        """Checks if object is contained in QuerySet."""
         if not isinstance(item, self.model_class):
             return False
         
-        # Простая проверка по ID
+        # Simple ID check
         if hasattr(item, 'id'):
             return self.filter(id=item.id).exists()
         return False
 
     def __iter__(self):
-        """Поддержка прямого итерирования по QuerySet (lazy loading)."""
+        """Support for direct iteration over QuerySet (lazy loading)."""
         return self.iter()
 
     def __aiter__(self):
-        """Поддержка асинхронного итерирования по QuerySet (lazy loading)."""
+        """Support for asynchronous iteration over QuerySet (lazy loading)."""
         return self._iter_async()
 
     def __getitem__(self, key):
-        """Поддержка индексации QuerySet (lazy loading)."""
+        """Support for QuerySet indexing (lazy loading)."""
         return self.get_item(key)

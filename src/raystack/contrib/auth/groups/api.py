@@ -22,7 +22,7 @@ from datetime import datetime
 
 router = APIRouter()
 
-# Создание таблицы при запуске приложения
+# Creating table on application startup
 # @router.on_event("startup")
 # async def create_tables():
 #     GroupModel.create_table()
@@ -30,28 +30,28 @@ router = APIRouter()
 #     if not owners_group:
 #         GroupModel.objects.create(name="Owners")
 
-# # Pydantic-модель для входа пользователя
+# # Pydantic model for user login
 # class UserLogin(BaseModel):
 #     email: str
 #     password: str
 
-# # Pydantic-модель для токена
+# # Pydantic model for token
 # class Token(BaseModel):
 #     access_token: str
 #     token_type: str
 
-# # Pydantic-модель для данных токена
+# # Pydantic model for token data
 # class TokenData(BaseModel):
 #     email: Union[str] = None
 
 
-# # Создание таблицы при запуске приложения
+# # Creating table on application startup
 # @router.on_event("startup")
 # def create_tables():
 #     UserModel.create_table()
 
 
-# # Создание нового пользователя (POST)
+# # Creating a new user (POST)
 # @router.post("/", response_model=None)
 # async def create_user(user: UserCreate):
 #     hashed_password = await hash_password(user.password)
@@ -68,7 +68,7 @@ router = APIRouter()
 #     )
 
 
-# # Получение всех пользователей (GET)
+# # Getting all users (GET)
 # @router.get("/", response_model=list[User])
 # def get_users():
 #     users = UserModel.objects.all()

@@ -2,12 +2,12 @@ from pydantic import BaseModel
 from raystack.core.database.models import Model
 from raystack.core.database.fields import CharField, AutoField
 
-# Pydantic-модель для создания группы
+# Pydantic model for creating a group
 class GroupCreate(BaseModel):
-    name: str  # Название группы
+    name: str  # Group name
     description: str = "N/A"
     
-# Pydantic-модель для представления группы
+# Pydantic model for representing a group
 class Group(BaseModel):
     id: int
     name: str
@@ -16,10 +16,10 @@ class Group(BaseModel):
     # class Config:
     #     from_attributes = True
 
-# # Модель базы данных для групп
+# # Database model for groups
 # class GroupModel(Model):
-#     id = AutoField()  # Первичный ключ
-#     name = CharField(max_length=100, unique=True)  # Название группы (уникальное)
+#     id = AutoField()  # Primary key
+#     name = CharField(max_length=100, unique=True)  # Group name (unique)
 
 #     def __str__(self):
 #         return self.name
@@ -27,13 +27,13 @@ class Group(BaseModel):
 class GroupModel(Model):
     table = "groups_groupmodel"
 
-    id = AutoField()  # Первичный ключ
-    name = CharField(max_length=100, unique=True)  # Название группы (уникальное)
+    id = AutoField()  # Primary key
+    name = CharField(max_length=100, unique=True)  # Group name (unique)
     description = CharField(max_length=100)
 
     @property
     def users(self):
         """
-        Загружает всех пользователей, связанных с этой группой.
+        Loads all users associated with this group.
         """
         return UserModel.objects.filter(group=self.id)

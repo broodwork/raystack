@@ -1,13 +1,13 @@
-# Основные зависимости для Raystack
+# Core dependencies for Raystack
 sqlalchemy>=2.0.0
 alembic>=1.12.0
 
-# Драйверы для различных баз данных
-# SQLite (встроен в Python)
-# psycopg2-binary>=2.9.0  # Для PostgreSQL
-# pymysql>=1.0.0  # Для MySQL
-# cx_oracle>=8.3.0  # Для Oracle
+# Drivers for various databases
+# SQLite (built into Python)
+# psycopg2-binary>=2.9.0  # For PostgreSQL
+# pymysql>=1.0.0  # For MySQL
+# cx_oracle>=8.3.0  # For Oracle
 
-# Дополнительные зависимости
+# Additional dependencies
 click>=8.0.0
 jinja2>=3.0.0 

@@ -10,6 +10,7 @@ from urllib.request import build_opener
 
 import raystack
 from raystack.conf import settings
+from raystack import setup
 from raystack.core.management.base import BaseCommand, CommandError
 from raystack.core.management.utils import (
     find_formatters,
@@ -162,7 +163,7 @@ class TemplateCommand(BaseCommand):
         # Setup a stub settings environment for template rendering
         if not settings.configured:
             settings.configure()
-            # raystack.setup() # FIXME
+            setup() # FIXME
 
         template_dir = self.handle_template(options["template"], base_subdir)
         prefix_length = len(template_dir) + 1

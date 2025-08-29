@@ -23,7 +23,7 @@ naiveip_re = _lazy_re_compile(
 )
 
 
-# Конфигурация логгера
+# Logger configuration
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,

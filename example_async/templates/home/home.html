@@ -37,11 +37,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Добро пожаловать в {{ framework }}! 🚀</h1>
+        <h1>Welcome to {{ framework }}! 🚀</h1>
         
         <div class="stats">
-            <h3>Статистика:</h3>
-            <p>Всего пользователей в базе данных: <strong>{{ user_count }}</strong></p>
+            <h3>Statistics:</h3>
+            <p>Total users in database: <strong>{{ user_count }}</strong></p>
         </div>
         
         <div class="message">
@@ -50,7 +50,7 @@
         
         {% if users %}
         <div class="users">
-            <h3>Пользователи:</h3>
+            <h3>Users:</h3>
             <ul>
             {% for user in users %}
                 <li>{{ user.username }} ({{ user.email }})</li>

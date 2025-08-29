@@ -4,14 +4,14 @@ from typing import Dict, Any, Optional
 
 class DatabaseSettings:
     """
-    Настройки базы данных для Raystack ORM.
-    Поддерживает различные типы баз данных через SQLAlchemy.
+    Database settings for Raystack ORM.
+    Supports various database types through SQLAlchemy.
     """
     
-    # URL базы данных по умолчанию
+    # Default database URL
     DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
     
-    # Настройки подключения
+    # Connection settings
     DATABASE_OPTIONS = {
         'pool_size': 10,
         'max_overflow': 20,
@@ -19,67 +19,67 @@ class DatabaseSettings:
         'pool_recycle': 3600,
     }
     
-    # Настройки миграций
+    # Migration settings
     MIGRATIONS_DIR = 'migrations'
     MIGRATIONS_AUTO_GENERATE = True
     
-    # Настройки логирования
+    # Logging settings
     DATABASE_LOGGING = False
     DATABASE_ECHO = False
     
     @classmethod
     def get_database_url(cls) -> str:
         """
-        Возвращает URL базы данных.
+        Returns the database URL.
         """
         return cls.DATABASE_URL
     
     @classmethod
     def get_database_options(cls) -> Dict[str, Any]:
         """
-        Возвращает опции для подключения к базе данных.
+        Returns options for connecting to the database.
         """
         return cls.DATABASE_OPTIONS.copy()
     
     @classmethod
     def get_migrations_dir(cls) -> str:
         """
-        Возвращает директорию для миграций.
+        Returns the migrations directory.
         """
         return cls.MIGRATIONS_DIR
     
     @classmethod
     def is_sqlite(cls) -> bool:
         """
-        Проверяет, используется ли SQLite.
+        Checks if SQLite is used.
         """
         return cls.DATABASE_URL.startswith('sqlite://')
     
     @classmethod
     def is_postgresql(cls) -> bool:
         """
-        Проверяет, используется ли PostgreSQL.
+        Checks if PostgreSQL is used.
         """
         return cls.DATABASE_URL.startswith('postgresql://')
     
     @classmethod
     def is_mysql(cls) -> bool:
         """
-        Проверяет, используется ли MySQL.
+        Checks if MySQL is used.
         """
         return cls.DATABASE_URL.startswith('mysql://')
     
     @classmethod
     def is_oracle(cls) -> bool:
         """
-        Проверяет, используется ли Oracle.
+        Checks if Oracle is used.
         """
         return cls.DATABASE_URL.startswith('oracle://')
     
     @classmethod
     def get_database_type(cls) -> str:
         """
-        Возвращает тип базы данных.
+        Returns the database type.
         """
         if cls.is_sqlite():
             return 'sqlite'
@@ -93,5 +93,5 @@ class DatabaseSettings:
             return 'unknown'
 
 
-# Глобальный экземпляр настроек
+# Global settings instance
 db_settings = DatabaseSettings() 

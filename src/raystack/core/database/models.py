@@ -96,32 +96,32 @@ class Model(metaclass=ModelMeta):
     @classmethod
     def get_table(cls):
         """
-        Создает и возвращает SQLAlchemy таблицу для модели.
+        Creates and returns SQLAlchemy table for the model.
         """
         from sqlalchemy import Table, Column, MetaData, Integer, String, Boolean, DateTime, Text, Float
         from raystack.core.database.sqlalchemy import Base
         
-        # Создаем таблицу
+        # Create table
         columns = []
         
         for field_name, field in cls._fields.items():
-            # Конвертируем типы полей в SQLAlchemy типы
+            # Convert field types to SQLAlchemy types
             if field.column_type == int:
                 column_type = Integer
             elif field.column_type == str:
-                column_type = String(255)  # По умолчанию VARCHAR(255)
+                column_type = String(255)  # Default VARCHAR(255)
             elif field.column_type == bool:
                 column_type = Boolean
             elif field.column_type == float:
                 column_type = Float
             else:
-                column_type = String(255)  # По умолчанию
+                column_type = String(255)  # Default
             
             primary_key = field.primary_key
             nullable = not field.primary_key
             unique = field.unique
             
-            # Создаем колонку
+            # Create column
             column = Column(
                 field_name, 
                 column_type, 
@@ -132,7 +132,7 @@ class Model(metaclass=ModelMeta):
             
             columns.append(column)
         
-        # Создаем таблицу
+        # Create table
         table = Table(
             cls.get_table_name(),
             Base.metadata,
@@ -144,7 +144,7 @@ class Model(metaclass=ModelMeta):
     @classmethod
     def create_table(cls):
         """
-        Создает таблицу в базе данных используя SQLAlchemy.
+        Creates table in database using SQLAlchemy.
         """
         columns = []
         
@@ -157,7 +157,7 @@ class Model(metaclass=ModelMeta):
                 'unique': field.unique
             }
             
-            # Обработка внешних ключей
+            # Handle foreign keys
             if isinstance(field, ForeignKeyField):
                 related_model = field.get_related_model()
                 table_name = related_model.get_table_name()
@@ -165,7 +165,7 @@ class Model(metaclass=ModelMeta):
             
             columns.append(column_def)
 
-        # # Создаем таблицу через SQLAlchemy бэкенд
+        # # Create table through SQLAlchemy backend
         # db.create_table(cls.get_table_name(), columns)
 
     def save(self):
@@ -180,7 +180,7 @@ class Model(metaclass=ModelMeta):
         data = {}
         for field, field_obj in self._fields.items():
             if isinstance(field_obj, AutoField):
-                continue  # id вообще не добавляем в data
+                continue  # Don't add id to data at all
             value = getattr(self, field, None)
             if isinstance(field_obj, ForeignKeyField):
                 if hasattr(value, 'id'):
@@ -226,7 +226,7 @@ class Model(metaclass=ModelMeta):
             print(f"[DEBUG] New id set: {self.id}")
     
     async def _save_async(self):
-        # async-реализация save
+        # async save implementation
         # Get field values from object
         data = {field: getattr(self, field, None) for field in self._fields}
 
@@ -294,10 +294,10 @@ class Model(metaclass=ModelMeta):
     @classmethod
     async def get(cls, **kwargs):
         """
-        Асинхронно получает одну запись по условиям.
+        Asynchronously retrieves one record by conditions.
         
-        :param kwargs: Условия поиска
-        :return: Найденная модель или None
+        :param kwargs: Search conditions
+        :return: Found model or None
         """
         table_name = cls.get_table_name()
         conditions = ' AND '.join([f"{k} = '{v}'" for k, v in kwargs.items()])
@@ -312,10 +312,10 @@ class Model(metaclass=ModelMeta):
     @classmethod
     async def filter(cls, **kwargs):
         """
-        Асинхронно фильтрует записи по условиям.
+        Asynchronously filters records by conditions.
         
-        :param kwargs: Условия фильтрации
-        :return: Список найденных моделей
+        :param kwargs: Filter conditions
+        :return: List of found models
         """
         table_name = cls.get_table_name()
         conditions = ' AND '.join([f"{k} = '{v}'" for k, v in kwargs.items()])
@@ -329,9 +329,9 @@ class Model(metaclass=ModelMeta):
     @classmethod
     async def all(cls):
         """
-        Асинхронно получает все записи.
+        Asynchronously retrieves all records.
         
-        :return: Список всех моделей
+        :return: List of all models
         """
         table_name = cls.get_table_name()
         query = f"SELECT * FROM {table_name}"
@@ -341,7 +341,7 @@ class Model(metaclass=ModelMeta):
     
     def delete(self):
         """
-        Удаляет запись из базы данных.
+        Deletes record from database.
         """
         from raystack.core.database.query import should_use_async
         if should_use_async():
@@ -351,7 +351,7 @@ class Model(metaclass=ModelMeta):
 
     def _delete_sync(self):
         """
-        Синхронно удаляет запись из базы данных.
+        Synchronously deletes record from database.
         """
         if hasattr(self, 'id') and self.id is not None:
             table_name = self.get_table_name()
@@ -360,7 +360,7 @@ class Model(metaclass=ModelMeta):
 
     async def _delete_async(self):
         """
-        Асинхронно удаляет запись из базы данных.
+        Asynchronously deletes record from database.
         """
         if hasattr(self, 'id') and self.id is not None:
             table_name = self.get_table_name()

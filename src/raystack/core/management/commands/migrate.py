@@ -1,67 +1,75 @@
 from raystack.core.management.base import BaseCommand
-from raystack.core.database.migrations import migration_manager
 import sys
 
 
 class Command(BaseCommand):
-    help = "Применяет миграции к базе данных"
+    help = "Applies migrations to the database"
 
     def add_arguments(self, parser):
         parser.add_argument(
             '--revision', '-r',
             type=str,
             default='head',
-            help='Ревизия для применения (по умолчанию "head")'
+            help='Revision to apply (default "head")'
         )
         parser.add_argument(
             '--fake',
             action='store_true',
-            help='Отметить миграцию как примененную без выполнения'
+            help='Mark migration as applied without execution'
         )
         parser.add_argument(
             '--show-plan',
             action='store_true',
-            help='Показать план миграций без применения'
+            help='Show migration plan without applying'
         )
 
     def handle(self, *args, **options):
+        # Lazy imports to avoid errors when loading commands
+        try:
+            from raystack.core.database.migrations import migration_manager
+        except ImportError as e:
+            self.stdout.write(
+                self.style.ERROR(f'Failed to import database module: {e}')
+            )
+            return
+        
         revision = options.get('revision', 'head')
         fake = options.get('fake', False)
         show_plan = options.get('show_plan', False)
         
         try:
-            # Инициализируем систему миграций если нужно
+            # Initialize migration system if needed
             migration_manager.init()
             
-            # Получаем текущую ревизию
+            # Get current revision
             current = migration_manager.current()
             self.stdout.write(
-                self.style.SUCCESS(f'Текущая ревизия: {current or "нет"}')
+                self.style.SUCCESS(f'Current revision: {current or "none"}')
             )
             
             if show_plan:
-                # Показываем план миграций
+                # Show migration plan
                 self.stdout.write(
-                    self.style.SUCCESS(f'План миграций до ревизии: {revision}')
+                    self.style.SUCCESS(f'Migration plan to revision: {revision}')
                 )
-                # Здесь можно добавить логику для показа плана
+                # Here you can add logic to show the plan
                 return
             
             if fake:
-                # Отмечаем миграцию как примененную
+                # Mark migration as applied
                 migration_manager.stamp(revision)
                 self.stdout.write(
-                    self.style.SUCCESS(f'Миграция отмечена как примененная: {revision}')
+                    self.style.SUCCESS(f'Migration marked as applied: {revision}')
                 )
             else:
-                # Применяем миграции
+                # Apply migrations
                 migration_manager.upgrade(revision)
                 self.stdout.write(
-                    self.style.SUCCESS(f'Миграции применены до ревизии: {revision}')
+                    self.style.SUCCESS(f'Migrations applied to revision: {revision}')
                 )
             
         except Exception as e:
             self.stdout.write(
-                self.style.ERROR(f'Ошибка при применении миграций: {e}')
+                self.style.ERROR(f'Error applying migrations: {e}')
             )
             sys.exit(1) 

@@ -22,7 +22,7 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
-# Создание таблицы при запуске приложения
+        # Create table when starting application
 @router.on_event("startup")
 async def create_tables():
     GroupModel.create_table()
@@ -30,4 +30,4 @@ async def create_tables():
     if not owners_group:
         GroupModel.objects.create(name="Owners")
 
-# (Закомментированные примеры моделей и ручек оставлены для истории)
+        # (Commented examples of models and endpoints left for history)

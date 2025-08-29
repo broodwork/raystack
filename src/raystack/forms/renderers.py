@@ -1,4 +1,4 @@
-# Регистрируем фильтр для Jinja2
+# Register filter for Jinja2
 
 def form_as_p(form):
     return form.as_p()

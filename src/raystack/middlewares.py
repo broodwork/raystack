@@ -6,7 +6,7 @@ import jwt
 from raystack.conf import settings
 
 class JWTAuthentication(AuthenticationBackend):
-    """JWT аутентификация для проверки токенов из cookies."""
+    """JWT authentication for checking tokens from cookies."""
     async def authenticate(self, request):
         jwt_token = request.cookies.get("jwt")
         if not jwt_token:
@@ -24,14 +24,14 @@ class JWTAuthentication(AuthenticationBackend):
 
 class SimpleAuthMiddleware(BaseHTTPMiddleware):
     """
-    Middleware для аутентификации с проверкой JWT токенов.
+    Middleware for authentication with JWT token verification.
     """
     def __init__(self, app):
         super().__init__(app)
         self.auth_backend = JWTAuthentication()
 
     async def dispatch(self, request: Request, call_next):
-        # Проверяем аутентификацию через JWT
+        # Check authentication via JWT
         auth_result = await self.auth_backend.authenticate(request)
         
         if auth_result:
@@ -39,9 +39,9 @@ class SimpleAuthMiddleware(BaseHTTPMiddleware):
             request.scope["auth"] = credentials
             request.scope["user"] = user
         else:
-            # Пользователь не аутентифицирован - создаем пустые объекты
+            # User not authenticated - create empty objects
             from starlette.authentication import AuthCredentials
-            request.scope["auth"] = AuthCredentials([])  # Пустые права доступа
+            request.scope["auth"] = AuthCredentials([])  # Empty permissions
             request.scope["user"] = None
         
         response = await call_next(request)
@@ -61,7 +61,7 @@ class PermissionMiddleware:
         # Create Request object for convenience
         request = Request(scope, receive)
 
-        # Для тестовых проектов пропускаем все запросы
-        # В реальных проектах здесь должна быть настоящая проверка аутентификации
+        # For test projects, allow all requests
+        # In real projects, there should be actual authentication verification here
         await self.app(scope, receive, send)
         return
