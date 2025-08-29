@@ -29,7 +29,7 @@ if hasattr(groups_api, 'router'):
     router.include_router(groups_api.router, prefix="/groups", tags=["groups"])
 # Подключаем роуты аккаунтов (регистрация, аутентификация, смена пароля)
 if hasattr(accounts_urls, 'router'):
-    router.include_router(accounts_urls.router, prefix="/auth/accounts", tags=["accounts"])
+    router.include_router(accounts_urls.router, prefix="/accounts", tags=["accounts"])
 # Подключаем роуты аккаунтов (login/logout)
 if hasattr(accounts_api, 'router'):
-    router.include_router(accounts_api.router, prefix="/auth/accounts", tags=["accounts"])
+    router.include_router(accounts_api.router, prefix="/accounts", tags=["accounts"])

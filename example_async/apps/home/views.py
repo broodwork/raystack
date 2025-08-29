@@ -1,3 +1,26 @@
-from raystack.shortcuts import render
+from raystack.shortcuts import render_template
+from fastapi import Request, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
-# Create your views here.
+# Используем функционал фреймворка
+from raystack.core.database.base import get_async_db
+from .models import User
+
+async def home_view(request: Request, session: AsyncSession = Depends(get_async_db)):
+    try:
+        # Используем асинхронный синтаксис для SQLModel
+        result = await session.execute(select(User))
+        users = result.scalars().all()
+        user_count = len(users)
+    except Exception as e:
+        # Если база данных недоступна, показываем заглушку
+        user_count = 0
+        users = []
+    
+    return render_template(request, "home/home.html", context={
+        "framework": "Raystack Async", 
+        "user_count": user_count,
+        "message": "Welcome to Raystack Framework!",
+        "users": users
+    })

@@ -3,14 +3,17 @@ import pathlib
 # Base project directory
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
+# API settings
+API_V1_STR = "/api/v1"
+
 # Database settings
 DATABASES = {
     'default': {
         'ENGINE': 'raystack.core.database.sqlalchemy',
-        # Синхронный режим (по умолчанию)
+        # Синхронный режим (для команд управления)
         # 'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Асинхронный режим (раскомментируйте для использования)
+        # Асинхронный режим (для веб-сервера)
         'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
         # Другие примеры асинхронных URL:
@@ -24,8 +27,6 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    # 'raystack.apps.admin',
-    # 'raystack.apps.users',
     'apps.home',
     'raystack.contrib.admin',
     'raystack.contrib.auth.users',
@@ -56,3 +57,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
+
+# Middleware settings
+MIDDLEWARE = [
+    'raystack.middlewares.SimpleAuthMiddleware',
+]

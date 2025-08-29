@@ -31,6 +31,7 @@ class Raystack(FastAPI):
         self.include_routers()
         self.include_templates()
         self.include_static()
+        self.include_middleware()
 
     def include_routers(self):
         # Check and import installed applications
@@ -62,6 +63,7 @@ class Raystack(FastAPI):
                 if internal_dir not in template_dirs:
                     template_dirs.append(internal_dir)
             template["DIRS"] = template_dirs
+
     def include_static(self):
         # Include framework static files
         internal_static_dir = os.path.join(self.raystack_directory, "contrib", "static")
@@ -78,3 +80,20 @@ class Raystack(FastAPI):
             static_dir = os.path.join(self.settings.BASE_DIR, self.settings.STATIC_URL)
             if os.path.exists(static_dir):
                 self.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+    def include_middleware(self):
+        # Include middleware from settings
+        if hasattr(self.settings, 'MIDDLEWARE') and self.settings.MIDDLEWARE:
+            logger.info(f"Loading middleware:")
+            for middleware_path in self.settings.MIDDLEWARE:
+                try:
+                    # Import middleware class
+                    module_path, class_name = middleware_path.rsplit('.', 1)
+                    module = importlib.import_module(module_path)
+                    middleware_class = getattr(module, class_name)
+                    
+                    # Add middleware
+                    self.add_middleware(middleware_class)
+                    logger.info(f"✅'{middleware_path}'")
+                except Exception as e:
+                    logger.warning(f"⚠️ Failed to load middleware '{middleware_path}': {e}")

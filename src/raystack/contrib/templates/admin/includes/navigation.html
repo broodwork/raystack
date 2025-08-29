@@ -18,10 +18,10 @@
       </div>
       <ul class="navbar-nav  justify-content-end">
           <li class="nav-item d-flex align-items-center">
-            <a href="{{url_for('auth/accounts/login')}}" class="nav-link text-body font-weight-bold px-0">
-              <i class="fa fa-user me-sm-1"></i>
+            <button onclick="performLogout()" class="nav-link text-body font-weight-bold px-0 border-0 bg-transparent">
+              <i class="fa fa-sign-out-alt me-sm-1"></i>
               <span class="d-sm-inline d-none me-3">Logout</span>
-            </a>
+            </button>
           </li>
           <!-- <li class="nav-item d-flex align-items-center">
             <a href="{{url_for('auth/accounts/login')}}" class="nav-link text-body font-weight-bold px-0">
@@ -134,3 +134,30 @@
   </div>
 </nav>
 <!-- End Navbar -->
+
+<script>
+async function performLogout() {
+    try {
+        // Отправляем POST запрос на logout
+        const response = await fetch('/accounts/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            // Если logout успешен, перенаправляем на страницу входа
+            window.location.href = '/accounts/login';
+        } else {
+            console.error('Logout failed:', response.statusText);
+            // Даже если logout не удался, перенаправляем на страницу входа
+            window.location.href = '/accounts/login';
+        }
+    } catch (error) {
+        console.error('Error during logout:', error);
+        // В случае ошибки тоже перенаправляем на страницу входа
+        window.location.href = '/accounts/login';
+    }
+}
+</script>

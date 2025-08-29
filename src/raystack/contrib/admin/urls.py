@@ -2,18 +2,16 @@ import os
 
 from fastapi import APIRouter, Request
 
-# from raystack.conf import settings
+from raystack.conf import settings
 from raystack.shortcuts import render_template
 
 from fastapi import Depends, HTTPException, status
 import jwt
 from jwt import PyJWTError as JWTError
 
-from config.settings import SECRET_KEY, ALGORITHM
-
 from fastapi.security import OAuth2PasswordBearer
 
-from starlette.authentication import requires
+from raystack.contrib.auth.accounts.decorators import login_required
 
 from raystack.contrib.auth.users.models import UserModel
 from raystack.contrib.auth.groups.models import GroupModel
@@ -40,7 +38,7 @@ def url_for(endpoint, **kwargs):
 
 
 @router.get("/users", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def users_view(request: Request):
     users = UserModel.objects.all().execute_all()  # type: ignore
     # for user in users:
@@ -56,7 +54,7 @@ async def users_view(request: Request):
 
 
 @router.get("/groups", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def groups_view(request: Request):
     groups = GroupModel.objects.all().execute()  # type: ignore
 
@@ -70,7 +68,7 @@ async def groups_view(request: Request):
 
 
 @router.get("/", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def index_view(request: Request):    
     return render_template(request=request, template_name="pages/index.html", context={
         "url_for": url_for,
@@ -80,7 +78,7 @@ async def index_view(request: Request):
     })
 
 @router.get("/tables", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def tables_view(request: Request):    
     return render_template(request=request, template_name="pages/tables.html", context={
         "url_for": url_for,
@@ -90,7 +88,7 @@ async def tables_view(request: Request):
     })
 
 @router.get("/billing", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def billing_view(request: Request):    
     return render_template(request=request, template_name="pages/billing.html", context={
         "url_for": url_for,
@@ -100,7 +98,7 @@ async def billing_view(request: Request):
     })
 
 @router.get("/profile", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def profile_view(request: Request):    
     return render_template(request=request, template_name="pages/profile.html", context={
         "url_for": url_for,
@@ -110,7 +108,7 @@ async def profile_view(request: Request):
     })
 
 @router.get("/users/edit/{user_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def user_edit_view(request: Request, user_id: int):
     user = UserModel.objects.filter(id=user_id).first()
     groups = GroupModel.objects.all()
@@ -122,7 +120,7 @@ async def user_edit_view(request: Request, user_id: int):
     })
 
 @router.post("/users/edit/{user_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def user_edit_post(request: Request, user_id: int):
     form = await request.form()
     user = UserModel.objects.filter(id=user_id).first()
@@ -143,7 +141,7 @@ async def user_edit_post(request: Request, user_id: int):
     })
 
 @router.get("/groups/edit/{group_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def group_edit_view(request: Request, group_id: int):
     group = GroupModel.objects.filter(id=group_id).first()
     return render_template(request=request, template_name="admin/group_edit.html", context={
@@ -153,7 +151,7 @@ async def group_edit_view(request: Request, group_id: int):
     })
 
 @router.post("/groups/edit/{group_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def group_edit_post(request: Request, group_id: int):
     form = await request.form()
     group = GroupModel.objects.filter(id=group_id).first()
@@ -170,7 +168,7 @@ async def group_edit_post(request: Request, group_id: int):
 
 # --- User Create ---
 @router.get("/users/create", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def user_create_view(request: Request):
     groups = GroupModel.objects.all()
     return render_template(request=request, template_name="admin/user_create.html", context={
@@ -180,7 +178,7 @@ async def user_create_view(request: Request):
     })
 
 @router.post("/users/create", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def user_create_post(request: Request):
     form = await request.form()
     user = UserModel(
@@ -201,7 +199,7 @@ async def user_create_post(request: Request):
 
 # --- User Delete ---
 @router.get("/users/delete/{user_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def user_delete_confirm(request: Request, user_id: int):
     user = UserModel.objects.filter(id=user_id).first()
     return render_template(request=request, template_name="admin/user_delete.html", context={
@@ -211,7 +209,7 @@ async def user_delete_confirm(request: Request, user_id: int):
     })
 
 @router.post("/users/delete/{user_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def user_delete_post(request: Request, user_id: int):
     user = UserModel.objects.filter(id=user_id).first()
     if user:
@@ -225,7 +223,7 @@ async def user_delete_post(request: Request, user_id: int):
 
 # --- Group Create ---
 @router.get("/groups/create", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def group_create_view(request: Request):
     form = GroupCreateForm()
     return render_template(request=request, template_name="admin/group_create.html", context={
@@ -235,7 +233,7 @@ async def group_create_view(request: Request):
     })
 
 @router.post("/groups/create", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def group_create_post(request: Request):
     data = await request.form()
     form = GroupCreateForm(data)
@@ -260,7 +258,7 @@ async def group_create_post(request: Request):
 
 # --- Group Delete ---
 @router.get("/groups/delete/{group_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def group_delete_confirm(request: Request, group_id: int):
     group = GroupModel.objects.filter(id=group_id).first()
     return render_template(request=request, template_name="admin/group_delete.html", context={
@@ -270,7 +268,7 @@ async def group_delete_confirm(request: Request, group_id: int):
     })
 
 @router.post("/groups/delete/{group_id}", response_model=None)
-@requires("user_auth")
+@login_required(["user_auth"])
 async def group_delete_post(request: Request, group_id: int):
     group = GroupModel.objects.filter(id=group_id).first()
     if group:

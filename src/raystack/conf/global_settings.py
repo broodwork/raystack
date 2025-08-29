@@ -213,7 +213,16 @@ EMAIL_TIMEOUT = None
 # List of strings representing installed apps.
 INSTALLED_APPS = []
 
-TEMPLATES = []
+TEMPLATES = [
+    {
+        "BACKEND": "raystack.template.backends.jinja2.Jinja2",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "environment": "raystack.template.backends.jinja2.environment",
+        },
+    },
+]
 
 # Default form rendering class.
 FORM_RENDERER = "raystack.forms.renderers.RaystackTemplates"
@@ -264,7 +273,8 @@ IGNORABLE_404_URLS = []
 # A secret key for this particular Raystack installation. Used in secret-key
 # hashing algorithms. Set this in your settings, or Raystack will complain
 # loudly.
-SECRET_KEY = ""
+SECRET_KEY = "raystack-insecure-key" # SHOULD BE CHANGED IN PRODUCTION!
+ALGORITHM = "HS256"
 
 # List of secret keys used to verify the validity of signatures. This allows
 # secret key rotation.
@@ -293,7 +303,7 @@ STATIC_ROOT = None
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = None
+STATIC_URL = "static/"
 
 # List of upload handler classes to be applied in order.
 FILE_UPLOAD_HANDLERS = [
@@ -623,7 +633,9 @@ FIXTURE_DIRS = []
 ###############
 
 # A list of locations of additional static files
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    "src/raystack/contrib/static",
+]
 
 # List of finder classes that know how to find static files in
 # various locations.

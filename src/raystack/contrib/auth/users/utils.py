@@ -11,7 +11,12 @@ import asyncio
 def asyncify(func):
     """Convert synchronous function to asynchronous."""
     async def inner(*args, **kwargs):
-        loop = asyncio.get_running_loop()
+        try:
+            # Python 3.7+
+            loop = asyncio.get_running_loop()
+        except AttributeError:
+            # Python 3.6
+            loop = asyncio.get_event_loop()
         func_out = await loop.run_in_executor(None, func, *args, **kwargs)
         return func_out
     return inner
@@ -30,6 +35,20 @@ def check_password(password: str, hashed_pass):
 
 def generate_jwt(user_id: int):
     """Generate JWT token for user authentication."""
-    payload = {'user_id': user_id}
-    token = jwt.encode(payload, str(SECRET_KEY), algorithm=ALGORITHM)
+    payload = {'sub': user_id, 'exp': datetime.utcnow() + timedelta(days=1)}
+
+    # Normalize key type for PyJWT
+    key: Union[str, bytes]
+    if isinstance(SECRET_KEY, (bytes, bytearray)):
+        try:
+            key = SECRET_KEY.decode('utf-8')
+        except Exception:
+            key = SECRET_KEY  # fallback
+    else:
+        key = SECRET_KEY
+
+    token = jwt.encode(payload, key, algorithm=ALGORITHM)
+    # PyJWT < 2 returns bytes
+    if isinstance(token, (bytes, bytearray)):
+        token = token.decode('utf-8')
     return token

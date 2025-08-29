@@ -15,7 +15,15 @@ from pathlib import Path
 
 import raystack
 from raystack.conf import global_settings
-from raystack.core.exceptions import ImproperlyConfigured
+
+# Safe import to avoid circular dependency
+try:
+    from raystack.core.exceptions import ImproperlyConfigured
+except ImportError:
+    class ImproperlyConfigured(Exception):
+        """Raised when the settings are not properly configured."""
+        pass
+
 from raystack.utils.functional import LazyObject, empty
 
 ENVIRONMENT_VARIABLE = "RAYSTACK_SETTINGS_MODULE"

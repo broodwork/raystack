@@ -44,3 +44,11 @@ SECRET_KEY = b'$2b$12$SE0dQGdt3D260TqXQzuzbOcN2EqVqzFbn4nlNvfsgburDCYp2UvAS'
 ALGORITHM = "HS256"
 
 STATIC_URL = "static/"
+
+# Настройки статических файлов
+STATICFILES_DIRS = [
+    str(BASE_DIR.parent / "src" / "raystack" / "contrib" / "static"),
+    str(BASE_DIR / "static"),
+]
+
+STATIC_ROOT = str(BASE_DIR / "staticfiles")
