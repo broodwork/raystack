@@ -2,14 +2,14 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
-from raystack.core.database.sqlalchemy import Base
+from raystack.core.database.sqlalchemy import Base, db
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+target_metadata = db.metadata
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode."""

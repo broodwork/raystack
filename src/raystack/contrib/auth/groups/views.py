@@ -26,7 +26,7 @@ router = APIRouter()
 @router.on_event("startup")
 async def create_tables():
     GroupModel.create_table()
-    owners_group = GroupModel.objects.filter(name="Owners").first()  # type: ignore
+    owners_group = await GroupModel.objects.filter(name="Owners").first()  # type: ignore
     if not owners_group:
         GroupModel.objects.create(name="Owners")
 

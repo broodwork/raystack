@@ -3,14 +3,17 @@ import pathlib
 # Base project directory
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
+# API settings
+API_V1_STR = "/api/v1"
+
 # Database settings
 DATABASES = {
     'default': {
         'ENGINE': 'raystack.core.database.sqlalchemy',
-        # Synchronous mode (default)
+        # Synchronous mode (for management commands)
         'URL': 'sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
-        # Asynchronous mode (uncomment to use)
+        # Asynchronous mode (for web server)
         # 'URL': 'sqlite+aiosqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         
         # Other examples of asynchronous URLs:
@@ -24,9 +27,11 @@ ALLOWED_HOSTS = ['*']
 DEBUG = True
 
 INSTALLED_APPS = [
-    'raystack.contrib.admin',
-    'raystack.contrib.auth',
     'apps.home',
+    'raystack.contrib.admin',
+    'raystack.contrib.auth.users',
+    'raystack.contrib.auth.accounts',
+    'raystack.contrib.auth.groups',
 ]
 
 TEMPLATES = [
@@ -47,8 +52,13 @@ STATIC_URL = "static/"
 
 # Static files settings
 STATICFILES_DIRS = [
-    str(BASE_DIR.parent / "src" / "raystack" / "contrib" / "static"),
+    str(BASE_DIR.parent / "raystack" / "src" / "raystack" / "contrib" / "static"),
     str(BASE_DIR / "static"),
 ]
 
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
+
+# Middleware settings
+MIDDLEWARE = [
+    'raystack.middlewares.SimpleAuthMiddleware',
+]

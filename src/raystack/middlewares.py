@@ -12,7 +12,15 @@ class JWTAuthentication(AuthenticationBackend):
         if not jwt_token:
             return None
         try:
-            payload = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+            # Get settings safely
+            try:
+                secret_key = getattr(settings, 'SECRET_KEY', 'default-secret-key')
+                algorithm = getattr(settings, 'ALGORITHM', 'HS256')
+            except ImportError:
+                secret_key = 'default-secret-key'
+                algorithm = 'HS256'
+            
+            payload = jwt.decode(jwt_token, secret_key, algorithms=[algorithm])
             user_id = payload.get("sub")
             if user_id is None:
                 return None

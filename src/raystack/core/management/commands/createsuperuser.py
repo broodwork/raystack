@@ -2,6 +2,7 @@ import getpass
 import random
 import string
 from raystack.core.management.base import BaseCommand, CommandError
+from raystack.contrib.auth.accounts.utils import hash_password
 
 
 class Command(BaseCommand):
@@ -89,71 +90,47 @@ class Command(BaseCommand):
         # Run async operations
         import asyncio
         
-        def create_superuser_sync():
+        async def create_superuser_sync():
             # Check if user already exists
-            existing_user = UserModel.objects.filter(email=email).first()
+            existing_user = await UserModel.objects.filter(email=email).first()
             if existing_user:
                 raise CommandError(f"User with email '{email}' already exists.")
 
-            # Hash the password
-            try:
-                import bcrypt
-                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            except ImportError:
-                # Fallback to simple hash if bcrypt is not available
-                import hashlib
-                hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            # Hash the password using the unified utility
+            hashed_password = await hash_password(password)
 
             # Get or create group
+            group_id = None
             if GroupModel:
-                group = GroupModel.objects.filter(id=1).first()
+                group = await GroupModel.objects.filter(id=1).first()
                 if not group:
                     # Create group through ORM
                     try:
-                        group = GroupModel.objects.create(
+                        group = await GroupModel.objects.create(
                             name="Admin",
                             description="Administrator group"
                         )
-                        group_id = group.id if group else 1
+                        group_id = group.id
                     except Exception as e:
-                        # Group already exists or other error
+                        # Group already exists or other error, assume ID 1
+                        self.stdout.write(self.style.WARNING(f"Warning: Could not create Admin group, assuming ID 1: {e}"))
                         group_id = 1
                 else:
                     group_id = group.id
             else:
-                group_id = 1
+                group_id = 1 # Fallback if GroupModel is not available
 
             # Create the superuser using ORM
             try:
-                # Create user without waiting for object return
-                fields = []
-                values = []
-                for field_name, value in [
-                    ('name', username),
-                    ('email', email),
-                    ('password_hash', hashed_password),
-                    ('age', 0),
-                    ('organization', 'Admin'),
-                    ('group', group_id)
-                ]:
-                    if field_name in UserModel._fields:
-                        fields.append(f'"{field_name}"')
-                        if isinstance(value, str):
-                            values.append(f"'{value}'")
-                        else:
-                            values.append(str(value))
-                
-                insert_query = f'INSERT INTO "{UserModel.get_table_name()}" ({", ".join(fields)}) VALUES ({", ".join(values)})'
-                
-                # Execute query directly through database
-                try:
-                    from raystack.core.database.sqlalchemy import db
-                    db.execute(insert_query)
-                except ImportError as e:
-                    raise CommandError(f"Failed to import database module: {e}")
-                except Exception as e:
-                    raise CommandError(f"Error creating superuser: {e}")
-                
+                # Create user using the ORM's create method
+                await UserModel.objects.create(
+                    name=username,
+                    email=email,
+                    password_hash=hashed_password,
+                    age=0, # Default value, adjust as needed
+                    organization="Admin",
+                    group=group_id
+                )
                 self.stdout.write(f"Superuser '{username}' created successfully.")
             except Exception as e:
                 raise CommandError(f"Error creating superuser: {e}")
@@ -175,7 +152,7 @@ class Command(BaseCommand):
         raystack.core.database.query.should_use_async = force_sync
         
         try:
-            create_superuser_sync()
+            asyncio.get_event_loop().run_until_complete(create_superuser_sync())
         finally:
             # Restore original function
             raystack.core.database.query.should_use_async = original_should_use_async

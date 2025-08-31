@@ -5,12 +5,17 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from starlette.authentication import requires
 from raystack.contrib.auth.users.models import UserModel
+import bcrypt
 
 
 # JWT settings
-SECRET_KEY = "your-secret-key-here"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+try:
+    from config.settings import SECRET_KEY, ALGORITHM
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+except ImportError:
+    SECRET_KEY = "your-secret-key-here"
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -45,7 +50,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = UserModel.objects.filter(email=email).first()
+    user = await UserModel.objects.filter(email=email).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -67,13 +72,14 @@ async def get_current_active_superuser(current_user: UserModel = Depends(get_cur
 
 # Password handling functions (stubs)
 async def hash_password(password: str) -> str:
-    # In a real application, password hashing should be implemented here
-    return password
+    # Hash password using bcrypt
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_password.decode('utf-8')
 
 
 async def check_password(plain_password: str, hashed_password: str) -> bool:
-    # In a real application, password verification should be implemented here
-    return plain_password == hashed_password
+    # Verify password using bcrypt
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
 def generate_jwt(user_id: int) -> str:

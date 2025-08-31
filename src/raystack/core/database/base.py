@@ -61,9 +61,9 @@ async def create_db_and_tables():
     if async_engine:
         async with async_engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
-            else:
-            # If async engine is not available, use synchronous
-            SQLModel.metadata.create_all(sync_engine)
+    else:
+        # If async engine is not available, use synchronous
+        SQLModel.metadata.create_all(sync_engine)
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     async_session_factory = get_async_session_factory()

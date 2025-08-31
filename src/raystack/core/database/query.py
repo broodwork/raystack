@@ -1,6 +1,50 @@
 import asyncio
 from raystack.core.database.sqlalchemy import db
 from raystack.core.database.fields.related import ForeignKeyField
+import inspect
+
+class SyncResult:
+    """Helper class to make synchronous results 'awaitable'."""
+    def __init__(self, result):
+        self._result = result
+
+    def __await__(self):
+        yield from ()
+        return self._result
+
+    def __iter__(self):
+        """Make SyncResult iterable if the wrapped result is iterable."""
+        if hasattr(self._result, '__iter__'):
+            return iter(self._result)
+        raise TypeError(f"'{self._result.__class__.__name__}' object is not iterable")
+
+    def __len__(self):
+        """Make SyncResult support len() if the wrapped result has length."""
+        if hasattr(self._result, '__len__'):
+            return len(self._result)
+        raise TypeError(f"'{self._result.__class__.__name__}' object has no len()")
+
+    def __getitem__(self, key):
+        """Make SyncResult support indexing if the wrapped result is indexable."""
+        if hasattr(self._result, '__getitem__'):
+            return self._result[key]
+        raise TypeError(f"'{self._result.__class__.__name__}' object is not subscriptable")
+
+    def __bool__(self):
+        """Make SyncResult support boolean evaluation."""
+        return bool(self._result)
+    
+    def __getattr__(self, name):
+        """Delegate attribute access to the wrapped result."""
+        return getattr(self._result, name)
+
+def universal_executor(sync_func, async_func, *args, **kwargs):
+    if should_use_async():
+        # If async is enabled, return the coroutine directly for awaiting
+        return async_func(*args, **kwargs)
+    else:
+        # If sync, execute the sync function and wrap result for pseudo-awaiting
+        return SyncResult(sync_func(*args, **kwargs))
 
 def is_async_context():
     """Accurately determines if we are in an async context"""
@@ -58,17 +102,7 @@ class QuerySet:
 
     def execute_all(self):
         """Executes the query and returns all results."""
-        if should_use_async():
-            return self._execute_async()
-        else:
-            return self._execute_sync()
-
-    async def aexecute_all(self):
-        """Asynchronous version of execute_all() for use in async context."""
-        if should_use_async():
-            return await self._execute_async()
-        else:
-            return self._execute_sync()
+        return universal_executor(self._execute_sync, self._execute_async)
 
     def order_by(self, *fields):
         # Always returns QuerySet
@@ -87,47 +121,22 @@ class QuerySet:
         return new_queryset
 
     def execute(self):
-        if should_use_async():
-            return self._execute_async()
-        else:
-            return self._execute_sync()
+        return universal_executor(self._execute_sync, self._execute_async)
 
     def first(self):
-        if should_use_async():
-            return self._first_async()
-        else:
-            return self._first_sync()
-
-    async def afirst(self):
-        """Asynchronous version of first() for use in async context."""
-        if should_use_async():
-            return await self._first_async()
-        else:
-            return self._first_sync()
+        return universal_executor(self._first_sync, self._first_async)
 
     def count(self):
-        if should_use_async():
-            return self._count_async()
-        else:
-            return self._count_sync()
+        return universal_executor(self._count_sync, self._count_async)
 
     def exists(self):
-        if should_use_async():
-            return self._exists_async()
-        else:
-            return self._exists_sync()
+        return universal_executor(self._exists_sync, self._exists_async)
 
     def delete(self):
-        if should_use_async():
-            return self._delete_async()
-        else:
-            return self._delete_sync()
+        return universal_executor(self._delete_sync, self._delete_async)
 
     def create(self, **kwargs):
-        if should_use_async():
-            return self._create_async(**kwargs)
-        else:
-            return self._create_sync(**kwargs)
+        return universal_executor(self._create_sync, self._create_async, **kwargs)
 
     # All sync methods use only _sync implementations, async — only _async implementations
 
@@ -262,6 +271,8 @@ class QuerySet:
     # Methods for iterations (work in sync and async contexts)
     def iter(self):
         """Returns an iterable object with query results (lazy loading)."""
+        # _iter_async and _iter_sync methods already return iterators/async iterators
+        # that are directly awaitable or iterable, so no need for universal_executor here.
         if should_use_async():
             return self._iter_async()
         else:
@@ -284,9 +295,13 @@ class QuerySet:
     def get_item(self, key):
         """Gets element by index or slice."""
         if should_use_async():
+            # For __getitem__ when async is used, we need to return an awaitable.
+            # _get_item_async returns a coroutine, so it's already compatible.
             return self._get_item_async(key)
         else:
-            return self._get_item_sync(key)
+            # For __getitem__ when sync is used, we wrap the result in SyncResult
+            # to make it awaitable in calling code if needed.
+            return SyncResult(self._get_item_sync(key))
 
     def _get_item_sync(self, key):
         """Synchronous element retrieval."""
@@ -352,7 +367,7 @@ class QuerySet:
             new_queryset.params = self.params
             new_queryset.query += f" LIMIT 1 OFFSET {key}"
             
-            result = await new_queryset._execute_sync()
+            result = await new_queryset._execute_async() # Fix: should use _execute_async
             if result:
                 return result[0]
             else:

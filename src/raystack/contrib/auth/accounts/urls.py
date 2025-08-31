@@ -60,8 +60,27 @@ async def test(request: Request):
         "config": request.app.settings,
     })
 
+@router.post("/login", response_model=None)
+async def login_post(request: Request):
+    form = await request.form()
+    email = form.get("email")
+    password = form.get("password")
+
+    user = await UserModel.objects.filter(email=email).first()
+
+    if user and await check_password(password, user.password_hash):
+        # Generate JWT token
+        token = generate_jwt(user.id)
+        
+        response = RedirectResponse(url="/admin/", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="jwt", value=token, httponly=True) # Secure cookie
+        return response
+    else:
+        return RedirectResponse(url="/accounts/login?error=invalid_credentials", status_code=status.HTTP_303_SEE_OTHER)
+
+
 @router.get("/register", response_model=None)
-async def test(request: Request):    
+async def test(request: Request):
     return render_template(request=request, template_name="accounts/register.html", context={
         "url_for": url_for,
         "parent": "home",

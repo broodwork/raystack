@@ -2,15 +2,17 @@ from collections.abc import Generator
 from typing import Union
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
+from starlette.authentication import SimpleUser # Import SimpleUser from Starlette
 
 # Lazy import to avoid errors when loading
 # from raystack.core.database.base import get_async_db, get_sync_engine
-from raystack.core.security.jwt import create_access_token # To avoid circular dependency
+from raystack.core.security.jwt import create_access_token, TokenPayload # Import TokenPayload
+from raystack.contrib.auth.users.models import UserModel # Import UserModel
 
 # Lazy imports to avoid circular dependencies
 
@@ -35,11 +37,6 @@ def get_algorithm():
     except ImportError:
         return 'HS256'
 
-# TODO: Define a base User model in raystack.contrib.auth.models that these projects can import
-# For now, we'll assume a User model exists in the project's models.py for demonstration.
-# from your_project.models import TokenPayload, User 
-# (This is a placeholder and will need to be addressed later.)
-
 _reusable_oauth2 = None
 
 def get_reusable_oauth2():
@@ -62,43 +59,41 @@ def get_db():
 # For Python 3.6 compatibility, we'll use regular types instead of Annotated
 SessionDep = Session
 TokenDep = str
+UserDep = Union[UserModel, SimpleUser] # Define UserDep to handle both UserModel and SimpleUser
 
-# Placeholder for User and TokenPayload models. These need to be imported from the actual project.
-# We will assume that `example_async.models.User` and `example_async.models.TokenPayload` are available for now.
-# In a real scenario, Raystack might provide a base User model or a way to register project-specific models.
-
-# Mock models for now to avoid immediate import errors. These should be replaced by actual models.
-class TokenPayload:
-    sub: str
-
-class User:
-    id: int
-    is_active: bool
-    is_superuser: bool
-
-def get_current_user(session: SessionDep, token: TokenDep) -> User:
+def get_current_user(request: Request, session: SessionDep, token: TokenDep = Depends(get_reusable_oauth2)) -> UserModel:
+    # First, check if user is already authenticated by middleware
+    if "user" in request.scope and request.scope["user"] is not None:
+        simple_user: SimpleUser = request.scope["user"]
+        # Assuming SimpleUser.identity is the user ID
+        user_id = int(simple_user.identity)
+        user = session.get(UserModel, user_id)
+        if user:
+            if not user.is_active:
+                raise HTTPException(status_code=400, detail="Inactive user")
+            return user
+        
+    # If not authenticated by middleware, try to authenticate via JWT token from header
     try:
-        # TODO: Replace with actual TokenPayload model from the project
         payload = jwt.decode(
             token, get_secret_key(), algorithms=[get_algorithm()]
         )
-        token_data = TokenPayload(**payload) # Needs to be project specific
+        token_data = TokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    # TODO: Replace with actual User model from the project
-    user = session.get(User, token_data.sub) # Needs to be project specific
+    user = session.get(UserModel, token_data.sub)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return user
 
-CurrentUser = User
+CurrentUser = UserModel
 
-def get_current_active_superuser(current_user: CurrentUser) -> User:
+def get_current_active_superuser(current_user: CurrentUser) -> UserModel:
     if not current_user.is_superuser:
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"

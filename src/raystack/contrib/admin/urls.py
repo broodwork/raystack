@@ -110,8 +110,8 @@ async def profile_view(request: Request):
 @router.get("/users/edit/{user_id}", response_model=None)
 @login_required(["user_auth"])
 async def user_edit_view(request: Request, user_id: int):
-    user = UserModel.objects.filter(id=user_id).first()
-    groups = GroupModel.objects.all()
+    user = await UserModel.objects.filter(id=user_id).first()
+    groups = await GroupModel.objects.all().execute()
     return render_template(request=request, template_name="admin/user_edit.html", context={
         "user": user,
         "groups": groups,
@@ -123,7 +123,7 @@ async def user_edit_view(request: Request, user_id: int):
 @login_required(["user_auth"])
 async def user_edit_post(request: Request, user_id: int):
     form = await request.form()
-    user = UserModel.objects.filter(id=user_id).first()
+    user = await UserModel.objects.filter(id=user_id).first()
     if user:
         user.name = form.get("name")
         user.age = int(form.get("age"))
@@ -131,10 +131,10 @@ async def user_edit_post(request: Request, user_id: int):
         user.organization = form.get("organization")
         group_id = int(form.get("group_id"))
         user.group = group_id
-        user.save()
+        await user.save()
     return render_template(request=request, template_name="admin/user_edit.html", context={
         "user": user,
-        "groups": GroupModel.objects.all(),
+        "groups": await GroupModel.objects.all().execute(),
         "url_for": url_for,
         "config": request.app.settings,
         "success": True
@@ -143,7 +143,7 @@ async def user_edit_post(request: Request, user_id: int):
 @router.get("/groups/edit/{group_id}", response_model=None)
 @login_required(["user_auth"])
 async def group_edit_view(request: Request, group_id: int):
-    group = GroupModel.objects.filter(id=group_id).first()
+    group = await GroupModel.objects.filter(id=group_id).first()
     return render_template(request=request, template_name="admin/group_edit.html", context={
         "group": group,
         "url_for": url_for,
@@ -154,11 +154,11 @@ async def group_edit_view(request: Request, group_id: int):
 @login_required(["user_auth"])
 async def group_edit_post(request: Request, group_id: int):
     form = await request.form()
-    group = GroupModel.objects.filter(id=group_id).first()
+    group = await GroupModel.objects.filter(id=group_id).first()
     if group:
         group.name = form.get("name")
         group.description = form.get("description")
-        group.save()
+        await group.save()
     return render_template(request=request, template_name="admin/group_edit.html", context={
         "group": group,
         "url_for": url_for,
@@ -170,7 +170,7 @@ async def group_edit_post(request: Request, group_id: int):
 @router.get("/users/create", response_model=None)
 @login_required(["user_auth"])
 async def user_create_view(request: Request):
-    groups = GroupModel.objects.all()
+    groups = await GroupModel.objects.all().execute()
     return render_template(request=request, template_name="admin/user_create.html", context={
         "groups": groups,
         "url_for": url_for,
@@ -189,9 +189,9 @@ async def user_create_post(request: Request):
         group=int(form.get("group_id")),
         organization=form.get("organization")
     )
-    user.save()
+    await user.save()
     return render_template(request=request, template_name="admin/user_create.html", context={
-        "groups": GroupModel.objects.all(),
+        "groups": await GroupModel.objects.all().execute(),
         "url_for": url_for,
         "config": request.app.settings,
         "success": True
@@ -201,7 +201,7 @@ async def user_create_post(request: Request):
 @router.get("/users/delete/{user_id}", response_model=None)
 @login_required(["user_auth"])
 async def user_delete_confirm(request: Request, user_id: int):
-    user = UserModel.objects.filter(id=user_id).first()
+    user = await UserModel.objects.filter(id=user_id).first()
     return render_template(request=request, template_name="admin/user_delete.html", context={
         "user": user,
         "url_for": url_for,
@@ -211,9 +211,9 @@ async def user_delete_confirm(request: Request, user_id: int):
 @router.post("/users/delete/{user_id}", response_model=None)
 @login_required(["user_auth"])
 async def user_delete_post(request: Request, user_id: int):
-    user = UserModel.objects.filter(id=user_id).first()
+    user = await UserModel.objects.filter(id=user_id).first()
     if user:
-        user.delete()
+        await user.delete()
     # Redirect to users list after deletion
     return render_template(request=request, template_name="admin/user_delete.html", context={
         "deleted": True,
@@ -242,7 +242,7 @@ async def group_create_post(request: Request):
             name=form.cleaned_data["name"],
             description=form.cleaned_data["description"]
         )
-        group.save()
+        await group.save()
         return render_template(request=request, template_name="admin/group_create.html", context={
             "form": GroupCreateForm(),
             "url_for": url_for,
@@ -260,7 +260,7 @@ async def group_create_post(request: Request):
 @router.get("/groups/delete/{group_id}", response_model=None)
 @login_required(["user_auth"])
 async def group_delete_confirm(request: Request, group_id: int):
-    group = GroupModel.objects.filter(id=group_id).first()
+    group = await GroupModel.objects.filter(id=group_id).first()
     return render_template(request=request, template_name="admin/group_delete.html", context={
         "group": group,
         "url_for": url_for,
@@ -270,9 +270,9 @@ async def group_delete_confirm(request: Request, group_id: int):
 @router.post("/groups/delete/{group_id}", response_model=None)
 @login_required(["user_auth"])
 async def group_delete_post(request: Request, group_id: int):
-    group = GroupModel.objects.filter(id=group_id).first()
+    group = await GroupModel.objects.filter(id=group_id).first()
     if group:
-        group.delete()
+        await group.delete()
     return render_template(request=request, template_name="admin/group_delete.html", context={
         "deleted": True,
         "url_for": url_for,

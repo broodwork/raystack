@@ -35,3 +35,5 @@ class UserModel(Model):
     password_hash = CharField(max_length=255)
     group = ForeignKeyField(to="GroupModel", related_name="users")  # Relationship with group
     organization = CharField(max_length=100)
+    is_active = CharField(max_length=1, default="1", null=True)  # 1 for active, 0 for inactive
+    is_superuser = CharField(max_length=1, default="0", null=True)  # 1 for superuser, 0 for regular user

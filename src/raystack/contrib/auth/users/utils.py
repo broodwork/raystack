@@ -3,7 +3,15 @@ from typing import Union
 from datetime import datetime, timedelta
 import jwt
 
-from config.settings import SECRET_KEY, ALGORITHM
+try:
+    from raystack.conf import settings
+except ImportError:
+    from config.settings import SECRET_KEY, ALGORITHM
+    # Create a mock settings object
+    class MockSettings:
+        SECRET_KEY = SECRET_KEY
+        ALGORITHM = ALGORITHM
+    settings = MockSettings()
 
 
 import asyncio
@@ -35,20 +43,28 @@ def check_password(password: str, hashed_pass):
 
 def generate_jwt(user_id: int):
     """Generate JWT token for user authentication."""
+    if user_id is None:
+        return None
+    
     payload = {'sub': user_id, 'exp': datetime.utcnow() + timedelta(days=1)}
 
-    # Normalize key type for PyJWT
-    key: Union[str, bytes]
-    if isinstance(SECRET_KEY, (bytes, bytearray)):
-        try:
-            key = SECRET_KEY.decode('utf-8')
-        except Exception:
-            key = SECRET_KEY  # fallback
-    else:
-        key = SECRET_KEY
+    # Get settings directly from config
+    try:
+        from config.settings import SECRET_KEY, ALGORITHM
+        secret_key = SECRET_KEY
+        algorithm = ALGORITHM
+    except ImportError:
+        secret_key = 'default-secret-key'
+        algorithm = 'HS256'
 
-    token = jwt.encode(payload, key, algorithm=ALGORITHM)
-    # PyJWT < 2 returns bytes
-    if isinstance(token, (bytes, bytearray)):
-        token = token.decode('utf-8')
-    return token
+    # Use secret_key as is (keep bytes format for consistency)
+    key = secret_key
+
+    try:
+        token = jwt.encode(payload, key, algorithm=algorithm)
+        # PyJWT < 2 returns bytes
+        if isinstance(token, (bytes, bytearray)):
+            token = token.decode('utf-8')
+        return token
+    except Exception:
+        return None

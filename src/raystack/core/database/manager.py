@@ -1,5 +1,5 @@
 import asyncio
-from raystack.core.database.query import QuerySet, should_use_async
+from raystack.core.database.query import QuerySet, should_use_async, universal_executor
 
 class Manager:
     def __init__(self, model_class):
@@ -12,26 +12,26 @@ class Manager:
         return QuerySet(self.model_class).all()
 
     def create(self, **kwargs):
-        # create usually creates object immediately, so we implement sync+async
-        if should_use_async():
-            return QuerySet(self.model_class)._create_async(**kwargs)
-        else:
-            return QuerySet(self.model_class)._create_sync(**kwargs)
+        return universal_executor(
+            QuerySet(self.model_class)._create_sync,
+            QuerySet(self.model_class)._create_async,
+            **kwargs
+        )
 
     def get(self, **kwargs):
         # get = filter + first
         qs = QuerySet(self.model_class).filter(**kwargs)
-        return qs.first()
+        return universal_executor(qs._first_sync, qs._first_async)
 
     def count(self):
-        return QuerySet(self.model_class).count()
+        return universal_executor(QuerySet(self.model_class)._count_sync, QuerySet(self.model_class)._count_async)
 
     def exists(self):
-        return QuerySet(self.model_class).exists()
+        return universal_executor(QuerySet(self.model_class)._exists_sync, QuerySet(self.model_class)._exists_async)
 
     def delete(self, **kwargs):
         qs = QuerySet(self.model_class).filter(**kwargs)
-        return qs.delete()
+        return universal_executor(qs._delete_sync, qs._delete_async)
 
             # Support for lazy loading and iteration
     def iter(self):

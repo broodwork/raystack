@@ -59,7 +59,7 @@ async def login_user(request):
     password = form["password"]
 
     # Search for user in database
-    user = UserModel.objects.filter(email=username).first()  # type: ignore
+    user = await UserModel.objects.filter(email=username).first()  # type: ignore
     if not user:
         return RedirectResponse(previous, status_code=303)
 

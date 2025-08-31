@@ -1,6 +1,6 @@
-from raystack.shortcuts import render
+from raystack.shortcuts import render_template
 
 # Create your views here.
 
 def home_view(request):
-    return render(request, "home/home.html", context={"framework": "Raystack"})
+    return render_template(request, "home/home.html", context={"framework": "Raystack"})

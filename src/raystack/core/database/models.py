@@ -169,11 +169,8 @@ class Model(metaclass=ModelMeta):
         # db.create_table(cls.get_table_name(), columns)
 
     def save(self):
-        from raystack.core.database.query import should_use_async
-        if should_use_async():
-            return self._save_async()
-        else:
-            return self._save_sync()
+        from raystack.core.database.query import universal_executor
+        return universal_executor(self._save_sync, self._save_async, self)
 
     def _save_sync(self):
         print(f"[DEBUG] _save_sync called for {self.__class__.__name__}")
@@ -274,10 +271,8 @@ class Model(metaclass=ModelMeta):
     
     @classmethod
     def create(cls, **kwargs):
-        if asyncio.get_event_loop().is_running():
-            return cls._create_async(**kwargs)
-        else:
-            return cls._create_sync(**kwargs)
+        from raystack.core.database.query import universal_executor
+        return universal_executor(cls._create_sync, cls._create_async, **kwargs)
 
     @classmethod
     def _create_sync(cls, **kwargs):
@@ -292,62 +287,16 @@ class Model(metaclass=ModelMeta):
         return instance
     
     @classmethod
-    async def get(cls, **kwargs):
-        """
-        Asynchronously retrieves one record by conditions.
-        
-        :param kwargs: Search conditions
-        :return: Found model or None
-        """
-        table_name = cls.get_table_name()
-        conditions = ' AND '.join([f"{k} = '{v}'" for k, v in kwargs.items()])
-        query = f"SELECT * FROM {table_name} WHERE {conditions} LIMIT 1"
-        
-        result = await db.execute_async(query, fetch=True)
-        if result:
-            row = result[0]
-            return cls(**dict(row))
-        return None
-    
-    @classmethod
-    async def filter(cls, **kwargs):
-        """
-        Asynchronously filters records by conditions.
-        
-        :param kwargs: Filter conditions
-        :return: List of found models
-        """
-        table_name = cls.get_table_name()
-        conditions = ' AND '.join([f"{k} = '{v}'" for k, v in kwargs.items()])
-        query = f"SELECT * FROM {table_name}"
-        if conditions:
-            query += f" WHERE {conditions}"
-        
-        result = await db.execute_async(query, fetch=True)
-        return [cls(**dict(row)) for row in result]
-    
-    @classmethod
-    async def all(cls):
-        """
-        Asynchronously retrieves all records.
-        
-        :return: List of all models
-        """
-        table_name = cls.get_table_name()
-        query = f"SELECT * FROM {table_name}"
-        
-        result = await db.execute_async(query, fetch=True)
-        return [cls(**dict(row)) for row in result]
-    
+    # The 'get', 'filter', 'all' methods on Model itself are not directly used in urls.py,
+    # and they are already async. The QuerySet object handles the sync/async logic.
+    # The 'create' method is already handled.
+
     def delete(self):
         """
         Deletes record from database.
         """
-        from raystack.core.database.query import should_use_async
-        if should_use_async():
-            return self._delete_async()
-        else:
-            return self._delete_sync()
+        from raystack.core.database.query import universal_executor
+        return universal_executor(self._delete_sync, self._delete_async, self)
 
     def _delete_sync(self):
         """

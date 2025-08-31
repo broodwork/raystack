@@ -1,6 +1,10 @@
 from typing import Optional, Union, Any
 import jwt
 from datetime import datetime, timedelta
+from pydantic import BaseModel
+
+class TokenPayload(BaseModel):
+    sub: Optional[int] = None
 
 def create_access_token(
     subject: Union[str, Any], expires_delta: Optional[timedelta] = None
