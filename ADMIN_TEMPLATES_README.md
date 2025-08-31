@@ -132,3 +132,4 @@ src/raystack/contrib/templates/admin/
 - `group` - данные группы
 
 Шаблоны используют стандартные Django/Jinja2 фильтры и функции для форматирования данных.
+
