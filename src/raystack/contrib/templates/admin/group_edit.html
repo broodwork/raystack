@@ -5,21 +5,69 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
-        <div class="card-header"><h5>Edit Group #{{ group.id }}</h5></div>
+        <div class="card-header">
+          <h5>Edit Group: {{ group.name }}</h5>
+          <p class="text-sm mb-0">Update group information and permissions</p>
+        </div>
         <div class="card-body">
           {% if success %}
             <div class="alert alert-success">Changes saved!</div>
           {% endif %}
           <form method="post">
             <div class="mb-3">
-              <label class="form-label">Name</label>
+              <label class="form-label">Group Name <span class="text-danger">*</span></label>
               <input type="text" class="form-control" name="name" value="{{ group.name }}" required>
             </div>
+            
             <div class="mb-3">
               <label class="form-label">Description</label>
-              <input type="text" class="form-control" name="description" value="{{ group.description }}">
+              <textarea class="form-control" name="description" rows="3" placeholder="Describe the purpose of this group">{{ group.description }}</textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            
+            <div class="mb-3">
+              <label class="form-label">Permissions</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="user_management" id="userMgmt" {% if 'user_management' in group.permissions %}checked{% endif %}>
+                    <label class="form-check-label" for="userMgmt">User Management</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="group_management" id="groupMgmt" {% if 'group_management' in group.permissions %}checked{% endif %}>
+                    <label class="form-check-label" for="groupMgmt">Group Management</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="system_settings" id="sysSettings" {% if 'system_settings' in group.permissions %}checked{% endif %}>
+                    <label class="form-check-label" for="sysSettings">System Settings</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="view_logs" id="viewLogs" {% if 'view_logs' in group.permissions %}checked{% endif %}>
+                    <label class="form-check-label" for="viewLogs">View Logs</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="admin_access" id="adminAccess" {% if 'admin_access' in group.permissions %}checked{% endif %}>
+                    <label class="form-check-label" for="adminAccess">Admin Access</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="read_only" id="readOnly" {% if 'read_only' in group.permissions %}checked{% endif %}>
+                    <label class="form-check-label" for="readOnly">Read Only</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="isActive" {% if group.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="isActive">
+                  Active group
+                </label>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save Changes</button>
             <a href="{{ url_for('admin/groups') }}" class="btn btn-secondary">Back</a>
           </form>
         </div>

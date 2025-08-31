@@ -1,0 +1,180 @@
+{% extends 'admin/layouts/base.html' %}
+
+{% block title %}System Logs{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+          <h6>System Logs</h6>
+          <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width: auto;" id="logLevel">
+              <option value="">All Levels</option>
+              <option value="DEBUG">DEBUG</option>
+              <option value="INFO">INFO</option>
+              <option value="WARNING">WARNING</option>
+              <option value="ERROR">ERROR</option>
+              <option value="CRITICAL">CRITICAL</option>
+            </select>
+            <button class="btn btn-info btn-sm" onclick="refreshLogs()">
+              <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <button class="btn btn-warning btn-sm" onclick="clearLogs()">
+              <i class="fas fa-trash me-1"></i>Clear
+            </button>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Timestamp</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Level</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Module</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Message</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">IP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for log in logs %}
+                <tr>
+                  <td>
+                    <div class="d-flex px-2 py-1">
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="mb-0 text-sm">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+                        <p class="text-xs text-secondary mb-0">{{ log.timestamp.strftime('%f')[:-3] }}ms</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge badge-sm 
+                      {% if log.level == 'ERROR' or log.level == 'CRITICAL' %}bg-gradient-danger
+                      {% elif log.level == 'WARNING' %}bg-gradient-warning
+                      {% elif log.level == 'INFO' %}bg-gradient-info
+                      {% else %}bg-gradient-secondary{% endif %}">
+                      {{ log.level }}
+                    </span>
+                  </td>
+                  <td>
+                    <p class="text-xs font-weight-bold mb-0">{{ log.module }}</p>
+                    <p class="text-xs text-secondary mb-0">{{ log.function }}</p>
+                  </td>
+                  <td>
+                    <p class="text-xs font-weight-bold mb-0">{{ log.message[:100] }}{% if log.message|length > 100 %}...{% endif %}</p>
+                    {% if log.details %}
+                    <p class="text-xs text-secondary mb-0">{{ log.details[:50] }}{% if log.details|length > 50 %}...{% endif %}</p>
+                    {% endif %}
+                  </td>
+                  <td class="align-middle text-center text-sm">
+                    {% if log.user %}
+                    <span class="text-secondary text-xs font-weight-bold">{{ log.user.name }}</span>
+                    {% else %}
+                    <span class="text-secondary text-xs">-</span>
+                    {% endif %}
+                  </td>
+                  <td class="align-middle text-center">
+                    <span class="text-secondary text-xs font-weight-bold">{{ log.ip_address or '-' }}</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Statistics -->
+  <div class="row">
+    <div class="col-lg-3 col-sm-6 mb-xl-0 mb-4">
+      <div class="card">
+        <div class="card-header p-3 pt-2">
+          <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+            <i class="fas fa-info-circle opacity-10"></i>
+          </div>
+          <div class="text-end pt-1">
+            <p class="text-sm mb-0 text-capitalize">INFO</p>
+            <h4 class="mb-0">{{ stats.info_count }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-sm-6 mb-xl-0 mb-4">
+      <div class="card">
+        <div class="card-header p-3 pt-2">
+          <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
+            <i class="fas fa-exclamation-triangle opacity-10"></i>
+          </div>
+          <div class="text-end pt-1">
+            <p class="text-sm mb-0 text-capitalize">WARNING</p>
+            <h4 class="mb-0">{{ stats.warning_count }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-sm-6 mb-xl-0 mb-4">
+      <div class="card">
+        <div class="card-header p-3 pt-2">
+          <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
+            <i class="fas fa-times-circle opacity-10"></i>
+          </div>
+          <div class="text-end pt-1">
+            <p class="text-sm mb-0 text-capitalize">ERROR</p>
+            <h4 class="mb-0">{{ stats.error_count }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-sm-6">
+      <div class="card">
+        <div class="card-header p-3 pt-2">
+          <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+            <i class="fas fa-bug opacity-10"></i>
+          </div>
+          <div class="text-end pt-1">
+            <p class="text-sm mb-0 text-capitalize">CRITICAL</p>
+            <h4 class="mb-0">{{ stats.critical_count }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function refreshLogs() {
+  location.reload();
+}
+
+function clearLogs() {
+  if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+    fetch('{{ url_for("admin/logs/clear") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      if (response.ok) {
+        location.reload();
+      }
+    });
+  }
+}
+
+document.getElementById('logLevel').addEventListener('change', function() {
+  const level = this.value;
+  const url = new URL(window.location);
+  if (level) {
+    url.searchParams.set('level', level);
+  } else {
+    url.searchParams.delete('level');
+  }
+  window.location = url;
+});
+</script>
+{% endblock content %}

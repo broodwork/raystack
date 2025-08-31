@@ -1,0 +1,258 @@
+{% extends 'admin/layouts/base.html' %}
+
+{% block title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>System Settings</h6>
+          <p class="text-sm mb-0">Configure system-wide settings and preferences</p>
+        </div>
+        <div class="card-body">
+          <form method="post" id="settingsForm">
+            <!-- General Settings -->
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="mb-3">General Settings</h6>
+                
+                <div class="mb-3">
+                  <label class="form-label">Site Name</label>
+                  <input type="text" class="form-control" name="site_name" value="{{ settings.site_name }}" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Site Description</label>
+                  <textarea class="form-control" name="site_description" rows="3">{{ settings.site_description }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Admin Email</label>
+                  <input type="email" class="form-control" name="admin_email" value="{{ settings.admin_email }}" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Time Zone</label>
+                  <select class="form-select" name="timezone">
+                    {% for tz in timezones %}
+                    <option value="{{ tz }}" {% if tz == settings.timezone %}selected{% endif %}>{{ tz }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <h6 class="mb-3">Security Settings</h6>
+                
+                <div class="mb-3">
+                  <label class="form-label">Session Timeout (minutes)</label>
+                  <input type="number" class="form-control" name="session_timeout" value="{{ settings.session_timeout }}" min="5" max="1440">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Password Policy</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="require_uppercase" {% if settings.require_uppercase %}checked{% endif %}>
+                    <label class="form-check-label">Require uppercase letters</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="require_numbers" {% if settings.require_numbers %}checked{% endif %}>
+                    <label class="form-check-label">Require numbers</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="require_special_chars" {% if settings.require_special_chars %}checked{% endif %}>
+                    <label class="form-check-label">Require special characters</label>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Minimum Password Length</label>
+                  <input type="number" class="form-control" name="min_password_length" value="{{ settings.min_password_length }}" min="6" max="50">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Failed Login Attempts Before Lockout</label>
+                  <input type="number" class="form-control" name="max_login_attempts" value="{{ settings.max_login_attempts }}" min="3" max="10">
+                </div>
+              </div>
+            </div>
+            
+            <hr class="horizontal dark">
+            
+            <!-- Email Settings -->
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="mb-3">Email Settings</h6>
+                
+                <div class="mb-3">
+                  <label class="form-label">SMTP Host</label>
+                  <input type="text" class="form-control" name="smtp_host" value="{{ settings.smtp_host }}">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">SMTP Port</label>
+                  <input type="number" class="form-control" name="smtp_port" value="{{ settings.smtp_port }}" min="1" max="65535">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">SMTP Username</label>
+                  <input type="text" class="form-control" name="smtp_username" value="{{ settings.smtp_username }}">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">SMTP Password</label>
+                  <input type="password" class="form-control" name="smtp_password" value="{{ settings.smtp_password }}">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Use TLS</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="smtp_use_tls" {% if settings.smtp_use_tls %}checked{% endif %}>
+                    <label class="form-check-label">Enable TLS encryption</label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <h6 class="mb-3">Logging Settings</h6>
+                
+                <div class="mb-3">
+                  <label class="form-label">Log Level</label>
+                  <select class="form-select" name="log_level">
+                    <option value="DEBUG" {% if settings.log_level == 'DEBUG' %}selected{% endif %}>DEBUG</option>
+                    <option value="INFO" {% if settings.log_level == 'INFO' %}selected{% endif %}>INFO</option>
+                    <option value="WARNING" {% if settings.log_level == 'WARNING' %}selected{% endif %}>WARNING</option>
+                    <option value="ERROR" {% if settings.log_level == 'ERROR' %}selected{% endif %}>ERROR</option>
+                    <option value="CRITICAL" {% if settings.log_level == 'CRITICAL' %}selected{% endif %}>CRITICAL</option>
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Log File Path</label>
+                  <input type="text" class="form-control" name="log_file_path" value="{{ settings.log_file_path }}">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Max Log File Size (MB)</label>
+                  <input type="number" class="form-control" name="max_log_size" value="{{ settings.max_log_size }}" min="1" max="1000">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Log Retention (days)</label>
+                  <input type="number" class="form-control" name="log_retention_days" value="{{ settings.log_retention_days }}" min="1" max="365">
+                </div>
+              </div>
+            </div>
+            
+            <hr class="horizontal dark">
+            
+            <!-- Database Settings -->
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="mb-3">Database Settings</h6>
+                
+                <div class="mb-3">
+                  <label class="form-label">Database URL</label>
+                  <input type="text" class="form-control" name="database_url" value="{{ settings.database_url }}" readonly>
+                  <small class="form-text text-muted">Database connection string (read-only)</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Connection Pool Size</label>
+                  <input type="number" class="form-control" name="db_pool_size" value="{{ settings.db_pool_size }}" min="1" max="100">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Max Overflow</label>
+                  <input type="number" class="form-control" name="db_max_overflow" value="{{ settings.db_max_overflow }}" min="0" max="100">
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <h6 class="mb-3">Backup Settings</h6>
+                
+                <div class="mb-3">
+                  <label class="form-label">Auto Backup</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="auto_backup" {% if settings.auto_backup %}checked{% endif %}>
+                    <label class="form-check-label">Enable automatic backups</label>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Backup Frequency (hours)</label>
+                  <input type="number" class="form-control" name="backup_frequency" value="{{ settings.backup_frequency }}" min="1" max="168">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Backup Retention (days)</label>
+                  <input type="number" class="form-control" name="backup_retention_days" value="{{ settings.backup_retention_days }}" min="1" max="365">
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Backup Path</label>
+                  <input type="text" class="form-control" name="backup_path" value="{{ settings.backup_path }}">
+                </div>
+              </div>
+            </div>
+            
+            <div class="row mt-4">
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset to Defaults</button>
+                <button type="button" class="btn btn-info" onclick="testEmailSettings()">Test Email</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function resetForm() {
+  if (confirm('Are you sure you want to reset all settings to defaults? This action cannot be undone.')) {
+    fetch('{{ url_for("admin/settings/reset") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      if (response.ok) {
+        location.reload();
+      }
+    });
+  }
+}
+
+function testEmailSettings() {
+  const formData = new FormData(document.getElementById('settingsForm'));
+  fetch('{{ url_for("admin/settings/test-email") }}', {
+    method: 'POST',
+    body: formData
+  }).then(response => {
+    if (response.ok) {
+      alert('Test email sent successfully!');
+    } else {
+      alert('Failed to send test email. Please check your settings.');
+    }
+  });
+}
+
+// Show success message if settings were saved
+{% if success %}
+document.addEventListener('DOMContentLoaded', function() {
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-success alert-dismissible fade show';
+  alert.innerHTML = `
+    Settings saved successfully!
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  document.querySelector('.card-body').insertBefore(alert, document.querySelector('.card-body').firstChild);
+});
+{% endif %}
+</script>
+{% endblock content %}

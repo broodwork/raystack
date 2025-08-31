@@ -1,0 +1,175 @@
+{% extends 'admin/layouts/base.html' %}
+
+{% block title %}Group Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+          <div>
+            <h6>Group Details</h6>
+            <p class="text-sm mb-0">View group information and members</p>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('admin/groups/edit', group_id=group.id) }}" class="btn btn-primary btn-sm">
+              <i class="fas fa-edit me-1"></i>Edit Group
+            </a>
+            <a href="{{ url_for('admin/groups') }}" class="btn btn-secondary btn-sm">
+              <i class="fas fa-arrow-left me-1"></i>Back to Groups
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="text-center mb-4">
+                <div class="avatar avatar-xl bg-gradient-info rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="fas fa-user-friends text-white" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="mt-3">{{ group.name }}</h5>
+                <p class="text-sm text-secondary">{{ group.description or 'No description' }}</p>
+                <span class="badge badge-sm {% if group.is_active %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                  {% if group.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="mb-3">Group Information</h6>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Group Name</label>
+                    <p class="text-sm">{{ group.name }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Group ID</label>
+                    <p class="text-sm">#{{ group.id }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Description</label>
+                    <p class="text-sm">{{ group.description or 'No description provided' }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Status</label>
+                    <p class="text-sm">
+                      <span class="badge badge-sm {% if group.is_active %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                        {% if group.is_active %}Active{% else %}Inactive{% endif %}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="mb-3">Statistics</h6>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Total Members</label>
+                    <p class="text-sm">{{ group.members.count() }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Active Members</label>
+                    <p class="text-sm">{{ group.members.filter_by(is_active=True).count() }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Created Date</label>
+                    <p class="text-sm">{{ group.created_at.strftime('%Y-%m-%d %H:%M') if group.created_at else 'Unknown' }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-sm font-weight-bold">Last Modified</label>
+                    <p class="text-sm">{{ group.updated_at.strftime('%Y-%m-%d %H:%M') if group.updated_at else 'Unknown' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr class="horizontal dark">
+          
+          <!-- Group Permissions -->
+          <div class="row">
+            <div class="col-12">
+              <h6 class="mb-3">Permissions</h6>
+              <div class="row">
+                {% for permission in group.permissions %}
+                <div class="col-md-3 col-sm-6 mb-2">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked disabled>
+                    <label class="form-check-label text-sm">{{ permission|title|replace('_', ' ') }}</label>
+                  </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                  <p class="text-sm text-secondary">No permissions assigned</p>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          
+          <hr class="horizontal dark">
+          
+          <!-- Group Members -->
+          <div class="row">
+            <div class="col-12">
+              <h6 class="mb-3">Group Members ({{ group.members.count() }})</h6>
+              {% if group.members.count() > 0 %}
+              <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Login</th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for member in group.members %}
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="{{ url_for('admin_static', filename='assets/img/default-avatar.jpg') }}" class="avatar avatar-sm me-3" alt="{{ member.first_name }}">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">{{ member.first_name }} {{ member.last_name }}</h6>
+                            <p class="text-xs text-secondary mb-0">@{{ member.username }}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ member.email }}</p>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="badge badge-sm {% if member.is_active %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                          {% if member.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-secondary text-xs font-weight-bold">{{ member.last_login.strftime('%Y-%m-%d %H:%M') if member.last_login else 'Never' }}</span>
+                      </td>
+                      <td class="align-middle">
+                        <a href="{{ url_for('admin/users/view', user_id=member.id) }}" class="btn btn-link btn-sm text-info">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <div class="text-center py-4">
+                <i class="fas fa-users text-secondary" style="font-size: 3rem;"></i>
+                <p class="text-secondary mt-2">No members in this group</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

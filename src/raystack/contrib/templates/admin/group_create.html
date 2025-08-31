@@ -5,7 +5,10 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
-        <div class="card-header"><h5>Add Group</h5></div>
+        <div class="card-header">
+          <h5>Add New Group</h5>
+          <p class="text-sm mb-0">Create a new user group with permissions</p>
+        </div>
         <div class="card-body">
           {% if success %}
             <div class="alert alert-success">Group created!</div>
@@ -14,8 +17,62 @@
             <div class="alert alert-danger">{{ errors }}</div>
           {% endif %}
           <form method="post">
-            {{ form|form_as_p|safe }}
-            <button type="submit" class="btn btn-primary">Create</button>
+            <div class="mb-3">
+              <label class="form-label">Group Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="name" required>
+              <small class="form-text text-muted">Unique name for the group</small>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description" rows="3" placeholder="Describe the purpose of this group"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Permissions</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="user_management" id="userMgmt">
+                    <label class="form-check-label" for="userMgmt">User Management</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="group_management" id="groupMgmt">
+                    <label class="form-check-label" for="groupMgmt">Group Management</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="system_settings" id="sysSettings">
+                    <label class="form-check-label" for="sysSettings">System Settings</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="view_logs" id="viewLogs">
+                    <label class="form-check-label" for="viewLogs">View Logs</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="admin_access" id="adminAccess">
+                    <label class="form-check-label" for="adminAccess">Admin Access</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="permissions" value="read_only" id="readOnly">
+                    <label class="form-check-label" for="readOnly">Read Only</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="isActive" checked>
+                <label class="form-check-label" for="isActive">
+                  Active group
+                </label>
+              </div>
+              <small class="form-text text-muted">Inactive groups cannot be assigned to users</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create Group</button>
             <a href="{{ url_for('admin/groups') }}" class="btn btn-secondary">Back</a>
           </form>
         </div>

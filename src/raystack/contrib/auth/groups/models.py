@@ -36,4 +36,6 @@ class GroupModel(Model):
         """
         Loads all users associated with this group.
         """
+        # Use string reference to avoid circular import
+        from raystack.contrib.auth.users.models import UserModel
         return UserModel.objects.filter(group=self.id)

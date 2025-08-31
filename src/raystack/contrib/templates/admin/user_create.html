@@ -5,35 +5,86 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
-        <div class="card-header"><h5>Add User</h5></div>
+        <div class="card-header">
+          <h5>Add New User</h5>
+          <p class="text-sm mb-0">Create a new user account</p>
+        </div>
         <div class="card-body">
           {% if success %}
             <div class="alert alert-success">User created!</div>
           {% endif %}
           <form method="post">
-            <div class="mb-3">
-              <label class="form-label">Name</label>
-              <input type="text" class="form-control" name="name" required>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">First Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="first_name" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="last_name" required>
+                </div>
+              </div>
             </div>
+            
             <div class="mb-3">
-              <label class="form-label">Age</label>
-              <input type="number" class="form-control" name="age" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
+              <label class="form-label">Email Address <span class="text-danger">*</span></label>
               <input type="email" class="form-control" name="email" required>
+              <small class="form-text text-muted">This will be used for login</small>
             </div>
+            
             <div class="mb-3">
-              <label class="form-label">Group</label>
+              <label class="form-label">Username <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="username" required>
+              <small class="form-text text-muted">Unique username for login</small>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Password <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" name="password" required>
+                  <small class="form-text text-muted">Minimum 8 characters</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" name="password_confirm" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Group <span class="text-danger">*</span></label>
               <select class="form-select" name="group_id" required>
+                <option value="">Select a group</option>
                 {% for group in groups %}
                   <option value="{{ group.id }}">{{ group.name }}</option>
                 {% endfor %}
               </select>
             </div>
+            
             <div class="mb-3">
               <label class="form-label">Organization</label>
               <input type="text" class="form-control" name="organization">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" name="phone">
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="isActive" checked>
+                <label class="form-check-label" for="isActive">
+                  Active account
+                </label>
+              </div>
+              <small class="form-text text-muted">Inactive users cannot log in</small>
             </div>
             <button type="submit" class="btn btn-primary">Create</button>
             <a href="{{ url_for('admin/users') }}" class="btn btn-secondary">Back</a>

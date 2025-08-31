@@ -1,6 +1,57 @@
-{% extends "base.html" %}
-
-{% block content %}
-    <h1>Welcome to {{ framework }}!</h1>
-    <p>This is a simple home page.</p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{ framework }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .nav-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .nav-links a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to {{ framework }}!</h1>
+        <p>This is a simple home page for the Raystack framework.</p>
+        
+        <div class="nav-links">
+            <a href="/admin/">Admin Panel</a>
+            <a href="/auth/accounts/login">Login</a>
+            <a href="/auth/accounts/register">Register</a>
+        </div>
+        
+        <p>Raystack is a modern web framework built with FastAPI and designed for rapid development.</p>
+    </div>
+</body>
+</html>
